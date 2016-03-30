@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
-                android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/listitem_rl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp">
 
     <TextView
         android:id="@+id/item.id"
@@ -16,7 +17,7 @@
         android:maxLength="4"
         android:textSize="18sp"
         android:textStyle="bold"
-        tools:text="1"/>
+        tools:text="1" />
 
     <TextView
         android:id="@+id/item.description"
@@ -26,7 +27,7 @@
         android:layout_toRightOf="@id/item.id"
         android:textAllCaps="true"
         android:textSize="18sp"
-        tools:text="Description of task"/>
+        tools:text="Description of task" />
 
     <TextView
         android:id="@+id/item.date"
@@ -35,7 +36,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@id/item.description"
         android:layout_marginTop="10dp"
-        tools:text="2016-04-01 00:00:00"/>
+        tools:text="2016-04-01 00:00:00" />
 
     <TextView
         android:id="@+id/item.user"
@@ -45,6 +46,6 @@
         android:layout_below="@id/item.description"
         android:layout_marginTop="10dp"
         android:textStyle="italic"
-        tools:text="michalu"/>
+        tools:text="michalu" />
 
 </RelativeLayout>

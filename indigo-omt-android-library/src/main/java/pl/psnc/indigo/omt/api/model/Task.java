@@ -124,6 +124,11 @@ public class Task implements Serializable, Parcelable {
     public Task() {
     }
 
+    public Task(String username, String application) {
+        this.user = username;
+        this.application = application;
+    }
+
     protected Task(Parcel in) {
         this.id = in.readString();
         this.date = in.readString();

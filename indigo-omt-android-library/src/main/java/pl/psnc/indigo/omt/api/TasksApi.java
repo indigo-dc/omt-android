@@ -6,9 +6,11 @@ import android.os.Looper;
 import java.util.HashMap;
 import java.util.List;
 
+import okhttp3.MediaType;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.threads.ApiHandlerThread;
 import pl.psnc.indigo.omt.threads.IndigoCallback;
+import pl.psnc.indigo.omt.threads.TaskCreateApiThread;
 import pl.psnc.indigo.omt.threads.TaskDetailsApiThread;
 import pl.psnc.indigo.omt.threads.TasksApiThread;
 
@@ -18,17 +20,23 @@ import pl.psnc.indigo.omt.threads.TasksApiThread;
 public class TasksApi extends Api {
     private ApiHandlerThread mWorker;
     private final String endpoint = "tasks";
+    public static final MediaType MEDIA_TYPE_INDIGO
+            = MediaType.parse("application/vnd.indigo-datacloud.apiserver+json; charset=utf-8");
 
     public TasksApi(String httpAddress) {
         super(httpAddress);
     }
 
     public interface TasksCallback extends IndigoCallback {
-        public void onSuccess(List<Task> result);
+        void onSuccess(List<Task> result);
     }
 
     public interface TaskDetailsCallback extends IndigoCallback {
-        public void onSuccess(Task result);
+        void onSuccess(Task result);
+    }
+
+    public interface TaskCreationCallback extends IndigoCallback {
+        void onSuccess(Task result);
     }
 
     public void getTasks(HashMap params, TasksCallback callback) {
@@ -43,5 +51,12 @@ public class TasksApi extends Api {
         mWorker.start();
         ((TaskDetailsApiThread) mWorker).prepareHandler();
         ((TaskDetailsApiThread) mWorker).callApi(httpAddress, endpoint, taskId);
+    }
+
+    public void createTask(Task newTask, TaskCreationCallback callback) {
+        mWorker = new TaskCreateApiThread(new Handler(Looper.getMainLooper()), callback);
+        mWorker.start();
+        ((TaskCreateApiThread) mWorker).prepareHandler();
+        ((TaskCreateApiThread) mWorker).callApi(httpAddress, endpoint, newTask);
     }
 }

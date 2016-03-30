@@ -2,9 +2,10 @@ package pl.psnc.indigo.omt;
 
 import java.util.HashMap;
 
-import pl.psnc.indigo.omt.api.TasksApi;
-import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
 import okhttp3.Authenticator;
+import pl.psnc.indigo.omt.api.TasksApi;
+import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
 
 /**
  * Created by michalu on 21.03.16.
@@ -41,6 +42,7 @@ public class Indigo {
 
     /**
      * Gets all tasks assigned to given user
+     *
      * @param username
      * @param callback
      */
@@ -59,6 +61,7 @@ public class Indigo {
 
     /**
      * Gets all status assigned to given user and filtered by status
+     *
      * @param username
      * @param status
      * @param callback
@@ -80,6 +83,7 @@ public class Indigo {
 
     /**
      * Gets all tasks related with given user and application filtered by status
+     *
      * @param username
      * @param application
      * @param status
@@ -104,6 +108,7 @@ public class Indigo {
 
     /**
      * Gets details about task
+     *
      * @param taskId
      * @param callback
      */
@@ -115,7 +120,17 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new TasksApi((url)).getTask(taskId,callback);
+        new TasksApi((url)).getTask(taskId, callback);
+    }
+
+    public static void createTask(Task newTask, TasksApi.TaskCreationCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new TasksApi((url)).createTask(newTask, callback);
     }
 
 }

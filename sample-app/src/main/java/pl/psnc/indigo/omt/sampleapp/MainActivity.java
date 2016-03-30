@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.TasksApi;
@@ -42,28 +43,17 @@ public class MainActivity extends AppCompatActivity {
         listAdapter = new TasksListAdapter(this);
         mRecyclerView.setAdapter(listAdapter);
         if (savedInstanceState == null || mTasks == null) {
-            Indigo.getTasks("brunor", TaskStatus.ANY, new TasksApi.TasksCallback() {
-                @Override
-                public void onSuccess(List<Task> tasks) {
-                    mTasks = (ArrayList) tasks;
-                    listAdapter.setTasks(mTasks);
-                    listAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            });
+           getTasks();
         }
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Indigo.createTask(new Task("michalu", "2"), new TasksApi.TaskCreationCallback() {
+                Indigo.createTask(new Task("michalu", UUID.randomUUID().toString(), "2"), new TasksApi.TaskCreationCallback() {
                     @Override
                     public void onSuccess(Task result) {
                         Log.d(TAG, "Created task: " + result.toString());
+                        getTasks();
                     }
 
                     @Override
@@ -71,6 +61,22 @@ public class MainActivity extends AppCompatActivity {
                         Log.e(TAG, "Creation task failed: " + exception.getMessage());
                     }
                 });
+            }
+        });
+    }
+
+    public void getTasks() {
+        Indigo.getTasks("michalu", TaskStatus.ANY, new TasksApi.TasksCallback() {
+            @Override
+            public void onSuccess(List<Task> tasks) {
+                mTasks = (ArrayList) tasks;
+                listAdapter.setTasks(mTasks);
+                listAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG, e.getMessage());
             }
         });
     }

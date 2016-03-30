@@ -21,7 +21,7 @@ public class TasksApi extends Api {
     private ApiHandlerThread mWorker;
     private final String endpoint = "tasks";
     public static final MediaType MEDIA_TYPE_INDIGO
-            = MediaType.parse("application/vnd.indigo-datacloud.apiserver+json; charset=utf-8");
+            = MediaType.parse("application/json");
 
     public TasksApi(String httpAddress) {
         super(httpAddress);

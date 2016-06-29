@@ -5,14 +5,13 @@ package pl.psnc.indigo.omt.api.model;
  */
 public class MediaType {
 
-    String type;
+  String type;
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
+  public void setType(String type) {
+    this.type = type;
+  }
 }

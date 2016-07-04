@@ -1,30 +1,32 @@
 package pl.psnc.indigo.omt.api.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by michalu on 21.03.16.
  */
 public class Link {
 
-  private String rel;
-  private String href;
+    @SerializedName("rel") private String mRel;
+    @SerializedName("href") private String mHref;
 
-  public Link() {
+    public Link() {
 
-  }
+    }
 
-  public String getRel() {
-    return rel;
-  }
+    public String getmRel() {
+        return mRel;
+    }
 
-  public void setRel(String rel) {
-    this.rel = rel;
-  }
+    public void setmRel(String rel) {
+        this.mRel = rel;
+    }
 
-  public String getHref() {
-    return href;
-  }
+    public String getHref() {
+        return mHref;
+    }
 
-  public void setHref(String href) {
-    this.href = href;
-  }
+    public void setHref(String href) {
+        this.mHref = href;
+    }
 }

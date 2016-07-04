@@ -10,104 +10,102 @@ import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
  * Created by michalu on 21.03.16.
  */
 public class Indigo {
-  private static String username;
-  private static String url;
-  private static String apiToken;
-  private static Authenticator authenticator;
-  private static boolean initialized = false;
+    private static String sUsername;
+    private static String sUrl;
+    private static String sApiToken;
+    private static Authenticator sAuthenticator;
+    private static boolean sInitialized = false;
 
-  private Indigo() {
+    private Indigo() {
 
-  }
-
-  private static void checkInitialization() throws NotInitilizedException {
-    if (!initialized) {
-      throw new NotInitilizedException(
-          "Library not initialized! Call Indigo.init() in your Application class");
     }
-  }
 
-  /**
-   * A method must be called in the application class of your app
-   */
-  public static void init(String url, String username, String apiToken) {
-    if (initialized) return;
-    Indigo.username = username;
-    Indigo.url = url;
-    Indigo.apiToken = apiToken;
-    initialized = true;
-  }
-
-  /**
-   * Gets all tasks assigned to given user
-   */
-  public static void getTasks(String username, TasksApi.TasksCallback callback) {
-    try {
-      checkInitialization();
-    } catch (NotInitilizedException e) {
-      callback.onError(e);
-      return;
+    private static void checkInitialization() throws NotInitilizedException {
+        if (!sInitialized) {
+            throw new NotInitilizedException(
+                "Library not initialized! Call Indigo.init() in your Application class");
+        }
     }
-    HashMap<String, String> params = new HashMap<>();
-    if (username != null && !username.isEmpty()) params.put("user", username);
-    new TasksApi(url).getTasks(params, callback);
-  }
 
-  /**
-   * Gets all status assigned to given user and filtered by status
-   */
-  public static void getTasks(String username, String status, TasksApi.TasksCallback callback) {
-    try {
-      checkInitialization();
-    } catch (NotInitilizedException e) {
-      callback.onError(e);
-      return;
+    /**
+     * A method must be called in the application class of your app
+     */
+    public static void init(String url) {
+        if (sInitialized) return;
+        Indigo.sUrl = url;
+        sInitialized = true;
     }
-    HashMap<String, String> params = new HashMap<>();
-    if (username != null && !username.isEmpty()) params.put("user", username);
-    if (status != null && !status.isEmpty()) params.put("status", status);
-    new TasksApi(url).getTasks(params, callback);
-  }
 
-  /**
-   * Gets all tasks related with given user and application filtered by status
-   */
-  public static void getTasks(String username, String application, String status,
-      TasksApi.TasksCallback callback) {
-    try {
-      checkInitialization();
-    } catch (NotInitilizedException e) {
-      callback.onError(e);
-      return;
+    /**
+     * Gets all tasks assigned to given user
+     */
+    public static void getTasks(TasksApi.TasksCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        HashMap<String, String> params = new HashMap<>();
+        if (sUsername != null && !sUsername.isEmpty()) params.put("user", sUsername);
+        new TasksApi(sUrl).getTasks(params, callback);
     }
-    HashMap<String, String> params = new HashMap<>();
-    if (username != null && !username.isEmpty()) params.put("user", username);
-    if (status != null && !status.isEmpty()) params.put("status", status);
-    if (application != null && !application.isEmpty()) params.put("application", application);
-    new TasksApi(url).getTasks(params, callback);
-  }
 
-  /**
-   * Gets details about task
-   */
-
-  public static void getTask(int taskId, TasksApi.TaskDetailsCallback callback) {
-    try {
-      checkInitialization();
-    } catch (NotInitilizedException e) {
-      callback.onError(e);
-      return;
+    /**
+     * Gets all status assigned to given user and filtered by status
+     */
+    public static void getTasks(String status, TasksApi.TasksCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        HashMap<String, String> params = new HashMap<>();
+        if (sUsername != null && !sUsername.isEmpty()) params.put("user", sUsername);
+        if (status != null && !status.isEmpty()) params.put("status", status);
+        new TasksApi(sUrl).getTasks(params, callback);
     }
-    new TasksApi((url)).getTask(taskId, callback);
-  }
 
-  public static void createTask(Task newTask, TasksApi.TaskCreationCallback callback) {
-    try {
-      checkInitialization();
-    } catch (NotInitilizedException e) {
-      callback.onError(e);
-      return;
+    /**
+     * Gets all tasks related with given user and application filtered by status
+     */
+    public static void getTasks(String application, String status,
+        TasksApi.TasksCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        HashMap<String, String> params = new HashMap<>();
+        if (sUsername != null && !sUsername.isEmpty()) params.put("user", sUsername);
+        if (status != null && !status.isEmpty()) params.put("status", status);
+        if (application != null && !application.isEmpty()) params.put("application", application);
+        new TasksApi(sUrl).getTasks(params, callback);
     }
-    new TasksApi((url)).createTask(newTask, callback);
-  }
+
+    /**
+     * Gets details about task
+     */
+
+    public static void getTask(int taskId, TasksApi.TaskDetailsCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new TasksApi((sUrl)).getTask(taskId, callback);
+    }
+
+    public static void createTask(Task newTask, TasksApi.TaskCreationCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new TasksApi((sUrl)).createTask(newTask, callback);
+    }
 }

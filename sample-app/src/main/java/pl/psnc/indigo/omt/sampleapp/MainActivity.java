@@ -155,12 +155,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(TaskViewHolder holder, int position) {
             Task t = tasks.get(position);
-            holder.id.setText(t.getId());
-            holder.description.setText(t.getDescription());
-            holder.date.setText(t.getDate());
-            holder.user.setText(t.getUser());
-            holder.all.setOnClickListener(clickListener);
-            holder.all.setTag(holder);
+            holder.mId.setText(t.getId());
+            holder.mDescription.setText(t.getDescription());
+            holder.mItemDate.setText(t.getDate());
+            holder.mUser.setText(t.getUser());
+            holder.mAll.setOnClickListener(clickListener);
+            holder.mAll.setTag(holder);
         }
 
         @Override

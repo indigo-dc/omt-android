@@ -7,22 +7,22 @@ import java.util.List;
  * Created by michalu on 21.03.16.
  */
 public class Root {
-  @SerializedName("_links") private List<Link> links;
-  private List<Version> versions;
+    @SerializedName("_links") private List<Link> mLinks;
+    @SerializedName("versions") private List<Version> mVersions;
 
-  public List<Link> getLinks() {
-    return links;
-  }
+    public List<Link> getLinks() {
+        return mLinks;
+    }
 
-  public void setLinks(List<Link> links) {
-    this.links = links;
-  }
+    public void setLinks(List<Link> links) {
+        this.mLinks = links;
+    }
 
-  public List<Version> getVersions() {
-    return versions;
-  }
+    public List<Version> getVersions() {
+        return mVersions;
+    }
 
-  public void setVersions(List<Version> versions) {
-    this.versions = versions;
-  }
+    public void setVersions(List<Version> versions) {
+        this.mVersions = versions;
+    }
 }

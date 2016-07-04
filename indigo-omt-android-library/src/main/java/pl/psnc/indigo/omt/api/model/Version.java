@@ -8,49 +8,49 @@ import java.util.List;
  */
 public class Version {
 
-  private String status;
-  private String updated;
-  @SerializedName("media-types") private MediaType mediaTypes;
-  @SerializedName("_links") private List<Link> links;
-  private String id;
+    @SerializedName("status") private String mStatus;
+    @SerializedName("updated") private String mUpdated;
+    @SerializedName("media-types") private MediaType mMediaTypes;
+    @SerializedName("_links") private List<Link> mLinks;
+    private String mId;
 
-  public String getStatus() {
-    return status;
-  }
+    public String getStatus() {
+        return mStatus;
+    }
 
-  public void setStatus(String status) {
-    this.status = status;
-  }
+    public void setStatus(String status) {
+        this.mStatus = status;
+    }
 
-  public String getUpdated() {
-    return updated;
-  }
+    public String getUpdated() {
+        return mUpdated;
+    }
 
-  public void setUpdated(String updated) {
-    this.updated = updated;
-  }
+    public void setUpdated(String updated) {
+        this.mUpdated = updated;
+    }
 
-  public MediaType getMediaTypes() {
-    return mediaTypes;
-  }
+    public MediaType getmMediaTypes() {
+        return mMediaTypes;
+    }
 
-  public void setMediaTypes(MediaType mediaTypes) {
-    this.mediaTypes = mediaTypes;
-  }
+    public void setmMediaTypes(MediaType mMediaTypes) {
+        this.mMediaTypes = mMediaTypes;
+    }
 
-  public List<Link> getLinks() {
-    return links;
-  }
+    public List<Link> getmLinks() {
+        return mLinks;
+    }
 
-  public void setLinks(List<Link> links) {
-    this.links = links;
-  }
+    public void setmLinks(List<Link> mLinks) {
+        this.mLinks = mLinks;
+    }
 
-  public String getId() {
-    return id;
-  }
+    public String getId() {
+        return mId;
+    }
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public void setId(String id) {
+        this.mId = id;
+    }
 }

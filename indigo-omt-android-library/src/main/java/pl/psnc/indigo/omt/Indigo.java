@@ -71,7 +71,7 @@ public class Indigo {
      * Gets all tasks related with given user and application filtered by status
      */
     public static void getTasks(String application, String status,
-        TasksApi.TasksCallback callback) {
+            TasksApi.TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {

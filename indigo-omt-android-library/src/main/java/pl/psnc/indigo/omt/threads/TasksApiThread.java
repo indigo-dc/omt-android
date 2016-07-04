@@ -77,6 +77,12 @@ public class TasksApiThread extends ApiHandlerThread {
                     mCallback.onError(e);
                 }
             });
+        } catch (final IllegalArgumentException e) {
+            mResponseHandler.post(new Runnable() {
+                @Override public void run() {
+                    mCallback.onError(e);
+                }
+            });
         }
     }
 }

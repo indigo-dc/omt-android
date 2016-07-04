@@ -60,7 +60,7 @@ public class TaskCreateApiThread extends ApiHandlerThread {
         try {
             OkHttpClient okHttp = new OkHttpClient.Builder().build();
             Request request =
-                new Request.Builder().post(RequestBody.create(TasksApi.MEDIA_TYPE_INDIGO, payload))
+                    new Request.Builder().post(RequestBody.create(TasksApi.MEDIA_TYPE_INDIGO, payload))
                     .url(mApiFullAddress)
                     .build();
 
@@ -79,6 +79,12 @@ public class TaskCreateApiThread extends ApiHandlerThread {
                 }
             });
         } catch (final NullPointerException e) {
+            mResponseHandler.post(new Runnable() {
+                @Override public void run() {
+                    mCallback.onError(e);
+                }
+            });
+        } catch (final IllegalArgumentException e) {
             mResponseHandler.post(new Runnable() {
                 @Override public void run() {
                     mCallback.onError(e);

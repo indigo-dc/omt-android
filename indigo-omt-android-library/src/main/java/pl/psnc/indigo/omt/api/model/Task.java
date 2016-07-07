@@ -4,6 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Created by michalu on 21.03.16.
@@ -92,14 +96,53 @@ public class Task implements Serializable, Parcelable {
         this.mIosandbox = mIosandbox;
     }
 
-    @Override public String toString() {
-        return "Task{" +
-            "Id='" + mId + '\'' +
-            ", Date='" + mDate + '\'' +
-            ", User='" + mUser + '\'' +
-            ", Description='" + mDescription + '\'' +
-            ", Status='" + mStatus + '\'' +
-            '}';
+    @Override public final boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Task task = (Task) o;
+
+        return new EqualsBuilder().append(mId, task.mId)
+            .append(mDate, task.mDate)
+            .append(mLastChange, task.mLastChange)
+            .append(mApplication, task.mApplication)
+            .append(mDescription, task.mDescription)
+            .append(mStatus, task.mStatus)
+            .append(mUser, task.mUser)
+            .append(mCreation, task.mCreation)
+            .append(mIosandbox, task.mIosandbox)
+            .isEquals();
+    }
+
+    @Override public final int hashCode() {
+        return new HashCodeBuilder().append(mId)
+            .append(mDate)
+            .append(mLastChange)
+            .append(mApplication)
+            .append(mDescription)
+            .append(mStatus)
+            .append(mUser)
+            .append(mCreation)
+            .append(mIosandbox)
+            .toHashCode();
+    }
+
+    @Override public final String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", mId)
+            .append("date", mDate)
+            .append("lastChange", mLastChange)
+            .append("application", mApplication)
+            .append("description", mDescription)
+            .append("status", mStatus)
+            .append("user", mUser)
+            .append("creation", mCreation)
+            .append("iosandbox", mIosandbox)
+            .toString();
     }
 
     @Override public int describeContents() {

@@ -1,6 +1,8 @@
 package pl.psnc.indigo.omt.api.model;
 
 import com.google.gson.annotations.SerializedName;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Created by michalu on 21.03.16.
@@ -14,11 +16,11 @@ public class Link {
 
     }
 
-    public String getmRel() {
+    public String getRel() {
         return mRel;
     }
 
-    public void setmRel(String rel) {
+    public void setRel(String rel) {
         this.mRel = rel;
     }
 
@@ -28,5 +30,11 @@ public class Link {
 
     public void setHref(String href) {
         this.mHref = href;
+    }
+
+    @Override
+    public final String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("rel", mRel).append("href", mHref).toString();
     }
 }

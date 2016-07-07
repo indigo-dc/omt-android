@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import java.util.ArrayList;
 import java.util.Map;
+import okhttp3.OkHttpClient;
 import pl.psnc.indigo.omt.api.RootApi;
 import pl.psnc.indigo.omt.exceptions.WrongApiUrlException;
 
@@ -23,9 +24,10 @@ public abstract class ApiHandlerThread extends HandlerThread {
     }
 
     protected void createFullAddress(String baseUrl, String endpoint,
-            Map<String, String> parameters) {
+        Map<String, String> parameters) {
         try {
-            mApiFullAddress = RootApi.getRootForAddress(baseUrl).getURLAsString() + endpoint;
+            mApiFullAddress =
+                RootApi.getRootForAddress(baseUrl, new OkHttpClient()).getURLAsString() + endpoint;
             if (parameters != null && parameters.size() > 0) {
                 ArrayList values = new ArrayList<>(parameters.values());
                 ArrayList keys = new ArrayList(parameters.keySet());
@@ -55,7 +57,10 @@ public abstract class ApiHandlerThread extends HandlerThread {
     protected void createFullAddress(String baseUrl, String endpoint, int itemId) {
         try {
             mApiFullAddress =
-                RootApi.getRootForAddress(baseUrl).getURLAsString() + endpoint + "/" + itemId;
+                RootApi.getRootForAddress(baseUrl, new OkHttpClient()).getURLAsString()
+                    + endpoint
+                    + "/"
+                    + itemId;
         } catch (WrongApiUrlException e) {
             mCallback.onError(e);
             quit();

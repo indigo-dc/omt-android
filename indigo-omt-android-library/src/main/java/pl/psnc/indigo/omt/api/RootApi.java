@@ -17,9 +17,11 @@ import pl.psnc.indigo.omt.exceptions.WrongApiUrlException;
 public class RootApi extends Api {
     private static HashMap<String, RootApi> sRootApiMap;
     private Root mRoot;
+    private OkHttpClient mClient;
 
-    private RootApi(String httpAddress) throws WrongApiUrlException {
+    private RootApi(String httpAddress, OkHttpClient client) throws WrongApiUrlException {
         super(httpAddress);
+        mClient = client;
         try {
             mRoot = getRoot();
         } catch (IOException e) {
@@ -27,24 +29,23 @@ public class RootApi extends Api {
         }
     }
 
-    public static RootApi getRootForAddress(String httpAddress) throws WrongApiUrlException {
+    public static RootApi getRootForAddress(String httpAddress, OkHttpClient client)
+        throws WrongApiUrlException {
         if (sRootApiMap == null) {
             sRootApiMap = new HashMap<String, RootApi>();
         }
         if (sRootApiMap.containsKey(httpAddress)) {
             return sRootApiMap.get(httpAddress);
         } else {
-            RootApi newRoot = new RootApi(httpAddress);
+            RootApi newRoot = new RootApi(httpAddress, client);
             sRootApiMap.put(httpAddress, newRoot);
             return newRoot;
         }
     }
 
     public Root getRoot() throws IOException {
-        OkHttpClient okHttp = new OkHttpClient.Builder().build();
         Request request = new Request.Builder().url(mHttpAddress).build();
-
-        Response response = okHttp.newCall(request).execute();
+        Response response = mClient.newCall(request).execute();
         Type rootType = new TypeToken<Root>() {
         }.getType();
         Root root = new Gson().fromJson(response.body().string(), rootType);

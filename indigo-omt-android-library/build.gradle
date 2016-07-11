@@ -7,14 +7,14 @@ ext {
 
   publishedGroupId = 'pl.psnc.indigo'
   libraryName = 'Indigo DataCloud Open Mobile Toolkit for Android'
-  artifact = 'omt-android'
+  artifact = 'indigo-omt-android-library'
 
   libraryDescription = 'Android library which simplifies access to INDIGO DataCloud API'
 
   siteUrl = 'https://github.com/indigo-dc/omt-android'
   gitUrl = 'https://github.com/indigo-dc/omt-android.git'
 
-  libraryVersion = '0.7'
+  libraryVersion = '0.7.1'
 
   developerId = 'mupsnc'
   developerName = 'Michal Urbaniak'

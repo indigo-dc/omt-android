@@ -1,0 +1,64 @@
+# Ansible Playbook for installing all OS, Android dependencies for building library and running tests
+# Playbook gets the sources of omt-android and places it into user home directory as well
+#
+# Playbook tested only with Ubuntu 14.04.3 LTS with sudo user
+#
+# Before running this playbook you need to install a nickp666.android-sdk role from Ansible's Galaxy
+#
+# $ ansible-galaxy install nickp666.android-sdk
+#
+# run this playbook with command:
+# $ ansible-playbook indigo-omt.android.yml --user UserWithSudo
+#
+# author: michalu
+
+--- 
+- 
+  hosts: all
+  pre_tasks: 
+  
+    - 
+      apt_repository: "repo='ppa:webupd8team/java'"
+      become: true
+      name: "Adding PPA repo for JDK 8"
+    - 
+      apt: "name={{item}} update_cache=yes"
+      with_items:
+        - git
+        - lib32stdc++6
+        - lib32z1
+      become: true
+      name: "Updating apt cache and installing dependencies"
+      
+    - 
+      become: true
+      name: "Automatically select the Oracle License"
+      shell: "echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections"
+    - 
+      apt: name=oracle-java8-installer
+      become: true
+      name: "Installing java 8 jdk"
+    - 
+      apt: name=oracle-java8-set-default
+      become: true
+      name: "Set JAVA_HOME variable"
+    - 
+      git: "repo=https://github.com/indigo-dc/omt-android.git dest=~/omt-android"
+      name: "Cloning sources from GitHub"
+    - 
+      file: "path=~/omt-android/local.properties state=touch owner=ubuntu group=ubuntu mode=0755"
+      name: "Creating a local.properties file"
+    - 
+      name: "Adding Android SDK location to local.properties"
+      shell: echo 'sdk.dir=/opt/android-sdk-linux' > ~/omt-android/local.properties
+   
+  roles: 
+    - 
+      become: true
+      role: nickp666.android-sdk
+      
+  post_tasks:
+    - 
+      name: "Changing android sdk permissions"
+      file: "path=/opt/android-sdk-linux owner=ubuntu recurse=yes group=ubuntu mode=0755"
+      become: true

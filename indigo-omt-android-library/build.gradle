@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply from: 'checkstyle.gradle'
 
 //Bintray config
 ext {
@@ -25,6 +26,23 @@ ext {
   allLicenses = ["Apache-2.0"]
 }
 //
+
+// task for creating empty local.properties required by
+// bintrayUpload task
+
+task fileExists {
+  File localProperties = new File('local.properties')
+  if (!localProperties.exists()) {
+    localProperties.createNewFile();
+    System.println("local.properties created")
+  } else {
+    System.println("local.properties is already here")
+  }
+}
+
+project.afterEvaluate {
+  assemble.dependsOn(fileExists)
+}
 
 android {
   compileSdkVersion 23

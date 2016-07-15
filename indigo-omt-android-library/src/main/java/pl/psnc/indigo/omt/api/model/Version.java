@@ -16,7 +16,7 @@ public class Version {
     @SerializedName("updated") private String mUpdated;
     @SerializedName("media-types") private MediaType mMediaTypes;
     @SerializedName("_links") private List<Link> mLinks;
-    private String mId;
+    @SerializedName("id") private String mId;
 
     public String getStatus() {
         return mStatus;

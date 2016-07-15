@@ -14,11 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.TasksApi;
 import pl.psnc.indigo.omt.api.model.Task;
@@ -31,8 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private TasksListAdapter mListAdapter;
     private List<Task> mTasks;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -42,14 +39,12 @@ public class MainActivity extends AppCompatActivity {
         mListAdapter = new TasksListAdapter(this);
         mRecyclerView.setAdapter(mListAdapter);
         Indigo.getTasks2(new TasksApi.TasksCallback() {
-            @Override
-            public void onSuccess(List<Task> result) {
+            @Override public void onSuccess(List<Task> result) {
                 Log.d(TAG, result.toString());
             }
 
-            @Override
-            public void onError(Exception exception) {
-
+            @Override public void onError(Exception exception) {
+                Log.e(TAG, exception.getMessage());
             }
         });
         if (savedInstanceState == null || mTasks == null) {
@@ -57,44 +52,38 @@ public class MainActivity extends AppCompatActivity {
         }
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            @Override public void onClick(View view) {
                 Indigo.createTask(new Task("michalu", UUID.randomUUID().toString(), "2"),
-                        new TasksApi.TaskCreationCallback() {
-                            @Override
-                            public void onSuccess(Task result) {
-                                Log.d(TAG, "Created task: " + result.toString());
-                                getTasks();
-                            }
+                    new TasksApi.TaskCreationCallback() {
+                        @Override public void onSuccess(Task result) {
+                            Log.d(TAG, "Created task: " + result.toString());
+                            getTasks();
+                        }
 
-                            @Override
-                            public void onError(Exception exception) {
-                                Log.e(TAG, "Creation task failed: " + exception.getMessage());
-                            }
-                        });
+                        @Override public void onError(Exception exception) {
+                            Log.e(TAG, "Creation task failed: " + exception.getMessage());
+                        }
+                    });
             }
         });
     }
 
     public void getTasks() {
         Indigo.getTasks("michalu", TaskStatus.ANY, new TasksApi.TasksCallback() {
-            @Override
-            public void onSuccess(List<Task> tasks) {
+            @Override public void onSuccess(List<Task> tasks) {
                 mTasks = (ArrayList) tasks;
                 mListAdapter.setTasks(mTasks);
                 mListAdapter.notifyDataSetChanged();
             }
 
-            @Override
-            public void onError(Exception e) {
+            @Override public void onError(Exception e) {
                 Log.e(TAG, e.getMessage());
             }
         });
     }
 
     View.OnClickListener mClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+        @Override public void onClick(View v) {
             TaskViewHolder viewHolder = (TaskViewHolder) v.getTag();
             int position = viewHolder.getAdapterPosition();
             Task t = mTasks.get(position);
@@ -103,26 +92,22 @@ public class MainActivity extends AppCompatActivity {
     };
 
     AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Task t = mTasks.get(position);
             Indigo.getTask(Integer.parseInt(t.getId()), new TasksApi.TaskDetailsCallback() {
-                @Override
-                public void onSuccess(Task result) {
+                @Override public void onSuccess(Task result) {
                     Toast.makeText(getApplicationContext(), result.getDescription(),
-                            Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_SHORT).show();
                 }
 
-                @Override
-                public void onError(Exception exception) {
+                @Override public void onError(Exception exception) {
                     Log.e(TAG, exception.getMessage());
                 }
             });
         }
     };
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    @Override protected void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mTasks = savedInstanceState.getParcelableArrayList("tasks");
             mListAdapter.setTasks(mTasks);
@@ -131,8 +116,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    @Override protected void onSaveInstanceState(Bundle outState) {
         if (mTasks != null && mTasks.size() > 0) {
             outState.putParcelableArrayList("tasks", (ArrayList) mTasks);
         }
@@ -155,16 +139,14 @@ public class MainActivity extends AppCompatActivity {
             mContext = activity;
         }
 
-        @Override
-        public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        @Override public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view =
-                    LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item, null);
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item, null);
             TaskViewHolder viewHolder = new TaskViewHolder(view);
             return viewHolder;
         }
 
-        @Override
-        public void onBindViewHolder(TaskViewHolder holder, int position) {
+        @Override public void onBindViewHolder(TaskViewHolder holder, int position) {
             Task t = mTasks.get(position);
             holder.mId.setText(t.getId());
             holder.mDescription.setText(t.getDescription());
@@ -174,14 +156,12 @@ public class MainActivity extends AppCompatActivity {
             holder.mAll.setTag(holder);
         }
 
-        @Override
-        public long getItemId(int position) {
+        @Override public long getItemId(int position) {
             int id = Integer.parseInt(mTasks.get(position).getId());
             return id;
         }
 
-        @Override
-        public int getItemCount() {
+        @Override public int getItemCount() {
             if (mTasks != null) return mTasks.size();
             return 0;
         }

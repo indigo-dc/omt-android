@@ -1,9 +1,10 @@
 package pl.psnc.indigo.omt;
 
 import java.util.HashMap;
-import okhttp3.Authenticator;
+
 import pl.psnc.indigo.omt.api.TasksApi;
 import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.api2.TasksAPI2;
 import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
 
 /**
@@ -13,7 +14,6 @@ public class Indigo {
     private static String sUsername;
     private static String sUrl;
     private static String sApiToken;
-    private static Authenticator sAuthenticator;
     private static boolean sInitialized = false;
 
     private Indigo() {
@@ -29,7 +29,7 @@ public class Indigo {
     private static void checkInitialization() throws NotInitilizedException {
         if (!sInitialized) {
             throw new NotInitilizedException(
-                "Library not initialized! Call Indigo.init() in your Application class");
+                    "Library not initialized! Call Indigo.init() in your Application class");
         }
     }
 
@@ -47,7 +47,7 @@ public class Indigo {
     /**
      * A method must be called in the application class of your app - only for debug purposes
      *
-     * @param url domain or IP address of the FutureGateway instance
+     * @param url      domain or IP address of the FutureGateway instance
      * @param username provided username to init the library. It should be gathered from the API
      */
     public static void init(String url, String username) {
@@ -77,7 +77,7 @@ public class Indigo {
     /**
      * Gets all status assigned to given user and filtered by status
      *
-     * @param status results will be filtered based on provided status
+     * @param status   results will be filtered based on provided status
      * @param callback a callback to notify about the result of the operation
      */
     public static void getTasks(String status, TasksApi.TasksCallback callback) {
@@ -93,15 +93,20 @@ public class Indigo {
         new TasksApi(sUrl).getTasks(params, callback);
     }
 
+
+    public static void getTasks2(TasksApi.TasksCallback callback) {
+        new TasksAPI2(callback).callApi();
+    }
+
     /**
      * Gets all tasks related with given user and application filtered by status
      *
      * @param application results will be filtered basing on the application name
-     * @param status results will be filtered based on the provided status
-     * @param callback a callback to notify about the result of the operation
+     * @param status      results will be filtered based on the provided status
+     * @param callback    a callback to notify about the result of the operation
      */
     public static void getTasks(String application, String status,
-        TasksApi.TasksCallback callback) {
+                                TasksApi.TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -118,7 +123,7 @@ public class Indigo {
     /**
      * Gets details about task
      *
-     * @param taskId id of the task which should be obtained
+     * @param taskId   id of the task which should be obtained
      * @param callback a callback to notify about the result of the operation
      */
 
@@ -135,7 +140,7 @@ public class Indigo {
     /**
      * Executing the task
      *
-     * @param newTask a task to execute
+     * @param newTask  a task to execute
      * @param callback a callback to notify about the result of the operation
      */
     public static void createTask(Task newTask, TasksApi.TaskCreationCallback callback) {

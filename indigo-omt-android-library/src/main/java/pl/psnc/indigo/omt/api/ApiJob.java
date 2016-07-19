@@ -1,7 +1,7 @@
-package pl.psnc.indigo.omt.api2;
+package pl.psnc.indigo.omt.api;
 
 import android.os.Handler;
-import pl.psnc.indigo.omt.threads.IndigoCallback;
+import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 
 /**
  * Created by michalu on 15.07.16.

@@ -1,4 +1,4 @@
-package pl.psnc.indigo.omt.threads2;
+package pl.psnc.indigo.omt.threads;
 
 import android.net.Uri;
 import android.os.Handler;
@@ -8,34 +8,38 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
-import pl.psnc.indigo.omt.api.TasksApi;
+import pl.psnc.indigo.omt.api.CreateTaskJob;
 import pl.psnc.indigo.omt.api.model.Task;
-import pl.psnc.indigo.omt.api2.GetTasksJob;
+import pl.psnc.indigo.omt.callbacks.IndigoCallback;
+import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
-import pl.psnc.indigo.omt.threads.IndigoCallback;
 
 /**
  * Created by michalu on 14.07.16.
  */
-public class TasksHandlerThread extends HandlerThread implements IndigoHandler {
+public class TasksCreateHandlerThread extends HandlerThread implements IndigoHandlerThread {
     private Handler mResponseHandler;
     private Handler mWorkerHandler;
     private IndigoCallback mCallback;
-    private GetTasksJob mApiJob;
+    private CreateTaskJob mApiJob;
 
-    public TasksHandlerThread(GetTasksJob job, Handler responseHandler, IndigoCallback callback) {
-        super("TasksHandlerThread");
+    public TasksCreateHandlerThread(CreateTaskJob job, Handler responseHandler,
+        IndigoCallback callback) {
+        super("TasksCreateHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mCallback = callback;
         this.mApiJob = job;
     }
 
-    public TasksHandlerThread(GetTasksJob job, Handler workerHandler, Handler responseHandler,
-        IndigoCallback callback) {
-        super("TasksHandlerThread");
+    public TasksCreateHandlerThread(CreateTaskJob job, Handler workerHandler,
+        Handler responseHandler, IndigoCallback callback) {
+        super("TasksCreateHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mWorkerHandler = workerHandler;
         this.mCallback = callback;
@@ -62,16 +66,23 @@ public class TasksHandlerThread extends HandlerThread implements IndigoHandler {
 
     @Override public void makeRequest() {
         try {
-            Uri address = mApiJob.getFullAddress(GetTasksJob.ENDPOINT);
-            Request request = new Request.Builder().url(address.getPath()).build();
+            Map<String, String> queryParams = new HashMap<>();
+            queryParams.put("user", mApiJob.getTask().getUser());
+            Uri address = mApiJob.getFullUri(CreateTaskJob.ENDPOINT, null, queryParams);
+
+            String payload = new Gson().toJson(mApiJob.getTask());
+
+            Request request = new Request.Builder().url(address.getPath())
+                .post(RequestBody.create(MediaType.parse("application/json"), payload))
+                .build();
             Response response = mApiJob.getClient().newCall(request).execute();
 
-            Type listOfTasks = new TypeToken<List<Task>>() {
+            Type taskType = new TypeToken<Task>() {
             }.getType();
-            final List<Task> tasks = new Gson().fromJson(response.body().string(), listOfTasks);
+            final Task task = new Gson().fromJson(response.body().string(), taskType);
             mResponseHandler.post(new Runnable() {
                 @Override public void run() {
-                    ((TasksApi.TasksCallback) mCallback).onSuccess(tasks);
+                    ((TaskCreationCallback) mCallback).onSuccess(task);
                 }
             });
         } catch (IndigoException e) {

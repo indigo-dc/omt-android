@@ -1,4 +1,4 @@
-package pl.psnc.indigo.omt.api2;
+package pl.psnc.indigo.omt.api;
 
 import android.net.Uri;
 import com.google.gson.Gson;
@@ -15,7 +15,7 @@ import pl.psnc.indigo.omt.exceptions.IndigoException;
 /**
  * Created by michalu on 14.07.16.
  */
-public class RootApi {
+public class ApiHelper {
     public static final Uri DEFAULT_ADDRESS = Uri.parse("http://90.147.74.77:8888");
     public static final Uri EMULATOR_LOCALHOST_ADDRESS = Uri.parse("http://10.0.2.2:8888");
     public static final Uri LOCALHOST_ADDRESS = Uri.parse("http://localhost:8888");
@@ -23,22 +23,22 @@ public class RootApi {
     private OkHttpClient mClient;
     private Uri mRootApiAddress;
 
-    public RootApi(OkHttpClient client) {
+    public ApiHelper(OkHttpClient client) {
         mClient = client;
         mRootApiAddress = DEFAULT_ADDRESS;
     }
 
-    public RootApi(OkHttpClient client, Uri httpAddress) {
+    public ApiHelper(OkHttpClient client, Uri httpAddress) {
         mClient = client;
         mRootApiAddress = httpAddress;
     }
 
-    public RootApi() {
+    public ApiHelper() {
         this.mClient = createClient();
         mRootApiAddress = DEFAULT_ADDRESS;
     }
 
-    public RootApi(Uri httpAddress) {
+    public ApiHelper(Uri httpAddress) {
         this.mClient = createClient();
         mRootApiAddress = httpAddress;
     }
@@ -65,24 +65,31 @@ public class RootApi {
         return new OkHttpClient.Builder().build();
     }
 
-    public Uri getFullAddress(String endpoint) throws IndigoException {
+    public Uri getFullUri(String endpoint) throws IndigoException {
         Root root = getRootForUri(mRootApiAddress);
         String version = root.getVersions().get(0).getId();
         Uri.Builder builder = new Uri.Builder();
-        return builder.path(mRootApiAddress.toString())
-            .appendPath(version)
-            .appendPath(endpoint)
+        return builder.encodedPath(mRootApiAddress.toString())
+            .appendEncodedPath(version)
+            .appendEncodedPath(endpoint)
             .build();
     }
 
-    public Uri getFullAddress(String endpoint, Map<String, String> parameters)
+    public Uri getFullUri(String endpoint, String[] pathParams, Map<String, String> queryParams)
         throws IndigoException {
         Root root = getRootForUri(mRootApiAddress);
         String version = root.getVersions().get(0).getId();
         Uri.Builder builder = new Uri.Builder();
-        builder.path(mRootApiAddress.toString()).appendPath(version).appendPath(endpoint);
-        if (parameters != null && !parameters.isEmpty()) {
-            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+        builder.encodedPath(mRootApiAddress.toString())
+            .appendEncodedPath(version)
+            .appendEncodedPath(endpoint);
+        if (pathParams != null && pathParams.length > 0) {
+            for (String param : pathParams) {
+                builder.appendPath(param);
+            }
+        }
+        if (queryParams != null && !queryParams.isEmpty()) {
+            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
                 builder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
         }

@@ -77,7 +77,7 @@ public class Indigo {
             return;
         }
         new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS, status, sUsername).doAsyncJob(
-            new Handler(Looper.getMainLooper()), callback);
+                new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -88,7 +88,7 @@ public class Indigo {
 
     public static void getTasks(TasksCallback callback) {
         new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
-            new Handler(Looper.getMainLooper()), callback);
+                new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -128,7 +128,7 @@ public class Indigo {
             return;
         }
         new GetTaskDetailsJob(taskId, ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
-            new Handler(Looper.getMainLooper()), callback);
+                new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -145,6 +145,6 @@ public class Indigo {
             return;
         }
         new CreateTaskJob(newTask, ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
-            new Handler(Looper.getMainLooper()), callback);
+                new Handler(Looper.getMainLooper()), callback);
     }
 }

@@ -26,7 +26,7 @@ public class TasksDetailsHandlerThread extends HandlerThread implements IndigoHa
     private GetTaskDetailsJob mApiJob;
 
     public TasksDetailsHandlerThread(GetTaskDetailsJob job, Handler responseHandler,
-        IndigoCallback callback) {
+            IndigoCallback callback) {
         super("TasksDetailsHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mCallback = callback;
@@ -34,7 +34,7 @@ public class TasksDetailsHandlerThread extends HandlerThread implements IndigoHa
     }
 
     public TasksDetailsHandlerThread(GetTaskDetailsJob job, Handler workerHandler,
-        Handler responseHandler, IndigoCallback callback) {
+            Handler responseHandler, IndigoCallback callback) {
         super("TasksDetailsHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mWorkerHandler = workerHandler;
@@ -62,7 +62,7 @@ public class TasksDetailsHandlerThread extends HandlerThread implements IndigoHa
     @Override public void makeRequest() {
         try {
             Uri address = mApiJob.getFullUri(GetTaskDetailsJob.ENDPOINT,
-                new String[] { String.valueOf(mApiJob.getTaskId()) }, null);
+                    new String[] { String.valueOf(mApiJob.getTaskId()) }, null);
             Request request = new Request.Builder().url(address.getPath()).build();
             Response response = mApiJob.getClient().newCall(request).execute();
 

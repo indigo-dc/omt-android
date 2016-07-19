@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener mOnFabClickListener = new View.OnClickListener() {
         @Override public void onClick(View view) {
             Indigo.createTask(new Task("michalu", UUID.randomUUID().toString(), "2"),
-                new TaskCreationCallback() {
+                    new TaskCreationCallback() {
                     @Override public void onSuccess(Task result) {
                         Log.d(TAG, "Created task: " + result.toString());
                         getTasks(new Comparator<Task>() {
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view =
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item, null);
+                    LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item, null);
             TaskViewHolder viewHolder = new TaskViewHolder(view);
             return viewHolder;
         }

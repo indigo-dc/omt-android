@@ -30,7 +30,7 @@ public class TasksCreateHandlerThread extends HandlerThread implements IndigoHan
     private CreateTaskJob mApiJob;
 
     public TasksCreateHandlerThread(CreateTaskJob job, Handler responseHandler,
-        IndigoCallback callback) {
+            IndigoCallback callback) {
         super("TasksCreateHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mCallback = callback;
@@ -38,7 +38,7 @@ public class TasksCreateHandlerThread extends HandlerThread implements IndigoHan
     }
 
     public TasksCreateHandlerThread(CreateTaskJob job, Handler workerHandler,
-        Handler responseHandler, IndigoCallback callback) {
+            Handler responseHandler, IndigoCallback callback) {
         super("TasksCreateHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mWorkerHandler = workerHandler;
@@ -73,8 +73,8 @@ public class TasksCreateHandlerThread extends HandlerThread implements IndigoHan
             String payload = new Gson().toJson(mApiJob.getTask());
 
             Request request = new Request.Builder().url(address.getPath())
-                .post(RequestBody.create(MediaType.parse("application/json"), payload))
-                .build();
+                    .post(RequestBody.create(MediaType.parse("application/json"), payload))
+                    .build();
             Response response = mApiJob.getClient().newCall(request).execute();
 
             Type taskType = new TypeToken<Task>() {

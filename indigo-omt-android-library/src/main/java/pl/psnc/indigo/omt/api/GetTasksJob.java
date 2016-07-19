@@ -44,7 +44,7 @@ public class GetTasksJob extends ApiHelper implements ApiJob {
     }
 
     public GetTasksJob(OkHttpClient client, Uri rootApiAddress, String status, String user,
-        String application) {
+            String application) {
         super(client, rootApiAddress);
         this.mStatus = status;
         this.mUser = user;

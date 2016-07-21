@@ -1,9 +1,16 @@
 package pl.psnc.indigo.omt;
 
+import android.os.Handler;
+import android.os.Looper;
 import java.util.HashMap;
-import okhttp3.Authenticator;
-import pl.psnc.indigo.omt.api.TasksApi;
+import pl.psnc.indigo.omt.api.CreateTaskJob;
+import pl.psnc.indigo.omt.api.GetTaskDetailsJob;
+import pl.psnc.indigo.omt.api.GetTasksJob;
+import pl.psnc.indigo.omt.api.ApiHelper;
 import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
+import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
+import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
 
 /**
@@ -13,7 +20,6 @@ public class Indigo {
     private static String sUsername;
     private static String sUrl;
     private static String sApiToken;
-    private static Authenticator sAuthenticator;
     private static boolean sInitialized = false;
 
     private Indigo() {
@@ -58,39 +64,31 @@ public class Indigo {
     }
 
     /**
-     * Gets all tasks assigned to authenticated user
-     *
-     * @param callback a callback to notify about the result of the operation
-     */
-    public static void getTasks(TasksApi.TasksCallback callback) {
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        HashMap<String, String> params = new HashMap<>();
-        if (sUsername != null && !sUsername.isEmpty()) params.put("user", sUsername);
-        new TasksApi(sUrl).getTasks(params, callback);
-    }
-
-    /**
      * Gets all status assigned to given user and filtered by status
      *
      * @param status results will be filtered based on provided status
      * @param callback a callback to notify about the result of the operation
      */
-    public static void getTasks(String status, TasksApi.TasksCallback callback) {
+    public static void getTasks(String status, TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        HashMap<String, String> params = new HashMap<>();
-        if (sUsername != null && !sUsername.isEmpty()) params.put("user", sUsername);
-        if (status != null && !status.isEmpty()) params.put("status", status);
-        new TasksApi(sUrl).getTasks(params, callback);
+        new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS, status, sUsername).doAsyncJob(
+                new Handler(Looper.getMainLooper()), callback);
+    }
+
+    /**
+     * Gets all tasks assigned to authenticated user
+     *
+     * @param callback a callback to notify about the result of the operation
+     */
+
+    public static void getTasks(TasksCallback callback) {
+        new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
+                new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -100,8 +98,7 @@ public class Indigo {
      * @param status results will be filtered based on the provided status
      * @param callback a callback to notify about the result of the operation
      */
-    public static void getTasks(String application, String status,
-        TasksApi.TasksCallback callback) {
+    public static void getTasks(String application, String status, TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -112,7 +109,8 @@ public class Indigo {
         if (sUsername != null && !sUsername.isEmpty()) params.put("user", sUsername);
         if (status != null && !status.isEmpty()) params.put("status", status);
         if (application != null && !application.isEmpty()) params.put("application", application);
-        new TasksApi(sUrl).getTasks(params, callback);
+        new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS, status, sUsername,
+            application).doAsyncJob(new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -122,14 +120,15 @@ public class Indigo {
      * @param callback a callback to notify about the result of the operation
      */
 
-    public static void getTask(int taskId, TasksApi.TaskDetailsCallback callback) {
+    public static void getTask(int taskId, TaskDetailsCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        new TasksApi((sUrl)).getTask(taskId, callback);
+        new GetTaskDetailsJob(taskId, ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
+                new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -138,13 +137,14 @@ public class Indigo {
      * @param newTask a task to execute
      * @param callback a callback to notify about the result of the operation
      */
-    public static void createTask(Task newTask, TasksApi.TaskCreationCallback callback) {
+    public static void createTask(Task newTask, TaskCreationCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        new TasksApi((sUrl)).createTask(newTask, callback);
+        new CreateTaskJob(newTask, ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
+                new Handler(Looper.getMainLooper()), callback);
     }
 }

@@ -12,7 +12,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Created by michalu on 21.03.16.
  */
-public class Task implements Serializable, Parcelable {
+public class Task implements Serializable, Parcelable, Comparable<Task> {
 
     @SerializedName("id") private String mId;
     @SerializedName("date") private String mDate;
@@ -191,4 +191,10 @@ public class Task implements Serializable, Parcelable {
             return new Task[size];
         }
     };
+
+    @Override public int compareTo(Task task) {
+        Integer lId = Integer.parseInt(this.getId());
+        Integer rId = Integer.parseInt(task.getId());
+        return lId.compareTo(rId);
+    }
 }

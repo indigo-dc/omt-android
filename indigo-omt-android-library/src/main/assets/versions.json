@@ -1,0 +1,24 @@
+{
+    "_links": [
+        {
+            "href": "/", 
+            "rel": "self"
+        }
+    ], 
+    "versions": [
+        {
+            "status": "prototype", 
+            "updated": "2015-10-19", 
+            "media-types": {
+                "type": "application/json"
+            }, 
+            "_links": [
+                {
+                    "href": "v1.0", 
+                    "rel": "self"
+                }
+            ], 
+            "id": "v1.0"
+        }
+    ]
+}

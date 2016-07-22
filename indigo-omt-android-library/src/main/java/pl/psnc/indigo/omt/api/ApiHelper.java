@@ -9,6 +9,7 @@ import java.util.Map;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import pl.psnc.indigo.omt.BuildConfig;
 import pl.psnc.indigo.omt.api.model.Root;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 
@@ -17,7 +18,7 @@ import pl.psnc.indigo.omt.exceptions.IndigoException;
  */
 public class ApiHelper {
     public static final Uri DEFAULT_ADDRESS = Uri.parse("http://90.147.74.77:8888");
-    public static final Uri EMULATOR_LOCALHOST_ADDRESS = Uri.parse("http://10.0.2.2:8888");
+    public static final Uri EMULATOR_LOCALHOST_ADDRESS = Uri.parse(BuildConfig.FGAPI_ADDRESS);
     public static final Uri LOCALHOST_ADDRESS = Uri.parse("http://localhost:8888");
 
     private OkHttpClient mClient;

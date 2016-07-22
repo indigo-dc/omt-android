@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply from: 'checkstyle.gradle'
+apply plugin: 'net.saliman.cobertura'
 
 //Bintray config
 ext {
@@ -53,6 +54,7 @@ android {
     targetSdkVersion 23
     versionCode 1
     versionName "1.0"
+    buildConfigField "String", "FGAPI_ADDRESS", "\"10.0.2.2:8888\""
   }
   buildTypes {
     release {

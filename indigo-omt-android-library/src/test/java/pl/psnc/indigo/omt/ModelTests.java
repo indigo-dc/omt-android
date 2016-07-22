@@ -6,6 +6,7 @@ import pl.psnc.indigo.omt.api.model.Link;
 import pl.psnc.indigo.omt.api.model.MediaType;
 import pl.psnc.indigo.omt.api.model.Root;
 import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.api.model.Version;
 
 import static org.junit.Assert.assertEquals;
@@ -35,9 +36,18 @@ public class ModelTests {
 
     @Test public void testTask() {
         Task task = new Task();
-        assertEquals(task, task);
-        assertNotEquals(task, null);
-        assertNotEquals(task, "");
+        task.setApplication("app1");
+        task.setDate("2016-07-01");
+        task.setLast_change("2016-07-14");
+        task.setDescription("Lorem");
+        task.setId("ID1");
+        task.setIosandbox("sandbox1");
+        task.setStatus(TaskStatus.ANY);
+        task.setCreation("creation");
+        task.setUser("michalu");
+        assertEquals(
+            "Task[id=ID1,date=2016-07-01,lastChange=2016-07-14,application=app1,description=Lorem,status=ANY,user=michalu,creation=creation,iosandbox=sandbox1]",
+            task.toString());
     }
 
     @Test public void testMediaType() {

@@ -50,6 +50,13 @@ public class ModelTests {
             task.toString());
     }
 
+    @Test public void testTaskEquals() {
+        Task task = new Task();
+        assertEquals(task, task);
+        assertNotEquals(task, null);
+        assertNotEquals(task, "");
+    }
+
     @Test public void testMediaType() {
         MediaType mediaType = new MediaType("application/json");
         assertEquals(mediaType, mediaType);

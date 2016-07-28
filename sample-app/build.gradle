@@ -42,4 +42,6 @@ dependencies {
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
   androidTestCompile "com.google.dexmaker:dexmaker:1.2"
   androidTestCompile "com.google.dexmaker:dexmaker-mockito:1.2"
+  // Android JUnit Runner
+  androidTestCompile 'com.android.support.test:runner:0.5'
 }

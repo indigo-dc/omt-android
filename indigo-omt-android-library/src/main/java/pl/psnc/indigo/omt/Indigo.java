@@ -105,10 +105,6 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        HashMap<String, String> params = new HashMap<>();
-        if (sUsername != null && !sUsername.isEmpty()) params.put("user", sUsername);
-        if (status != null && !status.isEmpty()) params.put("status", status);
-        if (application != null && !application.isEmpty()) params.put("application", application);
         new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS, status, sUsername,
             application).doAsyncJob(new Handler(Looper.getMainLooper()), callback);
     }

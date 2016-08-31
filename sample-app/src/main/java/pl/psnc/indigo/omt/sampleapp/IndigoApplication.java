@@ -9,6 +9,6 @@ import pl.psnc.indigo.omt.Indigo;
 public class IndigoApplication extends Application {
     @Override public void onCreate() {
         super.onCreate();
-        Indigo.init("http://10.0.3.2:8888");
+        Indigo.init("http://62.3.168.16", "brunor");
     }
 }

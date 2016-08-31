@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
      * @param comparator a comparator to compare tasks for sorting purpose
      */
     public void getTasks(final Comparator<Task> comparator) {
-        Indigo.getTasks(new TasksCallback() {
+        Indigo.getTasks(TaskStatus.ANY, new TasksCallback() {
             @Override public void onSuccess(List<Task> tasks) {
                 mTasks = (ArrayList) tasks;
                 if (comparator != null) Collections.sort(tasks, comparator);

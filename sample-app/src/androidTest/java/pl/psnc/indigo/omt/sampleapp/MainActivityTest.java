@@ -52,7 +52,7 @@ import pl.psnc.indigo.omt.exceptions.IndigoException;
     @Test(expected = IndigoException.class) public void test_getRootAddressForTasks()
         throws IndigoException {
         GetTasksJob job =
-            new GetTasksJob(getMockedClient("versions.json"), ApiHelper.EMULATOR_LOCALHOST_ADDRESS);
+            new GetTasksJob(getMockedClient("versions.json"), ApiHelper.DEFAULT_ADDRESS);
         Uri address = job.getFullUri("tasks");
         assertEquals(Uri.parse(BuildConfig.FGAPI_ADDRESS + "/v1.0/tasks").toString(),
             address.toString());
@@ -61,7 +61,7 @@ import pl.psnc.indigo.omt.exceptions.IndigoException;
     @Test(expected = IndigoException.class)
     public void test_getRootAddressForTasksWithUserAndStatus() throws IndigoException {
         GetTasksJob job =
-            new GetTasksJob(getMockedClient("versions.json"), ApiHelper.EMULATOR_LOCALHOST_ADDRESS,
+            new GetTasksJob(getMockedClient("versions.json"), ApiHelper.DEFAULT_ADDRESS,
                 TaskStatus.ANY, "brunor");
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("user", job.getUser());
@@ -75,7 +75,7 @@ import pl.psnc.indigo.omt.exceptions.IndigoException;
     @Test(expected = IndigoException.class) public void test_getRootAddressForTaskDetails()
         throws IndigoException {
         GetTaskDetailsJob job = new GetTaskDetailsJob(1, getMockedClient("versions.json"),
-            ApiHelper.EMULATOR_LOCALHOST_ADDRESS);
+            ApiHelper.DEFAULT_ADDRESS);
         Uri address =
             job.getFullUri("tasks", new String[] { String.valueOf(job.getTaskId()) }, null);
         assertEquals(Uri.parse(BuildConfig.FGAPI_ADDRESS + "/v1.0/tasks/1").toString(),

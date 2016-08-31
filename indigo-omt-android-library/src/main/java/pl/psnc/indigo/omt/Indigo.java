@@ -2,7 +2,6 @@ package pl.psnc.indigo.omt;
 
 import android.os.Handler;
 import android.os.Looper;
-import java.util.HashMap;
 import pl.psnc.indigo.omt.api.CreateTaskJob;
 import pl.psnc.indigo.omt.api.GetTaskDetailsJob;
 import pl.psnc.indigo.omt.api.GetTasksJob;
@@ -76,7 +75,7 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS, status, sUsername).doAsyncJob(
+        new GetTasksJob(ApiHelper.DEFAULT_ADDRESS, status, sUsername).doAsyncJob(
                 new Handler(Looper.getMainLooper()), callback);
     }
 
@@ -87,7 +86,7 @@ public class Indigo {
      */
 
     public static void getTasks(TasksCallback callback) {
-        new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
+        new GetTasksJob(ApiHelper.DEFAULT_ADDRESS).doAsyncJob(
                 new Handler(Looper.getMainLooper()), callback);
     }
 
@@ -105,7 +104,7 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS, status, sUsername,
+        new GetTasksJob(ApiHelper.DEFAULT_ADDRESS, status, sUsername,
             application).doAsyncJob(new Handler(Looper.getMainLooper()), callback);
     }
 
@@ -123,7 +122,7 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new GetTaskDetailsJob(taskId, ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
+        new GetTaskDetailsJob(taskId, ApiHelper.DEFAULT_ADDRESS).doAsyncJob(
                 new Handler(Looper.getMainLooper()), callback);
     }
 
@@ -140,7 +139,7 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new CreateTaskJob(newTask, ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
+        new CreateTaskJob(newTask, ApiHelper.DEFAULT_ADDRESS).doAsyncJob(
                 new Handler(Looper.getMainLooper()), callback);
     }
 }

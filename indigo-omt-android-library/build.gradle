@@ -56,7 +56,7 @@ android {
     versionCode 1
     versionName "1.0"
     //please provide here the IP with port to FG API
-    buildConfigField "String", "FGAPI_ADDRESS", "\"http://10.0.2.2:8888\""
+    buildConfigField "String", "FGAPI_ADDRESS", "\"http://62.3.168.16\""
   }
   buildTypes {
     release {

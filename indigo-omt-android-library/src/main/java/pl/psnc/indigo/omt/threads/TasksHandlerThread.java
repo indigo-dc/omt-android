@@ -4,16 +4,17 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.util.Log;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import okhttp3.Request;
 import okhttp3.Response;
 import pl.psnc.indigo.omt.api.GetTasksJob;
 import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
@@ -22,6 +23,7 @@ import pl.psnc.indigo.omt.exceptions.IndigoException;
  * Created by michalu on 14.07.16.
  */
 public class TasksHandlerThread extends HandlerThread implements IndigoHandlerThread {
+    private static final String TAG = "TasksHandlerThread";
     private Handler mResponseHandler;
     private Handler mWorkerHandler;
     private IndigoCallback mCallback;
@@ -63,13 +65,18 @@ public class TasksHandlerThread extends HandlerThread implements IndigoHandlerTh
 
     @Override public void makeRequest() {
         try {
-            Uri address = mApiJob.getFullUri(GetTasksJob.ENDPOINT);
+            HashMap<String, String> parameters = new HashMap<>();
+            parameters.put("user", mApiJob.getUser());
+            parameters.put("status", mApiJob.getStatus());
+            Uri address = mApiJob.getFullUri(GetTasksJob.ENDPOINT, null, parameters);
+            Log.d(TAG, "Calling: " + address);
             Request request = new Request.Builder().url(address.getPath()).build();
             Response response = mApiJob.getClient().newCall(request).execute();
-
-            Type listOfTasks = new TypeToken<List<Task>>() {
-            }.getType();
-            final List<Task> tasks = new Gson().fromJson(response.body().string(), listOfTasks);
+            String body = response.body().string();
+            Log.d(TAG, "List of tasks: " + body);
+            TasksWrapper tasksWrapper =
+                new Gson().fromJson(body, TasksWrapper.class);
+            final List<Task> tasks = tasksWrapper.getTasks();
             mResponseHandler.post(new Runnable() {
                 @Override public void run() {
                     Collections.sort(tasks);

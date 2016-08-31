@@ -17,8 +17,7 @@ import pl.psnc.indigo.omt.exceptions.IndigoException;
  * Created by michalu on 14.07.16.
  */
 public class ApiHelper {
-    public static final Uri DEFAULT_ADDRESS = Uri.parse("http://90.147.74.77:8888");
-    public static final Uri EMULATOR_LOCALHOST_ADDRESS = Uri.parse(BuildConfig.FGAPI_ADDRESS);
+    public static final Uri DEFAULT_ADDRESS = Uri.parse(BuildConfig.FGAPI_ADDRESS);
     public static final Uri LOCALHOST_ADDRESS = Uri.parse("http://localhost:8888");
 
     private OkHttpClient mClient;
@@ -91,7 +90,9 @@ public class ApiHelper {
         }
         if (queryParams != null && !queryParams.isEmpty()) {
             for (Map.Entry<String, String> entry : queryParams.entrySet()) {
-                builder.appendQueryParameter(entry.getKey(), entry.getValue());
+                if (entry.getKey() != null && entry.getValue() != null) {
+                    builder.appendQueryParameter(entry.getKey(), entry.getValue());
+                }
             }
         }
         return builder.build();

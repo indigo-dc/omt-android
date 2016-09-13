@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -62,7 +63,17 @@ public class ApiHelper {
     }
 
     private OkHttpClient createClient() {
-        return new OkHttpClient.Builder().build();
+        return new OkHttpClient.Builder().addInterceptor(new Interceptor() {
+            @Override public Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                Request newRequest = request.newBuilder()
+                    .addHeader("Authorization", "Bearer: " + "apiKey")
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+                Response response = chain.proceed(newRequest);
+                return response;
+            }
+        }).build();
     }
 
     public Uri getFullUri(String endpoint) throws IndigoException {

@@ -70,7 +70,7 @@ public class TasksHandlerThread extends HandlerThread implements IndigoHandlerTh
             parameters.put("status", mApiJob.getStatus());
             Uri address = mApiJob.getFullUri(GetTasksJob.ENDPOINT, null, parameters);
             Log.d(TAG, "Calling: " + address);
-            Request request = new Request.Builder().url(address.getPath()).build();
+            Request request = new Request.Builder().url(address.toString()).build();
             Response response = mApiJob.getClient().newCall(request).execute();
             String body = response.body().string();
             Log.d(TAG, "List of tasks: " + body);

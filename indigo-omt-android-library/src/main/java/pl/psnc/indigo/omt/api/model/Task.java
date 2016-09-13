@@ -4,15 +4,18 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import pl.psnc.indigo.omt.api.model.json.InputFile;
 
 /**
  * Created by michalu on 21.03.16.
  */
-public class Task implements Serializable, Parcelable, Comparable<Task> {
+public class Task implements Parcelable, Comparable<Task> {
 
     @SerializedName("id") private String mId;
     @SerializedName("date") private String mDate;
@@ -23,6 +26,9 @@ public class Task implements Serializable, Parcelable, Comparable<Task> {
     @SerializedName("user") private String mUser;
     @SerializedName("creation") private String mCreation;
     @SerializedName("iosandbox") private String mIosandbox;
+    @SerializedName("arguments") private List<String> mArguments = Collections.emptyList();
+    @SerializedName("input_files") private List<InputFile> mInputFiles = Collections.emptyList();
+    @SerializedName("output_files") private List<OutputFile> mOutputFiles = Collections.emptyList();
 
     public String getId() {
         return mId;
@@ -94,6 +100,30 @@ public class Task implements Serializable, Parcelable, Comparable<Task> {
 
     public void setIosandbox(String mIosandbox) {
         this.mIosandbox = mIosandbox;
+    }
+
+    public List<OutputFile> getmOutputFiles() {
+        return this.mOutputFiles;
+    }
+
+    public void setmOutputFiles(List<OutputFile> mOutputFiles) {
+        this.mOutputFiles = mOutputFiles;
+    }
+
+    public List<InputFile> getInputFiles() {
+        return this.mInputFiles;
+    }
+
+    public void setInputFiles(List<InputFile> inputFiles) {
+        this.mInputFiles = inputFiles;
+    }
+
+    public List<String> getmArguments() {
+        return this.mArguments;
+    }
+
+    public void setmArguments(List<String> mArguments) {
+        this.mArguments = mArguments;
     }
 
     @Override public final boolean equals(final Object o) {

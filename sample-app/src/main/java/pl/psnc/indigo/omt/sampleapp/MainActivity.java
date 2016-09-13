@@ -2,6 +2,7 @@ package pl.psnc.indigo.omt.sampleapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener mOnFabClickListener = new View.OnClickListener() {
         @Override public void onClick(View view) {
             Indigo.createTask(new Task("michalu", UUID.randomUUID().toString(), "2"),
-                    new TaskCreationCallback() {
+                new TaskCreationCallback() {
                     @Override public void onSuccess(Task result) {
                         Log.d(TAG, "Created task: " + result.toString());
                         getTasks(new Comparator<Task>() {
@@ -105,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
             TaskViewHolder viewHolder = (TaskViewHolder) v.getTag();
             int position = viewHolder.getAdapterPosition();
             Task t = mTasks.get(position);
-            Toast.makeText(getApplicationContext(), t.toString(), Toast.LENGTH_SHORT).show();
+            Intent intentWithTask = new Intent(v.getContext(), TaskDetailsActivity.class);
+            intentWithTask.putExtra("task", t);
+            startActivity(intentWithTask);
         }
     };
 
@@ -164,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view =
-                    LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item, null);
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item, null);
             TaskViewHolder viewHolder = new TaskViewHolder(view);
             return viewHolder;
         }

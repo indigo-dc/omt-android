@@ -3,14 +3,12 @@ package pl.psnc.indigo.omt.api.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import pl.psnc.indigo.omt.api.model.json.InputFile;
 
 /**
  * Created by michalu on 21.03.16.
@@ -29,6 +27,7 @@ public class Task implements Parcelable, Comparable<Task> {
     @SerializedName("arguments") private List<String> mArguments = Collections.emptyList();
     @SerializedName("input_files") private List<InputFile> mInputFiles = Collections.emptyList();
     @SerializedName("output_files") private List<OutputFile> mOutputFiles = Collections.emptyList();
+
 
     public String getId() {
         return mId;
@@ -102,11 +101,11 @@ public class Task implements Parcelable, Comparable<Task> {
         this.mIosandbox = mIosandbox;
     }
 
-    public List<OutputFile> getmOutputFiles() {
+    public List<OutputFile> getOutputFiles() {
         return this.mOutputFiles;
     }
 
-    public void setmOutputFiles(List<OutputFile> mOutputFiles) {
+    public void setOutputFiles(List<OutputFile> mOutputFiles) {
         this.mOutputFiles = mOutputFiles;
     }
 
@@ -118,11 +117,11 @@ public class Task implements Parcelable, Comparable<Task> {
         this.mInputFiles = inputFiles;
     }
 
-    public List<String> getmArguments() {
+    public List<String> getArguments() {
         return this.mArguments;
     }
 
-    public void setmArguments(List<String> mArguments) {
+    public void setArguments(List<String> mArguments) {
         this.mArguments = mArguments;
     }
 
@@ -175,29 +174,18 @@ public class Task implements Parcelable, Comparable<Task> {
             .toString();
     }
 
-    @Override public int describeContents() {
-        return 0;
-    }
-
-    @Override public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.mId);
-        dest.writeString(this.mDate);
-        dest.writeString(this.mLastChange);
-        dest.writeString(this.mApplication);
-        dest.writeString(this.mDescription);
-        dest.writeString(this.mStatus);
-        dest.writeString(this.mUser);
-        dest.writeString(this.mCreation);
-        dest.writeString(this.mIosandbox);
-    }
-
     public Task() {
     }
 
-    public Task(String username, String description, String application) {
-        mUser = username;
+    public Task(String description, String application) {
         mDescription = description;
         mApplication = application;
+    }
+
+    @Override public int compareTo(Task task) {
+        Integer lId = Integer.parseInt(this.getId());
+        Integer rId = Integer.parseInt(task.getId());
+        return lId.compareTo(rId);
     }
 
     protected Task(Parcel in) {
@@ -210,21 +198,37 @@ public class Task implements Parcelable, Comparable<Task> {
         mUser = in.readString();
         mCreation = in.readString();
         mIosandbox = in.readString();
+        mArguments = in.createStringArrayList();
+        mInputFiles = in.createTypedArrayList(InputFile.CREATOR);
+        mOutputFiles = in.createTypedArrayList(OutputFile.CREATOR);
     }
 
-    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
-        @Override public Task createFromParcel(Parcel source) {
-            return new Task(source);
+    @Override public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeString(mDate);
+        dest.writeString(mLastChange);
+        dest.writeString(mApplication);
+        dest.writeString(mDescription);
+        dest.writeString(mStatus);
+        dest.writeString(mUser);
+        dest.writeString(mCreation);
+        dest.writeString(mIosandbox);
+        dest.writeStringList(mArguments);
+        dest.writeTypedList(mInputFiles);
+        dest.writeTypedList(mOutputFiles);
+    }
+
+    @Override public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Task> CREATOR = new Creator<Task>() {
+        @Override public Task createFromParcel(Parcel in) {
+            return new Task(in);
         }
 
         @Override public Task[] newArray(int size) {
             return new Task[size];
         }
     };
-
-    @Override public int compareTo(Task task) {
-        Integer lId = Integer.parseInt(this.getId());
-        Integer rId = Integer.parseInt(task.getId());
-        return lId.compareTo(rId);
-    }
 }

@@ -73,7 +73,6 @@ public class TasksHandlerThread extends HandlerThread implements IndigoHandlerTh
             Request request = new Request.Builder().url(address.toString()).build();
             Response response = mApiJob.getClient().newCall(request).execute();
             String body = response.body().string();
-            Log.d(TAG, "List of tasks: " + body);
             TasksWrapper tasksWrapper =
                 new Gson().fromJson(body, TasksWrapper.class);
             final List<Task> tasks = tasksWrapper.getTasks();

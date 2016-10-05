@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import pl.psnc.indigo.omt.BuildConfig;
+import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.Root;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 
@@ -67,7 +68,7 @@ public class ApiHelper {
             @Override public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
                 Request newRequest = request.newBuilder()
-                    .addHeader("Authorization", "Bearer: " + "apiKey")
+                    .addHeader("Authorization", "Bearer " + Indigo.getApiToken())
                     .addHeader("Content-Type", "application/json")
                     .build();
                 Response response = chain.proceed(newRequest);

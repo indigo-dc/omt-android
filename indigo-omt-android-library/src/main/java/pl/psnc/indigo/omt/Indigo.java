@@ -2,10 +2,10 @@ package pl.psnc.indigo.omt;
 
 import android.os.Handler;
 import android.os.Looper;
+import pl.psnc.indigo.omt.api.ApiHelper;
 import pl.psnc.indigo.omt.api.CreateTaskJob;
 import pl.psnc.indigo.omt.api.GetTaskDetailsJob;
 import pl.psnc.indigo.omt.api.GetTasksJob;
-import pl.psnc.indigo.omt.api.ApiHelper;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
@@ -18,7 +18,7 @@ import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
 public class Indigo {
     private static String sUsername;
     private static String sUrl;
-    private static String sApiToken;
+    private static String sApiToken = "{access_token}";
     private static boolean sInitialized = false;
 
     private Indigo() {
@@ -36,6 +36,13 @@ public class Indigo {
             throw new NotInitilizedException(
                 "Library not initialized! Call Indigo.init() in your Application class");
         }
+    }
+
+    public static String getUrl() {
+        return sUrl;
+    }
+    public static String getApiToken() {
+        return sApiToken;
     }
 
     /**
@@ -76,7 +83,7 @@ public class Indigo {
             return;
         }
         new GetTasksJob(ApiHelper.DEFAULT_ADDRESS, status, sUsername).doAsyncJob(
-                new Handler(Looper.getMainLooper()), callback);
+            new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -86,8 +93,8 @@ public class Indigo {
      */
 
     public static void getTasks(TasksCallback callback) {
-        new GetTasksJob(ApiHelper.DEFAULT_ADDRESS).doAsyncJob(
-                new Handler(Looper.getMainLooper()), callback);
+        new GetTasksJob(ApiHelper.DEFAULT_ADDRESS).doAsyncJob(new Handler(Looper.getMainLooper()),
+            callback);
     }
 
     /**
@@ -104,8 +111,8 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(ApiHelper.DEFAULT_ADDRESS, status, sUsername,
-            application).doAsyncJob(new Handler(Looper.getMainLooper()), callback);
+        new GetTasksJob(ApiHelper.DEFAULT_ADDRESS, status, sUsername, application).doAsyncJob(
+            new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -123,7 +130,7 @@ public class Indigo {
             return;
         }
         new GetTaskDetailsJob(taskId, ApiHelper.DEFAULT_ADDRESS).doAsyncJob(
-                new Handler(Looper.getMainLooper()), callback);
+            new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -139,7 +146,8 @@ public class Indigo {
             callback.onError(e);
             return;
         }
+        newTask.setUser(sUsername);
         new CreateTaskJob(newTask, ApiHelper.DEFAULT_ADDRESS).doAsyncJob(
-                new Handler(Looper.getMainLooper()), callback);
+            new Handler(Looper.getMainLooper()), callback);
     }
 }

@@ -1,5 +1,8 @@
-package pl.psnc.indigo.omt.api.model.json;
+package pl.psnc.indigo.omt.api.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -9,16 +12,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Created by michalu on 13.09.16.
  */
-public class InputFile implements Serializable {
+public class InputFile implements Parcelable, Serializable {
     private static final long serialVersionUID = -8629464708321890767L;
-    private String mName;
-    private String mStatus;
+    @SerializedName("name") private String mName;
+    @SerializedName("status") private String mStatus;
 
-    public final String getmName() {
+    public final String getName() {
         return mName;
     }
 
-    public final void setmName(final String mName) {
+    public final void setName(final String mName) {
         this.mName = mName;
     }
 
@@ -55,4 +58,28 @@ public class InputFile implements Serializable {
             .append("status", mStatus)
             .toString();
     }
+
+    protected InputFile(Parcel in) {
+        mName = in.readString();
+        mStatus = in.readString();
+    }
+
+    @Override public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mName);
+        dest.writeString(mStatus);
+    }
+
+    @Override public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<InputFile> CREATOR = new Creator<InputFile>() {
+        @Override public InputFile createFromParcel(Parcel in) {
+            return new InputFile(in);
+        }
+
+        @Override public InputFile[] newArray(int size) {
+            return new InputFile[size];
+        }
+    };
 }

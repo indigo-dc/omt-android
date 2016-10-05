@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     >
   <android.support.v4.widget.NestedScrollView
       android:layout_width="match_parent"
@@ -22,8 +23,8 @@
           android:layout_marginRight="15dp"
           android:layout_marginTop="10dp"
           android:layout_toLeftOf="@+id/task.details.status"
-          tools:text="Task #1"
           android:textSize="33sp"
+          tools:text="Task #1"
           />
 
       <android.support.v7.widget.AppCompatButton
@@ -34,11 +35,11 @@
           android:layout_alignParentTop="true"
           android:layout_marginRight="10dp"
           android:layout_marginTop="10dp"
-          android:gravity="center"
           android:clickable="false"
+          android:colorButtonNormal="@color/colorAccent"
+          android:gravity="center"
           android:padding="10dp"
           android:textSize="22sp"
-          android:colorButtonNormal="@color/colorAccent"
           tools:text="DONE"
           />
 
@@ -47,19 +48,56 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_below="@id/task.details.title"
-          android:textSize="13sp"
           android:layout_marginLeft="25dp"
           android:layout_marginRight="10dp"
           android:layout_marginTop="15dp"
-          android:textColor="@android:color/black"
           android:background="@android:color/white"
+          android:textColor="@android:color/black"
+          android:textSize="13sp"
           tools:text="No description"
           />
 
-
+      <FrameLayout
+          android:id="@+id/task.input.files.fragment"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/task.details.description"
+          ></FrameLayout>
+      <FrameLayout
+          android:id="@+id/task.output.files.fragment"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/task.input.files.fragment"
+          ></FrameLayout>
 
 
     </RelativeLayout>
   </android.support.v4.widget.NestedScrollView>
+  <LinearLayout
+      android:id="@+id/task.details.statusbar"
+      android:layout_width="match_parent"
+      android:layout_height="60dp"
+      android:layout_alignParentBottom="true"
+      android:orientation="horizontal"
+      >
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="STOP"
+        />
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="START"
+        />
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="RELAUNCH"
+        />
+  </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

@@ -13,8 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,7 +22,6 @@ import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
-import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private View.OnClickListener mOnFabClickListener = new View.OnClickListener() {
         @Override public void onClick(View view) {
-            Indigo.createTask(new Task("michalu", UUID.randomUUID().toString(), "2"),
+            Indigo.createTask(new Task(UUID.randomUUID().toString(), "2"),
                 new TaskCreationCallback() {
                     @Override public void onSuccess(Task result) {
                         Log.d(TAG, "Created task: " + result.toString());
@@ -109,27 +106,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intentWithTask = new Intent(v.getContext(), TaskDetailsActivity.class);
             intentWithTask.putExtra("task", t);
             startActivity(intentWithTask);
-        }
-    };
-
-    /**
-     * on click listener handles showing details about the chosen task
-     * the details are collected directly from the server
-     */
-
-    AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Task t = mTasks.get(position);
-            Indigo.getTask(Integer.parseInt(t.getId()), new TaskDetailsCallback() {
-                @Override public void onSuccess(Task result) {
-                    Toast.makeText(getApplicationContext(), result.getDescription(),
-                        Toast.LENGTH_SHORT).show();
-                }
-
-                @Override public void onError(Exception exception) {
-                    Log.e(TAG, exception.getMessage());
-                }
-            });
         }
     };
 

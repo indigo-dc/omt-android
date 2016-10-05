@@ -1,7 +1,9 @@
 package pl.psnc.indigo.omt.api.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
-import java.net.URI;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -10,24 +12,24 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Created by michalu on 13.09.16.
  */
-public class OutputFile implements Serializable {
+public class OutputFile implements Parcelable, Serializable {
     private static final long serialVersionUID = -6923395958538037455L;
-    private String mName;
-    private URI mUrl;
+    @SerializedName("name") private String mName;
+    @SerializedName("url") private String mUrl;
 
     public final String getName() {
         return mName;
     }
 
-    public final void setName(final String name) {
+    public final void setName(String name) {
         this.mName = name;
     }
 
-    public final URI getUrl() {
+    public final String getUrl() {
         return mUrl;
     }
 
-    public final void setUrl(final URI url) {
+    public final void setUrl(String url) {
         this.mUrl = url;
     }
 
@@ -54,4 +56,28 @@ public class OutputFile implements Serializable {
             .append("url", mUrl)
             .toString();
     }
+
+    protected OutputFile(Parcel in) {
+        mName = in.readString();
+        mUrl = in.readString();
+    }
+
+    @Override public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mName);
+        dest.writeString(mUrl);
+    }
+
+    @Override public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<OutputFile> CREATOR = new Creator<OutputFile>() {
+        @Override public OutputFile createFromParcel(Parcel in) {
+            return new OutputFile(in);
+        }
+
+        @Override public OutputFile[] newArray(int size) {
+            return new OutputFile[size];
+        }
+    };
 }

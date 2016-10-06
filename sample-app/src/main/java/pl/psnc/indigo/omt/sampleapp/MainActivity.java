@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,11 +19,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import net.openid.appauth.AuthState;
+import net.openid.appauth.AuthorizationException;
+import net.openid.appauth.AuthorizationResponse;
+import net.openid.appauth.AuthorizationService;
+import net.openid.appauth.TokenResponse;
 import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
+import pl.psnc.indigo.omt.iam.IAMHelper;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -40,12 +47,70 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mListAdapter = new TasksListAdapter(this);
         mRecyclerView.setAdapter(mListAdapter);
-
-        if (savedInstanceState == null || mTasks == null) {
-            getTasks(null);
-        }
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(mOnFabClickListener);
+
+        final AuthState authState = IAMHelper.readAuthState(getApplicationContext());
+        Log.i(TAG, "access_token: " + authState.getAccessToken());
+        Log.i(TAG, "refresh_token: " + authState.getRefreshToken());
+
+        //for (authState.getLastAuthorizationResponse().additionalParameters.entrySet()
+        //...
+        if (getIntent().getExtras() != null) {
+            AuthorizationResponse resp = AuthorizationResponse.fromIntent(getIntent());
+            AuthorizationException ex = AuthorizationException.fromIntent(getIntent());
+            if (resp != null) {
+                // authorization succeeded
+                authState.update(resp, ex);
+                IAMHelper.writeAuthState(authState, getApplicationContext());
+                final AuthorizationService service =
+                    new AuthorizationService(getApplicationContext());
+                service.performTokenRequest(resp.createTokenExchangeRequest(),
+                    new AuthorizationService.TokenResponseCallback() {
+                        @Override public void onTokenRequestCompleted(TokenResponse response,
+                            AuthorizationException ex) {
+                            if (response != null) {
+                                // exchange succeeded
+                                authState.update(response, ex);
+                                IAMHelper.writeAuthState(authState, getApplicationContext());
+                                if (authState.isAuthorized()) {
+                                    if (mTasks == null) {
+                                        authState.performActionWithFreshTokens(service,
+                                            new AuthState.AuthStateAction() {
+                                                @Override public void execute(@Nullable String s,
+                                                    @Nullable String s1,
+                                                    @Nullable AuthorizationException e) {
+                                                    if (e == null) {
+                                                        getTasks(null);
+                                                    } else {
+                                                        Log.e(TAG, e.getMessage());
+                                                    }
+                                                }
+                                            });
+                                    }
+                                }
+                                Log.i(TAG, response.jsonSerializeString());
+                                Log.i(TAG, "access_token: " + response.accessToken);
+                                Log.i(TAG, "refresh_token: " + response.refreshToken);
+                            } else {
+                                // authorization failed, check ex for more details
+                                IAMHelper.writeForceReAuth(true, getApplicationContext());
+                                ex.printStackTrace();
+                            }
+                        }
+                    });
+            } else {
+                // authorization failed, check ex for more details
+                if (ex != null) ex.printStackTrace();
+                IAMHelper.writeForceReAuth(true, getApplicationContext());
+            }
+        }
+
+        if (authState.isAuthorized()) {
+            if (savedInstanceState == null || mTasks == null) {
+                getTasks(null);
+            }
+        }
     }
 
     /**
@@ -53,23 +118,31 @@ public class MainActivity extends AppCompatActivity {
      */
     private View.OnClickListener mOnFabClickListener = new View.OnClickListener() {
         @Override public void onClick(View view) {
-            Indigo.createTask(new Task(UUID.randomUUID().toString(), "2"),
-                new TaskCreationCallback() {
-                    @Override public void onSuccess(Task result) {
-                        Log.d(TAG, "Created task: " + result.toString());
-                        getTasks(new Comparator<Task>() {
-                            @Override public int compare(Task task, Task t1) {
-                                Integer lCi = Integer.parseInt(task.getId());
-                                Integer rCi = Integer.parseInt(t1.getId());
-                                return lCi.compareTo(rCi);
+            final AuthState authState = IAMHelper.readAuthState(getApplicationContext());
+            final AuthorizationService service = new AuthorizationService(getApplicationContext());
+            authState.performActionWithFreshTokens(service, new AuthState.AuthStateAction() {
+                @Override public void execute(@Nullable String s, @Nullable String s1,
+                    @Nullable AuthorizationException e) {
+                    IAMHelper.writeAuthState(authState, getApplicationContext());
+                    Indigo.createTask(new Task(UUID.randomUUID().toString(), "2"),
+                        new TaskCreationCallback() {
+                            @Override public void onSuccess(Task result) {
+                                Log.d(TAG, "Created task: " + result.toString());
+                                getTasks(new Comparator<Task>() {
+                                    @Override public int compare(Task task, Task t1) {
+                                        Integer lCi = Integer.parseInt(task.getId());
+                                        Integer rCi = Integer.parseInt(t1.getId());
+                                        return lCi.compareTo(rCi);
+                                    }
+                                });
+                            }
+
+                            @Override public void onError(Exception exception) {
+                                Log.e(TAG, "Creation task failed: " + exception.getMessage());
                             }
                         });
-                    }
-
-                    @Override public void onError(Exception exception) {
-                        Log.e(TAG, "Creation task failed: " + exception.getMessage());
-                    }
-                });
+                }
+            });
         }
     };
 
@@ -88,7 +161,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override public void onError(Exception e) {
-                Log.e(TAG, e.getMessage());
+                Log.e(TAG,
+                    (e.getMessage() != null) ? e.getMessage() : "Something wrong happend here!");
             }
         });
     }

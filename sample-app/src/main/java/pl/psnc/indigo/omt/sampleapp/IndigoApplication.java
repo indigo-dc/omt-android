@@ -7,8 +7,9 @@ import pl.psnc.indigo.omt.Indigo;
  * Created by michalu on 24.03.16.
  */
 public class IndigoApplication extends Application {
+
     @Override public void onCreate() {
         super.onCreate();
-        Indigo.init("http://62.3.168.16", "brunor");
+        Indigo.init(null, "michalu-dev");
     }
 }

@@ -6,6 +6,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class TasksHandlerThread extends HandlerThread implements IndigoHandlerTh
     }
 
     public TasksHandlerThread(GetTasksJob job, Handler workerHandler, Handler responseHandler,
-            IndigoCallback callback) {
+        IndigoCallback callback) {
         super("TasksHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mWorkerHandler = workerHandler;
@@ -73,8 +74,7 @@ public class TasksHandlerThread extends HandlerThread implements IndigoHandlerTh
             Request request = new Request.Builder().url(address.toString()).build();
             Response response = mApiJob.getClient().newCall(request).execute();
             String body = response.body().string();
-            TasksWrapper tasksWrapper =
-                new Gson().fromJson(body, TasksWrapper.class);
+            TasksWrapper tasksWrapper = new Gson().fromJson(body, TasksWrapper.class);
             final List<Task> tasks = tasksWrapper.getTasks();
             mResponseHandler.post(new Runnable() {
                 @Override public void run() {
@@ -87,6 +87,8 @@ public class TasksHandlerThread extends HandlerThread implements IndigoHandlerTh
         } catch (IOException e) {
             mCallback.onError(e);
         } catch (IllegalArgumentException e) {
+            mCallback.onError(e);
+        } catch (JsonSyntaxException e) {
             mCallback.onError(e);
         } finally {
             quit();

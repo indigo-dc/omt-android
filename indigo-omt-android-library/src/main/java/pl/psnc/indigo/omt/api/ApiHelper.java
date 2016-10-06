@@ -68,7 +68,7 @@ public class ApiHelper {
             @Override public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
                 Request newRequest = request.newBuilder()
-                    .addHeader("Authorization", "Bearer " + Indigo.getApiToken())
+                    .addHeader("Authorization", "Bearer " + Indigo.getAccessToken())
                     .addHeader("Content-Type", "application/json")
                     .build();
                 Response response = chain.proceed(newRequest);

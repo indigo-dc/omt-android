@@ -1,18 +1,20 @@
-package pl.psnc.indigo.omt.sampleapp;
+package pl.psnc.indigo.omt.sampleapp.activities;
 
 import android.app.FragmentTransaction;
+import android.app.job.JobParameters;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.widget.TextView;
 import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.sampleapp.R;
 import pl.psnc.indigo.omt.sampleapp.fragments.FragmentWithListAndCaption;
 
 /**
  * Created by michalu on 13.09.16.
  */
-public class TaskDetailsActivity extends AppCompatActivity {
+public class TaskDetailsActivity extends IndigoActivity {
     private TextView mTaskTitle, mTaskDescription, mLastUpdate;
     private AppCompatButton mStatusButton;
     private Task mTask;

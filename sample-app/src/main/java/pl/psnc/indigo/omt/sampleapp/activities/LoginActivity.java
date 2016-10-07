@@ -1,4 +1,4 @@
-package pl.psnc.indigo.omt.sampleapp;
+package pl.psnc.indigo.omt.sampleapp.activities;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -22,8 +22,9 @@ import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.ResponseTypeValues;
 import net.openid.appauth.TokenResponse;
 import pl.psnc.indigo.omt.iam.IAMHelper;
+import pl.psnc.indigo.omt.sampleapp.R;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends IndigoActivity {
     private static final String TAG = "LoginActivity";
     @BindView(R.id.login_button_iam) Button mLoginButton;
 
@@ -35,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         final Context ctx = this;
         final AuthState authState = IAMHelper.readAuthState(ctx);
         if (authState.isAuthorized()) {
-            Intent i = new Intent(ctx, MainActivity.class);
+            Intent i = new Intent(ctx, TasksActivity.class);
             startActivity(i);
             finish();
         }
@@ -62,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.i(TAG, "Refreshed refresh_token: " + response.refreshToken);
                                     authState.update(response, ex);
                                     IAMHelper.writeAuthState(authState, ctx);
-                                    Intent postAuthIntent = new Intent(ctx, MainActivity.class);
+                                    Intent postAuthIntent = new Intent(ctx, TasksActivity.class);
                                     startActivity(postAuthIntent);
                                     service.dispose();
                                     finish();
@@ -76,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                     && authState.getRefreshToken() != null
                     && authState.getAccessTokenExpirationTime() > now) {
                     Log.i(TAG, "The access token is ok, so go to activity");
-                    Intent postAuthIntent = new Intent(ctx, MainActivity.class);
+                    Intent postAuthIntent = new Intent(ctx, TasksActivity.class);
                     startActivity(postAuthIntent);
                     finish();
                 } else {
@@ -105,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                                 IAMHelper.IAM_CLIENT_ID, ResponseTypeValues.CODE,
                                 Uri.parse(IAMHelper.IAM_REDIRECT_URL_SCHEME)).setScopes(
                                 IAMHelper.IAM_SCOPES).build();
-                        Intent postAuthIntent = new Intent(ctx, MainActivity.class);
+                        Intent postAuthIntent = new Intent(ctx, TasksActivity.class);
                         service.performAuthorizationRequest(req,
                             PendingIntent.getActivity(ctx, req.hashCode(), postAuthIntent, 0));
                         service.dispose();

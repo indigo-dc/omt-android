@@ -9,11 +9,11 @@ import android.widget.TextView;
  * Created by michalu on 30.03.16.
  */
 public class TaskViewHolder extends RecyclerView.ViewHolder {
-    protected RelativeLayout mAll;
-    protected TextView mId;
-    protected TextView mDescription;
-    protected TextView mUser;
-    protected TextView mItemDate;
+    public RelativeLayout mAll;
+    public TextView mId;
+    public TextView mDescription;
+    public TextView mUser;
+    public TextView mItemDate;
 
     public TaskViewHolder(View view) {
         super(view);

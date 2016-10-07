@@ -1,4 +1,4 @@
-package pl.psnc.indigo.omt.sampleapp;
+package pl.psnc.indigo.omt.sampleapp.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,14 +6,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,31 +31,49 @@ import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.AuthorizationService;
 import net.openid.appauth.TokenResponse;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.iam.IAMHelper;
+import pl.psnc.indigo.omt.sampleapp.R;
+import pl.psnc.indigo.omt.sampleapp.TaskViewHolder;
+import pl.psnc.indigo.omt.sampleapp.callbacks.OnTaskListListener;
+import pl.psnc.indigo.omt.sampleapp.helpers.Actions;
+import pl.psnc.indigo.omt.sampleapp.helpers.MessageEvent;
+import pl.psnc.indigo.omt.sampleapp.receivers.TaskBroadcastReceiver;
 
-public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-    private FloatingActionButton mFab;
-    private RecyclerView mRecyclerView;
+public class TasksActivity extends IndigoActivity implements OnTaskListListener {
+    private static final String TAG = "TasksActivity";
+    @BindView(R.id.fab) FloatingActionButton mFab;
+    @BindView(R.id.tasks_list) RecyclerView mRecyclerView;
+    @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     private TasksListAdapter mListAdapter;
     private List<Task> mTasks;
+    TaskBroadcastReceiver mTaskBroadcastReceiver;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mRecyclerView = (RecyclerView) findViewById(R.id.listview_tasks);
+        final ActionBar ab = getSupportActionBar();
+        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+        ab.setDisplayHomeAsUpEnabled(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mListAdapter = new TasksListAdapter(this);
         mRecyclerView.setAdapter(mListAdapter);
-        mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(mOnFabClickListener);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
 
         final AuthState authState = IAMHelper.readAuthState(getApplicationContext());
         Log.i(TAG, "access_token: " + authState.getAccessToken());
@@ -82,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
                                                     @Nullable AuthorizationException e) {
                                                     if (e == null) {
                                                         getTasks(null);
+                                                        Intent i = new Intent(
+                                                            Actions.TASKS_UPDATE_LIST_ACTION);
+                                                        sendBroadcast(i);
                                                     } else {
                                                         Log.e(TAG, e.getMessage());
                                                     }
@@ -111,6 +139,17 @@ public class MainActivity extends AppCompatActivity {
                 getTasks(null);
             }
         }
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+            new NavigationView.OnNavigationItemSelectedListener() {
+                @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    menuItem.setChecked(true);
+                    mDrawerLayout.closeDrawers();
+                    return true;
+                }
+            });
     }
 
     /**
@@ -199,6 +238,13 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
+    @Override public void onUpdate(List<Task> list) {
+        if (list != null) {
+            mTasks = list;
+            mListAdapter.notifyDataSetChanged();
+        }
+    }
+
     public class TasksListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
         private Context mContext;
         private List<Task> mTasks;
@@ -241,5 +287,29 @@ public class MainActivity extends AppCompatActivity {
             if (mTasks != null) return mTasks.size();
             return 0;
         }
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
+    @Subscribe(threadMode = ThreadMode.BACKGROUND) public void onMessageEvent(MessageEvent event) {
+        Toast.makeText(this, event.message, Toast.LENGTH_SHORT).show();
     }
 }

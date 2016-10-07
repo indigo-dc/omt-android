@@ -22,18 +22,19 @@ import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
+import pl.psnc.indigo.omt.sampleapp.activities.TestActivity;
 
 /**
  * Created by michalu on 18.07.16.
  */
-@RunWith(AndroidJUnit4.class) public class MainActivityTest
+@RunWith(AndroidJUnit4.class) public class TasksActivityTest
     extends ActivityInstrumentationTestCase2<TestActivity> {
 
-    private static final String TAG = "MainActivityTest";
+    private static final String TAG = "TasksActivityTest";
 
     OkHttpClient mockClient;
 
-    public MainActivityTest() {
+    public TasksActivityTest() {
         super(TestActivity.class);
     }
 
@@ -133,7 +134,7 @@ import pl.psnc.indigo.omt.exceptions.IndigoException;
     @Test public void test_createTask() throws InterruptedException {
         Log.d(TAG, "starting test_createTask");
         Indigo.init("http://10.0.2.2:8888", "brunor");
-        Indigo.createTask(new Task("brunor", "sample description", "2"),
+        Indigo.createTask(new Task("sample description", "2"),
             new TaskCreationCallback() {
                 @Override public void onSuccess(Task result) {
                     assertNotNull(result);

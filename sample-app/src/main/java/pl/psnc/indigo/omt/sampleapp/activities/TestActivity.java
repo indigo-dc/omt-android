@@ -1,7 +1,8 @@
-package pl.psnc.indigo.omt.sampleapp;
+package pl.psnc.indigo.omt.sampleapp.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import pl.psnc.indigo.omt.sampleapp.R;
 
 public class TestActivity extends AppCompatActivity {
 

@@ -11,7 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorPrimary"
     android:animateLayoutChanges="true"
-    tools:context="pl.psnc.indigo.omt.sampleapp.LoginActivity"
+    tools:context="pl.psnc.indigo.omt.sampleapp.activities.LoginActivity"
     >
   <TextView
       android:layout_centerHorizontal="true"

@@ -1,4 +1,4 @@
-package pl.psnc.indigo.omt.sampleapp.activities;
+package pl.psnc.indigo.omt.sampleapp.views;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

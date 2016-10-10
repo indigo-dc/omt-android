@@ -6,5 +6,6 @@ package pl.psnc.indigo.omt.sampleapp.helpers;
 
 public class Actions {
     public static final String TASKS_UPDATE_LIST_ACTION = "pl.psnc.omt.actions.TASKS_UPDATE_LIST";
-    public static final String TASK_UPDATE_ACTION = "pl.psnc.omt.actions.TASK_UPDATE";
+    public static final String TASKS_UPDATE_LIST_ACTION_ALARM_MANAGER =
+        "pl.psnc.omt.actions.TASKS_UPDATE_LIST_ALARM_MANAGER";
 }

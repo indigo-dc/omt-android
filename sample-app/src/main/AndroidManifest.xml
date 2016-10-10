@@ -14,14 +14,17 @@
       android:label="@string/app_name"
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
-    <activity android:name=".activities.LoginActivity">
+    <!--
+    Activities
+    -->
+    <activity android:name=".views.LoginActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
     <activity
-        android:name=".activities.TasksActivity"
+        android:name=".views.TasksActivity"
         android:label="Home">
     </activity>
     <activity
@@ -36,16 +39,30 @@
         <data android:scheme="pl.psnc.indigo.omt.sampleapp"/>
       </intent-filter>
     </activity>
-    <activity android:name=".activities.TestActivity">
+    <activity android:name=".views.TestActivity">
     </activity>
-    <activity android:name=".activities.TaskDetailsActivity">
+    <activity android:name=".views.TaskDetailsActivity">
     </activity>
-    <receiver android:name=".receivers.TaskBroadcastReceiver" >
+    <!--
+    Receivers
+    -->
+    <receiver android:name=".receivers.TaskBroadcastReceiver">
       <intent-filter>
-        <action android:name="pl.psnc.omt.actions.TASKS_UPDATE_LIST" >
+        <action android:name="pl.psnc.omt.actions.TASKS_UPDATE_LIST">
         </action>
       </intent-filter>
     </receiver>
+    <!--
+    Services
+    -->
+    <!--<service-->
+    <!--android:name=".services.TaskDownloadService"-->
+    <!--android:permission="android.permission.BIND_JOB_SERVICE"-->
+    <!--android:exported="true"/>-->
+    <service
+        android:name=".services.TaskDownloadAlarmManagerService"
+        />
+
   </application>
 
 </manifest>

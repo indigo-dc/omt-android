@@ -7,45 +7,56 @@
     android:layout_margin="10dp"
     android:orientation="vertical"
     android:paddingBottom="5dp"
-    android:paddingTop="5dp">
+    android:paddingTop="5dp"
+    >
 
-    <TextView
-        android:id="@+id/item.id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:maxLength="4"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        tools:text="1" />
+  <TextView
+      android:id="@+id/item.id"
+      android:layout_width="40dp"
+      android:layout_height="40dp"
+      android:layout_alignParentLeft="true"
+      android:layout_gravity="center"
+      android:background="@drawable/circle"
+      android:gravity="center"
+      android:maxLength="4"
+      android:shadowRadius="10.0"
+      android:textColor="@android:color/background_light"
+      android:textSize="18sp"
+      android:textStyle="bold"
+      tools:text="1"
+      />
 
-    <TextView
-        android:id="@+id/item.description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/item.id"
-        android:textAllCaps="true"
-        android:textSize="18sp"
-        tools:text="Description of task" />
+  <TextView
+      android:id="@+id/item.description"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
 
-    <TextView
-        android:id="@+id/item.date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/item.description"
-        android:layout_marginTop="10dp"
-        tools:text="2016-04-01 00:00:00" />
+      android:layout_marginLeft="10dp"
+      android:layout_toRightOf="@id/item.id"
+      android:textAllCaps="true"
+      android:textSize="18sp"
+      tools:text="Description of task"
+      />
 
-    <TextView
-        android:id="@+id/item.user"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/item.description"
-        android:layout_marginTop="10dp"
-        android:textStyle="italic"
-        tools:text="michalu" />
+  <TextView
+      android:id="@+id/item.date"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentRight="true"
+      android:layout_below="@id/item.description"
+      android:layout_marginTop="10dp"
+      tools:text="2016-04-01 00:00:00"
+      />
+
+  <TextView
+      android:id="@+id/item.user"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentLeft="true"
+      android:layout_below="@id/item.date"
+      android:layout_marginTop="10dp"
+      android:textStyle="italic"
+      tools:text="michalu-dev"
+      />
 
 </RelativeLayout>

@@ -1,9 +1,10 @@
-package pl.psnc.indigo.omt.sampleapp.activities;
+package pl.psnc.indigo.omt.sampleapp.views;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import java.util.ArrayList;
@@ -31,9 +31,6 @@ import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.AuthorizationService;
 import net.openid.appauth.TokenResponse;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.api.model.TaskStatus;
@@ -41,20 +38,17 @@ import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.iam.IAMHelper;
 import pl.psnc.indigo.omt.sampleapp.R;
-import pl.psnc.indigo.omt.sampleapp.TaskViewHolder;
 import pl.psnc.indigo.omt.sampleapp.callbacks.OnTaskListListener;
-import pl.psnc.indigo.omt.sampleapp.helpers.Actions;
-import pl.psnc.indigo.omt.sampleapp.helpers.MessageEvent;
-import pl.psnc.indigo.omt.sampleapp.receivers.TaskBroadcastReceiver;
 
 public class TasksActivity extends IndigoActivity implements OnTaskListListener {
     private static final String TAG = "TasksActivity";
+    private static final int REFRESH_INTERVAL = 5000;
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.tasks_list) RecyclerView mRecyclerView;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     private TasksListAdapter mListAdapter;
     private List<Task> mTasks;
-    TaskBroadcastReceiver mTaskBroadcastReceiver;
+    private Handler mHandler = new Handler();
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +70,7 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
         }
 
         final AuthState authState = IAMHelper.readAuthState(getApplicationContext());
+        final AuthorizationService service = new AuthorizationService(getApplicationContext());
         Log.i(TAG, "access_token: " + authState.getAccessToken());
         Log.i(TAG, "refresh_token: " + authState.getRefreshToken());
 
@@ -88,8 +83,6 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
                 // authorization succeeded
                 authState.update(resp, ex);
                 IAMHelper.writeAuthState(authState, getApplicationContext());
-                final AuthorizationService service =
-                    new AuthorizationService(getApplicationContext());
                 service.performTokenRequest(resp.createTokenExchangeRequest(),
                     new AuthorizationService.TokenResponseCallback() {
                         @Override public void onTokenRequestCompleted(TokenResponse response,
@@ -107,9 +100,6 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
                                                     @Nullable AuthorizationException e) {
                                                     if (e == null) {
                                                         getTasks(null);
-                                                        Intent i = new Intent(
-                                                            Actions.TASKS_UPDATE_LIST_ACTION);
-                                                        sendBroadcast(i);
                                                     } else {
                                                         Log.e(TAG, e.getMessage());
                                                     }
@@ -136,7 +126,16 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
 
         if (authState.isAuthorized()) {
             if (savedInstanceState == null || mTasks == null) {
-                getTasks(null);
+                authState.performActionWithFreshTokens(service, new AuthState.AuthStateAction() {
+                    @Override public void execute(@Nullable String s, @Nullable String s1,
+                        @Nullable AuthorizationException e) {
+                        if (e == null) {
+                            getTasks(null);
+                        } else {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }
+                });
             }
         }
     }
@@ -222,6 +221,25 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
         }
     };
 
+    private Runnable mPeriodicTaskUpdate = new Runnable() {
+        @Override public void run() {
+            Indigo.getTasks(TaskStatus.ANY, new TasksCallback() {
+                @Override public void onSuccess(List<Task> tasks) {
+                    mTasks = (ArrayList) tasks;
+                    mListAdapter.setTasks(mTasks);
+                    mListAdapter.notifyDataSetChanged();
+                    //schedule refreshing task
+                    mHandler.postDelayed(mPeriodicTaskUpdate, REFRESH_INTERVAL);
+                }
+
+                @Override public void onError(Exception e) {
+                    Log.e(TAG, (e.getMessage() != null) ? e.getMessage()
+                        : "Something wrong happend here!");
+                }
+            });
+        }
+    };
+
     @Override protected void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mTasks = savedInstanceState.getParcelableArrayList("tasks");
@@ -243,6 +261,10 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
             mTasks = list;
             mListAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
     }
 
     public class TasksListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
@@ -300,16 +322,11 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
 
     @Override public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        mHandler.postDelayed(mPeriodicTaskUpdate, 5000);
     }
 
     @Override public void onStop() {
-        EventBus.getDefault().unregister(this);
+        mHandler.removeCallbacks(mPeriodicTaskUpdate);
         super.onStop();
-    }
-
-    // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
-    @Subscribe(threadMode = ThreadMode.BACKGROUND) public void onMessageEvent(MessageEvent event) {
-        Toast.makeText(this, event.message, Toast.LENGTH_SHORT).show();
     }
 }

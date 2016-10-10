@@ -1,9 +1,10 @@
-package pl.psnc.indigo.omt.sampleapp;
+package pl.psnc.indigo.omt.sampleapp.views;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import pl.psnc.indigo.omt.sampleapp.R;
 
 /**
  * Created by michalu on 30.03.16.

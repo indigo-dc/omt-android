@@ -22,7 +22,7 @@ import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
-import pl.psnc.indigo.omt.sampleapp.activities.TestActivity;
+import pl.psnc.indigo.omt.sampleapp.views.TestActivity;
 
 /**
  * Created by michalu on 18.07.16.

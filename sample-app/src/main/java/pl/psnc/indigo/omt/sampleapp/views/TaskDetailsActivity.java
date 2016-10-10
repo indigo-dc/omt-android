@@ -1,10 +1,8 @@
-package pl.psnc.indigo.omt.sampleapp.activities;
+package pl.psnc.indigo.omt.sampleapp.views;
 
 import android.app.FragmentTransaction;
-import android.app.job.JobParameters;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.widget.TextView;
 import pl.psnc.indigo.omt.api.model.Task;

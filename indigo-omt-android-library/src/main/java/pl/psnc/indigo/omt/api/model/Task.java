@@ -24,10 +24,10 @@ public class Task implements Parcelable, Comparable<Task> {
     @SerializedName("user") private String mUser;
     @SerializedName("creation") private String mCreation;
     @SerializedName("iosandbox") private String mIosandbox;
+    @SerializedName("_links") private List<Link> mLinks;
     @SerializedName("arguments") private List<String> mArguments = Collections.emptyList();
     @SerializedName("input_files") private List<InputFile> mInputFiles = Collections.emptyList();
     @SerializedName("output_files") private List<OutputFile> mOutputFiles = Collections.emptyList();
-
 
     public String getId() {
         return mId;
@@ -123,6 +123,25 @@ public class Task implements Parcelable, Comparable<Task> {
 
     public void setArguments(List<String> mArguments) {
         this.mArguments = mArguments;
+    }
+
+    public List<Link> getLinks() {
+        return this.mLinks;
+    }
+
+    public void setLinks(List<Link> mLinks) {
+        this.mLinks = mLinks;
+    }
+
+    public String getUploadUrl() {
+        if (mLinks != null && !mLinks.isEmpty()) {
+            for (Link l : mLinks) {
+                if (l.getRel().equals("input")) {
+                    return l.getHref();
+                }
+            }
+        }
+        return null;
     }
 
     @Override public final boolean equals(final Object o) {

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationResponse;
@@ -43,6 +42,7 @@ import pl.psnc.indigo.omt.sampleapp.callbacks.OnTaskListListener;
 public class TasksActivity extends IndigoActivity implements OnTaskListListener {
     private static final String TAG = "TasksActivity";
     private static final int REFRESH_INTERVAL = 5000;
+    private int counter = 0;
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.tasks_list) RecyclerView mRecyclerView;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
@@ -162,7 +162,7 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
                 @Override public void execute(@Nullable String s, @Nullable String s1,
                     @Nullable AuthorizationException e) {
                     IAMHelper.writeAuthState(authState, getApplicationContext());
-                    Indigo.createTask(new Task(UUID.randomUUID().toString(), "2"),
+                    Indigo.createTask(new Task("ENES Use case | " + counter++, "2"),
                         new TaskCreationCallback() {
                             @Override public void onSuccess(Task result) {
                                 Log.d(TAG, "Created task: " + result.toString());

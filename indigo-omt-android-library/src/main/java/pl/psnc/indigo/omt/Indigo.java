@@ -1,5 +1,7 @@
 package pl.psnc.indigo.omt;
 
+import android.app.Application;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,6 +22,7 @@ public class Indigo {
     private static String sUrl;
     private static String sApiToken;
     private static boolean sInitialized = false;
+    private static Context sApplicationContext;
 
     private Indigo() {
 
@@ -55,6 +58,14 @@ public class Indigo {
         sApiToken = accessToken;
     }
 
+    private static Context getApplicationContext() {
+        return Indigo.sApplicationContext;
+    }
+
+    public static void setsApplicationContext(Context sApplicationContext) {
+        Indigo.sApplicationContext = sApplicationContext;
+    }
+
     /**
      * A method must be called in the application class of your app
      *
@@ -64,6 +75,11 @@ public class Indigo {
         if (sInitialized) return;
         Indigo.sUrl = url;
         sInitialized = true;
+    }
+
+    public static <T extends Application> void init(T application) {
+        sApplicationContext = application.getApplicationContext();
+        if (sApplicationContext != null) sInitialized = true;
     }
 
     /**

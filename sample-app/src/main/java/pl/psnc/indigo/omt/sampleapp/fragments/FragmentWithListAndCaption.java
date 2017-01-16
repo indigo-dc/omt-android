@@ -2,6 +2,7 @@ package pl.psnc.indigo.omt.sampleapp.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.List;
+import pl.psnc.indigo.omt.BuildConfig;
 import pl.psnc.indigo.omt.api.model.InputFile;
 import pl.psnc.indigo.omt.api.model.OutputFile;
 import pl.psnc.indigo.omt.sampleapp.R;
@@ -66,11 +68,18 @@ public class FragmentWithListAndCaption extends Fragment {
             if (mFiles.get(position) instanceof InputFile) {
                 InputFile i = (InputFile) mFiles.get(position);
                 holder.mFileName.setText(i.getName());
+                holder.mFileName.setTextColor(Color.BLACK);
+                holder.mFileName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             } else {
                 OutputFile i = (OutputFile) mFiles.get(position);
                 holder.mFileName.setText(i.getName());
-                holder.mFileName.setTag(holder);
-                holder.mFileName.setOnClickListener(mOnClickListener);
+                if (i.getUrl() != null) {
+                    holder.mFileName.setTag(holder);
+                    holder.mFileName.setOnClickListener(mOnClickListener);
+                    holder.mFileName.setTextColor(Color.BLUE);
+                    holder.mFileName.setCompoundDrawablesWithIntrinsicBounds(
+                        android.R.drawable.arrow_down_float, 0, 0, 0);
+                }
             }
         }
 
@@ -92,7 +101,7 @@ public class FragmentWithListAndCaption extends Fragment {
             if (mFiles.get(position) instanceof OutputFile) {
                 OutputFile o = (OutputFile) mFiles.get(position);
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://62.3.168.16/v1.0/" + o.getUrl().toString()));
+                    Uri.parse(BuildConfig.FGAPI_ADDRESS + "/v1.0/" + o.getUrl().toString()));
                 startActivity(browserIntent);
             }
         }

@@ -1,6 +1,5 @@
 package pl.psnc.indigo.omt.tasks.remote;
 
-import java.io.File;
 import java.io.IOException;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -85,50 +84,80 @@ public class RemoteTasksAPI implements TasksOperations {
             if (taskResponse.isSuccessful()) {
                 result = taskResponse.body();
                 //uploading files
-                String uploadUrl = result.getUploadUrl();
-                for (InputFile iff : task.getInputFiles()) {
-                    RequestBody requestFile =
-                        RequestBody.create(MediaType.parse("application/octet-stream"), iff.getFile());
-                    MultipartBody.Part body =
-                        MultipartBody.Part.createFormData("file[]", iff.getName(), requestFile);
-                    String fullUploadUrl = BuildConfig.FGAPI_ADDRESS + uploadUrl;
-                    Call<ResponseBody> callUpload =
-                        mTasksRetrofitAPI.uploadInputFile(fullUploadUrl, body, task.getUser());
-                    Response<ResponseBody> uploadResponse = callUpload.execute();
-                    if (!uploadResponse.isSuccessful()) {
-                        throw new IndigoException("Cannot upload file: "
-                            + iff.getName()
-                            + "\n"
-                            + uploadResponse.errorBody());
-                    }
-                }
+                uploadInputFile(result.getUploadUrl(), task);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
             e.printStackTrace();
-        } catch (IndigoException e) {
-
         }
         return result;
     }
 
     @Override public TasksWrapper createTasks(TasksWrapper tasks) {
+        //TODO: implement creating multiple tasks
         return null;
     }
 
     @Override public Task getTaskDetails(int taskId) {
-        return null;
+        Task task = null;
+        Call<Task> call = mTasksRetrofitAPI.getTaskDetails(taskId);
+        try {
+            Response<Task> taskResponse = call.execute();
+            if (taskResponse.isSuccessful()) {
+                task = taskResponse.body();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        return task;
     }
 
     @Override public Task modifyTask(int taskId, Task task) {
         return null;
     }
 
-    @Override public Boolean deleteTask(int taskId) {
-        return null;
+    @Override public boolean deleteTask(Task task) {
+        boolean result = false;
+        Call<ResponseBody> call = mTasksRetrofitAPI.deleteTask(Integer.parseInt(task.getId()));
+        try {
+            Response<ResponseBody> response = call.execute();
+            if (response.isSuccessful()) {
+                result = true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
-    @Override public void uploadInputFile(String url, File file) {
+    @Override public void uploadInputFile(String url, Task task) {
+        String uploadUrl = url;
+        for (InputFile iff : task.getInputFiles()) {
+            RequestBody requestFile =
+                RequestBody.create(MediaType.parse("application/octet-stream"), iff.getFile());
+            MultipartBody.Part body =
+                MultipartBody.Part.createFormData("file[]", iff.getName(), requestFile);
+            String fullUploadUrl = BuildConfig.FGAPI_ADDRESS + uploadUrl;
+            Call<ResponseBody> callUpload =
+                mTasksRetrofitAPI.uploadInputFile(fullUploadUrl, body, task.getUser());
+            try {
+                Response<ResponseBody> uploadResponse = callUpload.execute();
+                if (!uploadResponse.isSuccessful()) {
+                    throw new IndigoException(
+                        "Cannot upload file: " + iff.getName() + "\n" + uploadResponse.errorBody());
+                }
+            } catch (IndigoException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

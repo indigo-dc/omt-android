@@ -14,7 +14,8 @@
       android:id="@+id/item.id"
       android:layout_width="40dp"
       android:layout_height="40dp"
-      android:layout_alignParentLeft="true"
+      android:layout_alignBottom="@+id/item.date"
+      android:layout_alignParentStart="true"
       android:layout_gravity="center"
       android:background="@drawable/circle"
       android:gravity="center"
@@ -28,13 +29,14 @@
 
   <TextView
       android:id="@+id/item.description"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-
-      android:layout_marginLeft="10dp"
-      android:layout_toRightOf="@id/item.id"
-      android:textAllCaps="true"
-      android:textSize="18sp"
+      android:layout_alignParentTop="true"
+      android:layout_marginLeft="5dp"
+      android:layout_toEndOf="@+id/item.id"
+      android:ellipsize="end"
+      android:maxLines="1"
+      android:textSize="20sp"
       tools:text="Description of task"
       />
 
@@ -42,21 +44,23 @@
       android:id="@+id/item.date"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentRight="true"
-      android:layout_below="@id/item.description"
-      android:layout_marginTop="10dp"
+      android:layout_alignStart="@+id/item.description"
+      android:layout_below="@+id/item.description"
       tools:text="2016-04-01 00:00:00"
       />
 
-  <TextView
-      android:id="@+id/item.user"
+  <Button
+      android:id="@+id/item.status"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_below="@id/item.date"
-      android:layout_marginTop="10dp"
+      android:layout_alignBottom="@+id/item.date"
+      android:layout_alignParentEnd="true"
+      android:clickable="false"
+      android:focusable="false"
       android:textStyle="italic"
-      tools:text="michalu-dev"
+      tools:text="DONE"
+      style="@style/Base.Widget.AppCompat.Button.Colored"
+
       />
 
 </RelativeLayout>

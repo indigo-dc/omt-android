@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,6 +33,7 @@ import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.AuthorizationService;
 import net.openid.appauth.TokenResponse;
 import pl.psnc.indigo.omt.Indigo;
+import pl.psnc.indigo.omt.api.model.InputFile;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
@@ -162,23 +165,23 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
                 @Override public void execute(@Nullable String s, @Nullable String s1,
                     @Nullable AuthorizationException e) {
                     IAMHelper.writeAuthState(authState, getApplicationContext());
-                    Indigo.createTask(new Task("ENES Use case | " + counter++, "2"),
-                        new TaskCreationCallback() {
-                            @Override public void onSuccess(Task result) {
-                                Log.d(TAG, "Created task: " + result.toString());
-                                getTasks(new Comparator<Task>() {
-                                    @Override public int compare(Task task, Task t1) {
-                                        Integer lCi = Integer.parseInt(task.getId());
-                                        Integer rCi = Integer.parseInt(t1.getId());
-                                        return lCi.compareTo(rCi);
-                                    }
-                                });
-                            }
 
-                            @Override public void onError(Exception exception) {
-                                Log.e(TAG, "Creation task failed: " + exception.getMessage());
-                            }
-                        });
+                    Indigo.createTask(createDummyTask(), new TaskCreationCallback() {
+                        @Override public void onSuccess(Task result) {
+                            Log.d(TAG, "Created task: " + result.toString());
+                            getTasks(new Comparator<Task>() {
+                                @Override public int compare(Task task, Task t1) {
+                                    Integer lCi = Integer.parseInt(task.getId());
+                                    Integer rCi = Integer.parseInt(t1.getId());
+                                    return lCi.compareTo(rCi);
+                                }
+                            });
+                        }
+
+                        @Override public void onError(Exception exception) {
+                            Log.e(TAG, "Creation task failed: " + exception.getMessage());
+                        }
+                    });
                 }
             });
         }
@@ -230,6 +233,23 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
                     mListAdapter.notifyDataSetChanged();
                     //schedule refreshing task
                     mHandler.postDelayed(mPeriodicTaskUpdate, REFRESH_INTERVAL);
+                }
+
+                @Override public void onError(Exception e) {
+                    Log.e(TAG, (e.getMessage() != null) ? e.getMessage()
+                        : "Something wrong happend here!");
+                }
+            });
+        }
+    };
+
+    private Runnable mTaskUpdate = new Runnable() {
+        @Override public void run() {
+            Indigo.getTasks(TaskStatus.ANY, new TasksCallback() {
+                @Override public void onSuccess(List<Task> tasks) {
+                    mTasks = (ArrayList) tasks;
+                    mListAdapter.setTasks(mTasks);
+                    mListAdapter.notifyDataSetChanged();
                 }
 
                 @Override public void onError(Exception e) {
@@ -295,7 +315,7 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
             holder.mId.setText(t.getId());
             holder.mDescription.setText(t.getDescription());
             holder.mItemDate.setText(t.getDate());
-            holder.mUser.setText(t.getUser());
+            holder.mStatus.setText(t.getStatus());
             holder.mAll.setOnClickListener(mClickListener);
             holder.mAll.setTag(holder);
         }
@@ -320,13 +340,43 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override public void onStart() {
-        super.onStart();
-        mHandler.postDelayed(mPeriodicTaskUpdate, 5000);
+    @Override public void onResume() {
+        super.onResume();
+        mHandler.post(mTaskUpdate);
+        mHandler.postDelayed(mPeriodicTaskUpdate, 100);
     }
 
-    @Override public void onStop() {
+    @Override public void onPause() {
         mHandler.removeCallbacks(mPeriodicTaskUpdate);
-        super.onStop();
+        super.onPause();
+    }
+
+    private Task createDummyTask() {
+        File file1 = new File(getExternalFilesDir(null) + File.separator + "sayhello.sh");
+        File file2 = new File(getExternalFilesDir(null) + File.separator + "sayhello.txt");
+        try {
+            file1.createNewFile();
+            file2.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Task task = new Task();
+        task.setDescription("TasksAPI v2 - creating task");
+        task.setApplication("2");
+        task.setUser("test");
+
+        InputFile if1 = new InputFile();
+        if1.setFile(file1);
+        if1.setName(file1.getName());
+
+        InputFile if2 = new InputFile();
+        if2.setFile(file2);
+        if2.setName(file2.getName());
+        ArrayList<InputFile> files = new ArrayList<>();
+        files.add(if1);
+        files.add(if2);
+        task.setInputFiles(files);
+        return task;
     }
 }

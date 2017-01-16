@@ -1,24 +1,15 @@
 package pl.psnc.indigo.omt.threads;
 
-import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.util.Log;
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import okhttp3.Request;
-import okhttp3.Response;
-import pl.psnc.indigo.omt.api.GetTasksJob;
-import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
-import pl.psnc.indigo.omt.exceptions.IndigoException;
+import pl.psnc.indigo.omt.tasks.TasksAPI;
+import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
 /**
  * Created by michalu on 14.07.16.
@@ -28,28 +19,27 @@ public class TasksHandlerThread extends HandlerThread implements IndigoHandlerTh
     private Handler mResponseHandler;
     private Handler mWorkerHandler;
     private IndigoCallback mCallback;
-    private GetTasksJob mApiJob;
+    private TasksAPI mTaskAPI;
+    private String mApplication;
+    private String mStatus;
+    private String mUsername;
 
-    public TasksHandlerThread(GetTasksJob job, Handler responseHandler, IndigoCallback callback) {
-        super("TasksHandlerThread");
-        this.mResponseHandler = responseHandler;
-        this.mCallback = callback;
-        this.mApiJob = job;
-    }
-
-    public TasksHandlerThread(GetTasksJob job, Handler workerHandler, Handler responseHandler,
-        IndigoCallback callback) {
+    public TasksHandlerThread(String username, String status, String application,
+        Handler workerHandler, Handler responseHandler, IndigoCallback callback) {
         super("TasksHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mWorkerHandler = workerHandler;
         this.mCallback = callback;
-        this.mApiJob = job;
+        this.mStatus = status;
+        this.mApplication = application;
+        this.mUsername = username;
     }
 
     @Override public void prepare() {
         if (mWorkerHandler == null) {
             mWorkerHandler = new Handler(getLooper(), new Handler.Callback() {
                 @Override public boolean handleMessage(Message msg) {
+                    mTaskAPI = new TasksAPI(HttpClientFactory.getNonIAMClient());
                     makeRequest();
                     return true;
                 }
@@ -66,26 +56,38 @@ public class TasksHandlerThread extends HandlerThread implements IndigoHandlerTh
 
     @Override public void makeRequest() {
         try {
-            HashMap<String, String> parameters = new HashMap<>();
-            parameters.put("user", mApiJob.getUser());
-            parameters.put("status", mApiJob.getStatus());
-            Uri address = mApiJob.getFullUri(GetTasksJob.ENDPOINT, null, parameters);
-            Log.d(TAG, "Calling: " + address);
-            Request request = new Request.Builder().url(address.toString()).build();
-            Response response = mApiJob.getClient().newCall(request).execute();
-            String body = response.body().string();
-            TasksWrapper tasksWrapper = new Gson().fromJson(body, TasksWrapper.class);
-            final List<Task> tasks = tasksWrapper.getTasks();
-            mResponseHandler.post(new Runnable() {
-                @Override public void run() {
-                    Collections.sort(tasks);
-                    ((TasksCallback) mCallback).onSuccess(tasks);
-                }
-            });
-        } catch (IndigoException e) {
-            mCallback.onError(e);
-        } catch (IOException e) {
-            mCallback.onError(e);
+            if (mApplication != null && mStatus != null) {
+                final TasksWrapper taskWrapper =
+                    mTaskAPI.getTasks(mUsername, mStatus, mApplication);
+                mResponseHandler.post(new Runnable() {
+                    @Override public void run() {
+                        if (taskWrapper.getTasks() != null) {
+                            Collections.sort(taskWrapper.getTasks());
+                            ((TasksCallback) mCallback).onSuccess(taskWrapper.getTasks());
+                        }
+                    }
+                });
+            } else if (mStatus != null && mApplication == null) {
+                final TasksWrapper taskWrapper = mTaskAPI.getTasks(mUsername, mStatus);
+                mResponseHandler.post(new Runnable() {
+                    @Override public void run() {
+                        if (taskWrapper.getTasks() != null) {
+                            Collections.sort(taskWrapper.getTasks());
+                            ((TasksCallback) mCallback).onSuccess(taskWrapper.getTasks());
+                        }
+                    }
+                });
+            } else {
+                final TasksWrapper taskWrapper = mTaskAPI.getTasks(mUsername);
+                mResponseHandler.post(new Runnable() {
+                    @Override public void run() {
+                        if (taskWrapper.getTasks() != null) {
+                            Collections.sort(taskWrapper.getTasks());
+                            ((TasksCallback) mCallback).onSuccess(taskWrapper.getTasks());
+                        }
+                    }
+                });
+            }
         } catch (IllegalArgumentException e) {
             mCallback.onError(e);
         } catch (JsonSyntaxException e) {

@@ -1,6 +1,5 @@
 package pl.psnc.indigo.omt.tasks;
 
-import java.io.File;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 
@@ -23,7 +22,7 @@ public interface TasksOperations {
 
     Task modifyTask(int taskId, Task task);
 
-    Boolean deleteTask(int taskId);
+    boolean deleteTask(Task task);
 
-    void uploadInputFile(String url, File file);
+    void uploadInputFile(String url, Task task);
 }

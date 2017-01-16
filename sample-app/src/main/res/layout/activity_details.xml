@@ -37,6 +37,7 @@
           android:layout_marginTop="10dp"
           android:clickable="false"
           android:colorButtonNormal="@color/colorAccent"
+          style="@style/Base.Widget.AppCompat.Button.Colored"
           android:gravity="center"
           android:padding="10dp"
           android:textSize="22sp"
@@ -84,19 +85,20 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="STOP"
-        />
-    <Button
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="START"
-        />
-    <Button
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
         android:text="RELAUNCH"
+        style="@style/Base.Widget.AppCompat.Button.Colored"
+        android:enabled="false"
+        android:focusable="false"
+        android:drawableLeft="@android:drawable/ic_popup_sync"
+        />
+    <Button
+        android:id="@+id/activity_details_remove_task"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        style="@style/Base.Widget.AppCompat.Button.Colored"
+        android:text="DELETE"
+        android:drawableLeft="@android:drawable/ic_menu_delete"
         />
   </LinearLayout>
 

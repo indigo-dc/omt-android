@@ -3,21 +3,20 @@ package pl.psnc.indigo.omt.api;
 import android.os.Handler;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
-import pl.psnc.indigo.omt.threads.TasksDetailsHandlerThread;
+import pl.psnc.indigo.omt.threads.TasksDeleteHandlerThread;
 
 /**
  * Created by michalu on 14.07.16.
  */
-public class GetTaskDetailsJob implements APIRunner {
-    public static final String ENDPOINT = "tasks";
+public class DeleteTaskJob implements APIRunner {
     private Task mTask;
 
-    public GetTaskDetailsJob(Task task) {
+    public DeleteTaskJob(Task task) {
         mTask = task;
     }
 
     @Override public void doAsync(Handler responseHandler, IndigoCallback callback) {
-        new TasksDetailsHandlerThread(mTask, null, responseHandler, callback).start();
+        new TasksDeleteHandlerThread(mTask, null, responseHandler, callback).start();
     }
 
     public Task getTask() {

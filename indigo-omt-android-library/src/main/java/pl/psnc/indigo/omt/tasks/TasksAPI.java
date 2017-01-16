@@ -1,6 +1,5 @@
 package pl.psnc.indigo.omt.tasks;
 
-import java.io.File;
 import okhttp3.OkHttpClient;
 import pl.psnc.indigo.omt.api.BaseAPI;
 import pl.psnc.indigo.omt.api.model.Task;
@@ -26,11 +25,11 @@ public class TasksAPI implements TasksOperations {
     }
 
     @Override public TasksWrapper getTasks(String user, String status) {
-        return null;
+        return mTasksAPI.getTasks(user, status);
     }
 
     @Override public TasksWrapper getTasks(String user, String status, String application) {
-        return null;
+        return mTasksAPI.getTasks(user, status, application);
     }
 
     @Override public Task createTask(Task task) {
@@ -38,22 +37,22 @@ public class TasksAPI implements TasksOperations {
     }
 
     @Override public TasksWrapper createTasks(TasksWrapper tasks) {
-        return null;
+        return mTasksAPI.createTasks(tasks);
     }
 
     @Override public Task getTaskDetails(int taskId) {
-        return null;
+        return mTasksAPI.getTaskDetails(taskId);
     }
 
     @Override public Task modifyTask(int taskId, Task task) {
         return null;
     }
 
-    @Override public Boolean deleteTask(int taskId) {
-        return null;
+    @Override public boolean deleteTask(Task task) {
+        return mTasksAPI.deleteTask(task);
     }
 
-    @Override public void uploadInputFile(String url, File file) {
-
+    @Override public void uploadInputFile(String url, Task task) {
+        mTasksAPI.uploadInputFile(url, task);
     }
 }

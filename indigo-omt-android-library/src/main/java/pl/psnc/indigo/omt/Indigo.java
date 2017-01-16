@@ -6,10 +6,12 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import pl.psnc.indigo.omt.api.CreateTaskJob;
+import pl.psnc.indigo.omt.api.DeleteTaskJob;
 import pl.psnc.indigo.omt.api.GetTaskDetailsJob;
 import pl.psnc.indigo.omt.api.GetTasksJob;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
+import pl.psnc.indigo.omt.callbacks.TaskDeleteCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
@@ -108,8 +110,7 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(getUrl(), status, sUsername).doAsyncJob(new Handler(Looper.getMainLooper()),
-            callback);
+        new GetTasksJob(status, sUsername).doAsync(new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -119,7 +120,7 @@ public class Indigo {
      */
 
     public static void getTasks(TasksCallback callback) {
-        new GetTasksJob(getUrl()).doAsyncJob(new Handler(Looper.getMainLooper()), callback);
+        new GetTasksJob(sUsername).doAsync(new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -136,26 +137,25 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(getUrl(), status, sUsername, application).doAsyncJob(
-            new Handler(Looper.getMainLooper()), callback);
+        new GetTasksJob(status, sUsername, application).doAsync(new Handler(Looper.getMainLooper()),
+            callback);
     }
 
     /**
      * Gets details about task
      *
-     * @param taskId id of the task which should be obtained
+     * @param task the task which should be obtained
      * @param callback a callback to notify about the result of the operation
      */
 
-    public static void getTask(int taskId, TaskDetailsCallback callback) {
+    public static void getTask(Task task, TaskDetailsCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        new GetTaskDetailsJob(taskId, getUrl()).doAsyncJob(new Handler(Looper.getMainLooper()),
-            callback);
+        new GetTaskDetailsJob(task).doAsync(new Handler(Looper.getMainLooper()), callback);
     }
 
     /**
@@ -172,7 +172,17 @@ public class Indigo {
             return;
         }
         newTask.setUser(sUsername);
-        new CreateTaskJob(newTask, getUrl()).doAsyncJob(new Handler(Looper.getMainLooper()),
-            callback);
+        new CreateTaskJob(newTask).doAsync(new Handler(Looper.getMainLooper()), callback);
+    }
+
+    public static void deleteTask(Task task, TaskDeleteCallback callback) {
+
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new DeleteTaskJob(task).doAsync(new Handler(Looper.getMainLooper()), callback);
     }
 }

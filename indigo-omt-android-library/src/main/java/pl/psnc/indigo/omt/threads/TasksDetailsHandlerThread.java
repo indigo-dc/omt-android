@@ -1,20 +1,14 @@
 package pl.psnc.indigo.omt.threads;
 
-import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import okhttp3.Request;
-import okhttp3.Response;
-import pl.psnc.indigo.omt.api.GetTaskDetailsJob;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
+import pl.psnc.indigo.omt.tasks.TasksAPI;
+import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
 /**
  * Created by michalu on 14.07.16.
@@ -23,29 +17,23 @@ public class TasksDetailsHandlerThread extends HandlerThread implements IndigoHa
     private Handler mResponseHandler;
     private Handler mWorkerHandler;
     private IndigoCallback mCallback;
-    private GetTaskDetailsJob mApiJob;
+    private TasksAPI mTasksAPI;
+    private Task mTask;
 
-    public TasksDetailsHandlerThread(GetTaskDetailsJob job, Handler responseHandler,
-            IndigoCallback callback) {
-        super("TasksDetailsHandlerThread");
-        this.mResponseHandler = responseHandler;
-        this.mCallback = callback;
-        this.mApiJob = job;
-    }
-
-    public TasksDetailsHandlerThread(GetTaskDetailsJob job, Handler workerHandler,
-            Handler responseHandler, IndigoCallback callback) {
+    public TasksDetailsHandlerThread(Task task, Handler workerHandler, Handler responseHandler,
+        IndigoCallback callback) {
         super("TasksDetailsHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mWorkerHandler = workerHandler;
         this.mCallback = callback;
-        this.mApiJob = job;
+        this.mTask = task;
     }
 
     @Override public void prepare() {
         if (mWorkerHandler == null) {
             mWorkerHandler = new Handler(getLooper(), new Handler.Callback() {
                 @Override public boolean handleMessage(Message msg) {
+                    mTasksAPI = new TasksAPI(HttpClientFactory.getNonIAMClient());
                     makeRequest();
                     return true;
                 }
@@ -61,23 +49,16 @@ public class TasksDetailsHandlerThread extends HandlerThread implements IndigoHa
 
     @Override public void makeRequest() {
         try {
-            Uri address = mApiJob.getFullUri(GetTaskDetailsJob.ENDPOINT,
-                    new String[] { String.valueOf(mApiJob.getTaskId()) }, null);
-            Request request = new Request.Builder().url(address.getPath()).build();
-            Response response = mApiJob.getClient().newCall(request).execute();
-
-            Type taskType = new TypeToken<Task>() {
-            }.getType();
-            final Task task = new Gson().fromJson(response.body().string(), taskType);
+            final Task taskWithDetails = mTasksAPI.getTaskDetails(Integer.parseInt(mTask.getId()));
             mResponseHandler.post(new Runnable() {
                 @Override public void run() {
-                    ((TaskDetailsCallback) mCallback).onSuccess(task);
+                    if (taskWithDetails == null) {
+                        mCallback.onError(new IndigoException("No details downloaded"));
+                    } else {
+                        ((TaskDetailsCallback) mCallback).onSuccess(taskWithDetails);
+                    }
                 }
             });
-        } catch (IndigoException e) {
-            mCallback.onError(e);
-        } catch (IOException e) {
-            mCallback.onError(e);
         } catch (IllegalArgumentException e) {
             mCallback.onError(e);
         } finally {

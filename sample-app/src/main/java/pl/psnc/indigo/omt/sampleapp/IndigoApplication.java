@@ -10,6 +10,6 @@ public class IndigoApplication extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
-        Indigo.init(null, "michalu-dev");
+        Indigo.init(null, "test");
     }
 }

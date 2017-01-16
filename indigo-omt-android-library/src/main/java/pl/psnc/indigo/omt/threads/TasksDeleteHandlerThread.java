@@ -5,28 +5,28 @@ import android.os.HandlerThread;
 import android.os.Message;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
-import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
+import pl.psnc.indigo.omt.callbacks.TaskDeleteCallback;
 import pl.psnc.indigo.omt.tasks.TasksAPI;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
 /**
  * Created by michalu on 14.07.16.
  */
-public class TasksCreateHandlerThread extends HandlerThread implements IndigoHandlerThread {
+public class TasksDeleteHandlerThread extends HandlerThread implements IndigoHandlerThread {
     private Handler mResponseHandler;
     private Handler mWorkerHandler;
     private IndigoCallback mCallback;
     private TasksAPI mTasksAPI;
     private Task mTaskToCreate;
 
-    public TasksCreateHandlerThread(Task task, Handler responseHandler, IndigoCallback callback) {
+    public TasksDeleteHandlerThread(Task task, Handler responseHandler, IndigoCallback callback) {
         super("TasksCreateHandlerThread");
         this.mResponseHandler = responseHandler;
         this.mCallback = callback;
         this.mTaskToCreate = task;
     }
 
-    public TasksCreateHandlerThread(Task task, Handler workerHandler, Handler responseHandler,
+    public TasksDeleteHandlerThread(Task task, Handler workerHandler, Handler responseHandler,
         IndigoCallback callback) {
         super("TasksCreateHandlerThread");
         this.mResponseHandler = responseHandler;
@@ -56,14 +56,10 @@ public class TasksCreateHandlerThread extends HandlerThread implements IndigoHan
 
     @Override public void makeRequest() {
         try {
-            final Task task = mTasksAPI.createTask(mTaskToCreate);
+            final boolean deleted = mTasksAPI.deleteTask(mTaskToCreate);
             mResponseHandler.post(new Runnable() {
                 @Override public void run() {
-                    if (task == null) {
-                        throw new NullPointerException("Task is null");
-                    } else {
-                        ((TaskCreationCallback) mCallback).onSuccess(task);
-                    }
+                    ((TaskDeleteCallback) mCallback).onSuccess(deleted);
                 }
             });
         } catch (IllegalArgumentException e) {

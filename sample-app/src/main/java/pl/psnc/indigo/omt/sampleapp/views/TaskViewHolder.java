@@ -2,6 +2,7 @@ package pl.psnc.indigo.omt.sampleapp.views;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import pl.psnc.indigo.omt.sampleapp.R;
@@ -13,7 +14,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout mAll;
     public TextView mId;
     public TextView mDescription;
-    public TextView mUser;
+    public Button mStatus;
     public TextView mItemDate;
 
     public TaskViewHolder(View view) {
@@ -22,6 +23,6 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         this.mId = (TextView) view.findViewById(R.id.item_id);
         this.mDescription = (TextView) view.findViewById(R.id.item_description);
         this.mItemDate = (TextView) view.findViewById(R.id.item_date);
-        this.mUser = (TextView) view.findViewById(R.id.item_user);
+        this.mStatus = (Button) view.findViewById(R.id.item_status);
     }
 }

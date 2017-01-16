@@ -1,5 +1,5 @@
-<manifest package="pl.psnc.indigo.omt"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="pl.psnc.indigo.omt">
 
   <application
       android:allowBackup="true"

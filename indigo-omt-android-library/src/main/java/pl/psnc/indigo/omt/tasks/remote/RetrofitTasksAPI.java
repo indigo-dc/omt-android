@@ -36,7 +36,7 @@ public interface RetrofitTasksAPI {
 
     @PATCH("tasks/{id}") Call<Task> modifyTask(@Path("id") int taskId, @Body Task task);
 
-    @DELETE("tasks/{id}") Call<Boolean> deleteTask(@Path("id") int taskId);
+    @DELETE("tasks/{id}") Call<ResponseBody> deleteTask(@Path("id") int taskId);
 
     @Multipart @POST Call<ResponseBody> uploadInputFile(@Url String url,
         @Part MultipartBody.Part file, @Query("user") String user);

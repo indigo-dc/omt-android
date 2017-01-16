@@ -38,9 +38,9 @@ public class TasksTest {
         }
 
         Task task = new Task();
-        task.setDescription("TasksAPI v2 - testing task");
+        task.setDescription("TasksAPI v2 - creating task");
         task.setApplication("2");
-        task.setUser("brunor");
+        task.setUser("michalu-dev");
 
         InputFile if1 = new InputFile();
         if1.setFile(file1);
@@ -56,5 +56,29 @@ public class TasksTest {
 
         Task result = tasksAPI.createTask(task);
         Assert.assertNotNull(result);
+    }
+
+    @Test public void test_GetTaskDetails() {
+        OkHttpClient client = HttpClientFactory.getNonIAMClient();
+        TasksAPI tasksAPI = new TasksAPI(client);
+
+        int taskId = 266;
+        Task task = tasksAPI.getTaskDetails(taskId);
+        Assert.assertNotNull(task);
+    }
+
+    @Test public void test_CreateAndDeleteTask() {
+        OkHttpClient client = HttpClientFactory.getNonIAMClient();
+        TasksAPI tasksAPI = new TasksAPI(client);
+
+        Task task = new Task();
+        task.setDescription("TasksAPI v2 - creating&deleting task");
+        task.setApplication("2");
+        task.setUser("michalu-dev");
+
+        Task taskAfterCreating = tasksAPI.createTask(task);
+
+        Assert.assertNotNull(taskAfterCreating);
+        Assert.assertTrue(tasksAPI.deleteTask(taskAfterCreating));
     }
 }

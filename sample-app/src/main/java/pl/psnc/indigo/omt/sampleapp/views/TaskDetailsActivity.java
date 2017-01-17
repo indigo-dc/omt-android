@@ -8,10 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.TaskDeleteCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
+import pl.psnc.indigo.omt.iam.IAMHelper;
 import pl.psnc.indigo.omt.sampleapp.R;
 import pl.psnc.indigo.omt.sampleapp.fragments.FragmentWithListAndCaption;
 
@@ -34,7 +36,8 @@ public class TaskDetailsActivity extends IndigoActivity {
 
         mDeleteTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View view) {
-                Indigo.deleteTask(mTask, new TaskDeleteCallback() {
+                AuthState authState = IAMHelper.readAuthState(getApplicationContext());
+                Indigo.deleteTask(mTask, authState, new TaskDeleteCallback() {
                     @Override public void onSuccess(boolean result) {
                         finish();
                     }
@@ -51,7 +54,8 @@ public class TaskDetailsActivity extends IndigoActivity {
         if (i != null) {
             mTask = i.getParcelableExtra("task");
             if (mTask != null) {
-                Indigo.getTask(mTask, new TaskDetailsCallback() {
+                AuthState authState = IAMHelper.readAuthState(getApplicationContext());
+                Indigo.getTask(mTask, authState, new TaskDetailsCallback() {
                     @Override public void onSuccess(Task result) {
                         mTaskTitle.setText("Task #" + result.getId());
                         mStatusButton.setText(result.getStatus());

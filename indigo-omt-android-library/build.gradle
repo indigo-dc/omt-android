@@ -55,8 +55,9 @@ android {
     targetSdkVersion 23
     versionCode 1
     versionName "1.0"
-    //please provide here the IP with port to FG API
-    buildConfigField "String", "FGAPI_ADDRESS", "\"http://62.3.168.16\""
+    //default IP with port to FG API
+    buildConfigField "String", "FGAPI_ADDRESS", "\"http://62.3.168.167:80\""
+    buildConfigField "String", "FGAPI_CONTENT_TYPE", "\"application/vnd.indigo-datacloud.apiserver+json\""
   }
   buildTypes {
     release {

@@ -31,6 +31,7 @@ import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.AuthorizationService;
+import net.openid.appauth.ClientSecretPost;
 import net.openid.appauth.TokenResponse;
 import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.InputFile;
@@ -39,6 +40,7 @@ import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.iam.IAMHelper;
+import pl.psnc.indigo.omt.sampleapp.BuildConfig;
 import pl.psnc.indigo.omt.sampleapp.R;
 import pl.psnc.indigo.omt.sampleapp.callbacks.OnTaskListListener;
 
@@ -87,6 +89,7 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
                 authState.update(resp, ex);
                 IAMHelper.writeAuthState(authState, getApplicationContext());
                 service.performTokenRequest(resp.createTokenExchangeRequest(),
+                    new ClientSecretPost(BuildConfig.IAM_CLIENT_SECRET),
                     new AuthorizationService.TokenResponseCallback() {
                         @Override public void onTokenRequestCompleted(TokenResponse response,
                             AuthorizationException ex) {
@@ -113,6 +116,7 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
                                 Log.i(TAG, response.jsonSerializeString());
                                 Log.i(TAG, "access_token: " + response.accessToken);
                                 Log.i(TAG, "refresh_token: " + response.refreshToken);
+                                // Log.i("Client secret:", authState.getClientSecret());
                             } else {
                                 // authorization failed, check ex for more details
                                 IAMHelper.writeForceReAuth(true, getApplicationContext());
@@ -166,7 +170,7 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
                     @Nullable AuthorizationException e) {
                     IAMHelper.writeAuthState(authState, getApplicationContext());
 
-                    Indigo.createTask(createDummyTask(), new TaskCreationCallback() {
+                    Indigo.createTask(createDummyTask(), authState, new TaskCreationCallback() {
                         @Override public void onSuccess(Task result) {
                             Log.d(TAG, "Created task: " + result.toString());
                             getTasks(new Comparator<Task>() {
@@ -193,7 +197,8 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
      * @param comparator a comparator to compare tasks for sorting purpose
      */
     public void getTasks(final Comparator<Task> comparator) {
-        Indigo.getTasks(TaskStatus.ANY, new TasksCallback() {
+        AuthState authState = IAMHelper.readAuthState(getApplicationContext());
+        Indigo.getTasks(TaskStatus.ANY, authState, new TasksCallback() {
             @Override public void onSuccess(List<Task> tasks) {
                 mTasks = (ArrayList) tasks;
                 if (comparator != null) Collections.sort(tasks, comparator);
@@ -226,7 +231,8 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
 
     private Runnable mPeriodicTaskUpdate = new Runnable() {
         @Override public void run() {
-            Indigo.getTasks(TaskStatus.ANY, new TasksCallback() {
+            AuthState authState = IAMHelper.readAuthState(getApplicationContext());
+            Indigo.getTasks(TaskStatus.ANY, authState, new TasksCallback() {
                 @Override public void onSuccess(List<Task> tasks) {
                     mTasks = (ArrayList) tasks;
                     mListAdapter.setTasks(mTasks);
@@ -245,7 +251,8 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
 
     private Runnable mTaskUpdate = new Runnable() {
         @Override public void run() {
-            Indigo.getTasks(TaskStatus.ANY, new TasksCallback() {
+            AuthState authState = IAMHelper.readAuthState(getApplicationContext());
+            Indigo.getTasks(TaskStatus.ANY, authState, new TasksCallback() {
                 @Override public void onSuccess(List<Task> tasks) {
                     mTasks = (ArrayList) tasks;
                     mListAdapter.setTasks(mTasks);

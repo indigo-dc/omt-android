@@ -1,6 +1,7 @@
 package pl.psnc.indigo.omt.api;
 
 import android.os.Handler;
+import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 import pl.psnc.indigo.omt.threads.TasksCreateHandlerThread;
@@ -16,8 +17,8 @@ public class CreateTaskJob implements APIRunner {
         mTask = task;
     }
 
-    @Override public void doAsync(Handler responseHandler, IndigoCallback callback) {
-        new TasksCreateHandlerThread(mTask, null, responseHandler, callback).start();
+    @Override public void doAsync(Handler responseHandler, AuthState authState, IndigoCallback callback) {
+        new TasksCreateHandlerThread(mTask, null, responseHandler, authState, callback).start();
     }
 
     public Task getTask() {

@@ -16,6 +16,16 @@ android {
   buildTypes {
     debug {
       testCoverageEnabled true
+
+      buildConfigField "String", "FGAPI_ADDRESS", "\"http://62.3.168.167\""
+      buildConfigField "String", "IAM_CLIENT_ID", "\"6158f403-b6a0-4b17-b181-0543da55c7ef\""
+      buildConfigField "String", "IAM_URL", "\"https://iam-test.indigo-datacloud.eu\""
+      buildConfigField "String", "IAM_CLIENT_SECRET",
+          "\"Qj3hglsVeV6RLxcywR2my95bmu1oJTOjURO6Lw0pCVX9_p8JMGcW9G4CS4wzphX1-idqobwgR8b3wQDoXGDe2g\""
+      buildConfigField "String", "IAM_REDIRECT_URL_SCHEME",
+          "\"pl.psnc.indigo.omt.sampleapp://oauth2redirect\""
+      buildConfigField "String []", "IAM_SCOPES",
+          "{ \"profile\", \"openid\", \"offline_access\" }"
     }
     release {
       minifyEnabled false

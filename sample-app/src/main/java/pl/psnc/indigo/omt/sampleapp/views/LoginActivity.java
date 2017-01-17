@@ -19,9 +19,11 @@ import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationRequest;
 import net.openid.appauth.AuthorizationService;
 import net.openid.appauth.AuthorizationServiceConfiguration;
+import net.openid.appauth.ClientSecretPost;
 import net.openid.appauth.ResponseTypeValues;
 import net.openid.appauth.TokenResponse;
 import pl.psnc.indigo.omt.iam.IAMHelper;
+import pl.psnc.indigo.omt.sampleapp.BuildConfig;
 import pl.psnc.indigo.omt.sampleapp.R;
 
 public class LoginActivity extends IndigoActivity {
@@ -45,7 +47,7 @@ public class LoginActivity extends IndigoActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        final Uri issuerUri = IAMHelper.IAM_URL;
+        final Uri issuerUri = Uri.parse(BuildConfig.IAM_URL);
         final Context ctx = this;
         final AuthState authState = IAMHelper.readAuthState(ctx);
         if (authState.isAuthorized()) {
@@ -67,6 +69,7 @@ public class LoginActivity extends IndigoActivity {
                         .show();
                     final AuthorizationService service = new AuthorizationService(ctx);
                     service.performTokenRequest(authState.createTokenRefreshRequest(),
+                        new ClientSecretPost(BuildConfig.IAM_CLIENT_SECRET),
                         new AuthorizationService.TokenResponseCallback() {
                             @Override
                             public void onTokenRequestCompleted(@Nullable TokenResponse response,
@@ -122,9 +125,9 @@ public class LoginActivity extends IndigoActivity {
 
                         AuthorizationRequest req =
                             new AuthorizationRequest.Builder(serviceConfiguration,
-                                IAMHelper.IAM_CLIENT_ID, ResponseTypeValues.CODE,
-                                Uri.parse(IAMHelper.IAM_REDIRECT_URL_SCHEME)).setScopes(
-                                IAMHelper.IAM_SCOPES).build();
+                                BuildConfig.IAM_CLIENT_ID, ResponseTypeValues.CODE,
+                                Uri.parse(BuildConfig.IAM_REDIRECT_URL_SCHEME)).setScopes(
+                                BuildConfig.IAM_SCOPES).build();
                         Intent postAuthIntent = new Intent(ctx, TasksActivity.class);
                         service.performAuthorizationRequest(req,
                             PendingIntent.getActivity(ctx, req.hashCode(), postAuthIntent, 0));

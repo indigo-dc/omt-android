@@ -11,6 +11,7 @@ import pl.psnc.indigo.omt.root.remote.RemoteRootAPI;
 public class RootAPI implements RootOperations {
     private RemoteRootAPI mRemoteRootAPI;
     private static RootAPI sInstance = null;
+    private String mCachedRoot = null;
 
     private RootAPI(OkHttpClient client) {
         mRemoteRootAPI = new RemoteRootAPI(client);
@@ -22,11 +23,13 @@ public class RootAPI implements RootOperations {
     }
 
     @Override public String getRoot() {
-        try {
-            return BuildConfig.FGAPI_ADDRESS + mRemoteRootAPI.getRoot();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+        if (mCachedRoot == null) {
+            try {
+                mCachedRoot = BuildConfig.FGAPI_ADDRESS + mRemoteRootAPI.getRoot();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
+        return mCachedRoot;
     }
 }

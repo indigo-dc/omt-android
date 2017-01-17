@@ -1,6 +1,7 @@
 package pl.psnc.indigo.omt.api;
 
 import android.os.Handler;
+import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 
 /**
@@ -8,5 +9,5 @@ import pl.psnc.indigo.omt.callbacks.IndigoCallback;
  */
 public interface APIRunner {
 
-    void doAsync(Handler responseHandler, IndigoCallback callback);
+    void doAsync(Handler responseHandler, AuthState authState, IndigoCallback callback);
 }

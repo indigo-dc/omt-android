@@ -6,6 +6,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import pl.psnc.indigo.omt.BuildConfig;
 
 /**
  * Created by michalu on 13.01.17.
@@ -19,7 +20,7 @@ public class HttpClientFactory {
                 Request request = chain.request();
                 request.newBuilder()
                     .addHeader("Authorization", "Bearer " + accessToken)
-                    .addHeader("Content-Type", "application/vnd.indigo-datacloud.apiserver+json")
+                    .addHeader("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE)
                     .build();
                 Response response = chain.proceed(request);
                 return response;
@@ -33,7 +34,7 @@ public class HttpClientFactory {
                 Request request = chain.request();
                 request.newBuilder()
                     .addHeader("Authorization", "Bearer " + accessToken)
-                    .addHeader("Content-Type", "application/vnd.indigo-datacloud.apiserver+json")
+                    .addHeader("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE)
                     .build();
                 Response response = chain.proceed(request);
                 return response;
@@ -47,7 +48,7 @@ public class HttpClientFactory {
                 Request request = chain.request();
                 request.newBuilder()
                     .addHeader("Authorization", "Bearer {}")
-                    .addHeader("Content-Type", "application/vnd.indigo-datacloud.apiserver+json")
+                    .addHeader("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE)
                     .build();
                 Response response = chain.proceed(request);
                 return response;

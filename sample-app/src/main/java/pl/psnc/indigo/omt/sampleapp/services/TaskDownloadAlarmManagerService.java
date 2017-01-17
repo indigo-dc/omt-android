@@ -36,8 +36,7 @@ public class TaskDownloadAlarmManagerService extends IntentService {
             authState.performActionWithFreshTokens(service, new AuthState.AuthStateAction() {
                 @Override public void execute(@Nullable String s, @Nullable String s1,
                     @Nullable AuthorizationException e) {
-                    Indigo.setAccessToken(s);
-                    Indigo.getTasks(TaskStatus.ANY, new TasksCallback() {
+                    Indigo.getTasks(TaskStatus.ANY, authState, new TasksCallback() {
                         @Override public void onSuccess(List<Task> result) {
                             EventBus.getDefault()
                                 .post(new TasksDownloadedCompleted("New tasks avaialble", result));

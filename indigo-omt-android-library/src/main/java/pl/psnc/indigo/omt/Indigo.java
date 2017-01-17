@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.api.CreateTaskJob;
 import pl.psnc.indigo.omt.api.DeleteTaskJob;
 import pl.psnc.indigo.omt.api.GetTaskDetailsJob;
@@ -21,8 +22,6 @@ import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
  */
 public class Indigo {
     private static String sUsername;
-    private static String sUrl;
-    private static String sApiToken;
     private static boolean sInitialized = false;
     private static Context sApplicationContext;
 
@@ -43,58 +42,21 @@ public class Indigo {
         }
     }
 
-    public static Uri getUrl() {
-        if (sUrl == null) return Uri.parse(BuildConfig.FGAPI_ADDRESS);
-        return Uri.parse(sUrl);
-    }
-
-    public static String getAccessToken() {
-        return sApiToken;
-    }
-
-    public static void setUsername(String username) {
-        sUsername = username;
-    }
-
-    public static void setAccessToken(String accessToken) {
-        sApiToken = accessToken;
-    }
-
-    private static Context getApplicationContext() {
+    public static Context getApplicationContext() {
         return Indigo.sApplicationContext;
     }
 
-    public static void setsApplicationContext(Context sApplicationContext) {
-        Indigo.sApplicationContext = sApplicationContext;
-    }
-
-    /**
-     * A method must be called in the application class of your app
-     *
-     * @param url domain or IP address of the FutureGateway instance
-     */
-    public static void init(String url) {
-        if (sInitialized) return;
-        Indigo.sUrl = url;
-        sInitialized = true;
-    }
-
-    public static <T extends Application> void init(T application) {
-        sApplicationContext = application.getApplicationContext();
-        if (sApplicationContext != null) sInitialized = true;
-    }
 
     /**
      * A method must be called in the application class of your app - only for debug purposes
      *
-     * @param url domain or IP address of the FutureGateway instance
+     * @param application an instance of your application
      * @param username provided username to init the library. It should be gathered from the API
      */
-    public static void init(String url, String username) {
-        if (sInitialized) return;
-        Indigo.sUrl = url;
-        Indigo.sUsername = username;
-        sInitialized = true;
+    public static <T extends Application> void init(T application, String username) {
+        sApplicationContext = application.getApplicationContext();
+        sUsername = username;
+        if (sApplicationContext != null) sInitialized = true;
     }
 
     /**
@@ -103,14 +65,15 @@ public class Indigo {
      * @param status results will be filtered based on provided status
      * @param callback a callback to notify about the result of the operation
      */
-    public static void getTasks(String status, TasksCallback callback) {
+    public static void getTasks(String status, AuthState authState, TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(status, sUsername).doAsync(new Handler(Looper.getMainLooper()), callback);
+        new GetTasksJob(status, sUsername).doAsync(new Handler(Looper.getMainLooper()), authState,
+            callback);
     }
 
     /**
@@ -119,8 +82,9 @@ public class Indigo {
      * @param callback a callback to notify about the result of the operation
      */
 
-    public static void getTasks(TasksCallback callback) {
-        new GetTasksJob(sUsername).doAsync(new Handler(Looper.getMainLooper()), callback);
+    public static void getTasks(AuthState authState, TasksCallback callback) {
+        new GetTasksJob(sUsername).doAsync(new Handler(Looper.getMainLooper()), authState,
+            callback);
     }
 
     /**
@@ -130,7 +94,8 @@ public class Indigo {
      * @param status results will be filtered based on the provided status
      * @param callback a callback to notify about the result of the operation
      */
-    public static void getTasks(String application, String status, TasksCallback callback) {
+    public static void getTasks(String application, String status, AuthState authState,
+        TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -138,7 +103,7 @@ public class Indigo {
             return;
         }
         new GetTasksJob(status, sUsername, application).doAsync(new Handler(Looper.getMainLooper()),
-            callback);
+            authState, callback);
     }
 
     /**
@@ -148,14 +113,15 @@ public class Indigo {
      * @param callback a callback to notify about the result of the operation
      */
 
-    public static void getTask(Task task, TaskDetailsCallback callback) {
+    public static void getTask(Task task, AuthState authState, TaskDetailsCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        new GetTaskDetailsJob(task).doAsync(new Handler(Looper.getMainLooper()), callback);
+        new GetTaskDetailsJob(task).doAsync(new Handler(Looper.getMainLooper()), authState,
+            callback);
     }
 
     /**
@@ -164,7 +130,8 @@ public class Indigo {
      * @param newTask a task to execute
      * @param callback a callback to notify about the result of the operation
      */
-    public static void createTask(Task newTask, TaskCreationCallback callback) {
+    public static void createTask(Task newTask, AuthState authState,
+        TaskCreationCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -172,10 +139,18 @@ public class Indigo {
             return;
         }
         newTask.setUser(sUsername);
-        new CreateTaskJob(newTask).doAsync(new Handler(Looper.getMainLooper()), callback);
+        new CreateTaskJob(newTask).doAsync(new Handler(Looper.getMainLooper()), authState,
+            callback);
     }
 
-    public static void deleteTask(Task task, TaskDeleteCallback callback) {
+    /**
+     * Deleting the task
+     *
+     * @param task task to delete
+     * @param authState an object with auth data
+     * @param callback callback informing about results
+     */
+    public static void deleteTask(Task task, AuthState authState, TaskDeleteCallback callback) {
 
         try {
             checkInitialization();
@@ -183,6 +158,6 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new DeleteTaskJob(task).doAsync(new Handler(Looper.getMainLooper()), callback);
+        new DeleteTaskJob(task).doAsync(new Handler(Looper.getMainLooper()), authState, callback);
     }
 }

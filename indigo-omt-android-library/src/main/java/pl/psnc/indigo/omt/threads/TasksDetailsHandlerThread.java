@@ -1,8 +1,13 @@
 package pl.psnc.indigo.omt.threads;
 
+import android.content.Context;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Message;
+import android.support.annotation.Nullable;
+import net.openid.appauth.AuthState;
+import net.openid.appauth.AuthorizationException;
+import net.openid.appauth.AuthorizationService;
+import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
@@ -13,19 +18,22 @@ import pl.psnc.indigo.omt.utils.HttpClientFactory;
 /**
  * Created by michalu on 14.07.16.
  */
-public class TasksDetailsHandlerThread extends HandlerThread implements IndigoHandlerThread {
+public class TasksDetailsHandlerThread extends ApiHandlerThread implements ApiCallWorkflow {
+    public static final String TAG = "TasksDetailsHandlerThread";
     private Handler mResponseHandler;
     private Handler mWorkerHandler;
     private IndigoCallback mCallback;
     private TasksAPI mTasksAPI;
     private Task mTask;
+    private AuthState mAuthState;
 
     public TasksDetailsHandlerThread(Task task, Handler workerHandler, Handler responseHandler,
-        IndigoCallback callback) {
-        super("TasksDetailsHandlerThread");
+        AuthState authState, IndigoCallback callback) {
+        super(TAG, responseHandler, workerHandler, authState, callback);
         this.mResponseHandler = responseHandler;
         this.mWorkerHandler = workerHandler;
         this.mCallback = callback;
+        this.mAuthState = authState;
         this.mTask = task;
     }
 
@@ -33,8 +41,7 @@ public class TasksDetailsHandlerThread extends HandlerThread implements IndigoHa
         if (mWorkerHandler == null) {
             mWorkerHandler = new Handler(getLooper(), new Handler.Callback() {
                 @Override public boolean handleMessage(Message msg) {
-                    mTasksAPI = new TasksAPI(HttpClientFactory.getNonIAMClient());
-                    makeRequest();
+                    authenticate(mAuthState);
                     return true;
                 }
             });
@@ -47,22 +54,27 @@ public class TasksDetailsHandlerThread extends HandlerThread implements IndigoHa
         mWorkerHandler.obtainMessage().sendToTarget();
     }
 
-    @Override public void makeRequest() {
-        try {
-            final Task taskWithDetails = mTasksAPI.getTaskDetails(Integer.parseInt(mTask.getId()));
-            mResponseHandler.post(new Runnable() {
-                @Override public void run() {
-                    if (taskWithDetails == null) {
-                        mCallback.onError(new IndigoException("No details downloaded"));
-                    } else {
-                        ((TaskDetailsCallback) mCallback).onSuccess(taskWithDetails);
+    @Override public void authenticate(AuthState authState) {
+        Context ctx = Indigo.getApplicationContext();
+        AuthorizationService authService = new AuthorizationService(ctx);
+        authState.performActionWithFreshTokens(authService, new AuthState.AuthStateAction() {
+            @Override public void execute(@Nullable String s, @Nullable String s1,
+                @Nullable AuthorizationException e) {
+                mTasksAPI = new TasksAPI(HttpClientFactory.getClient(s));
+
+                final Task taskWithDetails =
+                    mTasksAPI.getTaskDetails(Integer.parseInt(mTask.getId()));
+                mResponseHandler.post(new Runnable() {
+                    @Override public void run() {
+                        if (taskWithDetails == null) {
+                            mCallback.onError(new IndigoException("No details downloaded"));
+                        } else {
+                            ((TaskDetailsCallback) mCallback).onSuccess(taskWithDetails);
+                        }
                     }
-                }
-            });
-        } catch (IllegalArgumentException e) {
-            mCallback.onError(e);
-        } finally {
-            quit();
-        }
+                });
+                quit();
+            }
+        });
     }
 }

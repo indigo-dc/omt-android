@@ -6,6 +6,7 @@ import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
+import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.TasksAPI;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
@@ -29,37 +30,47 @@ public class TasksHandlerThread extends ApiHandlerThread implements ApiCallWorkf
     }
 
     @Override public void networkWork(String token) {
-        mTaskAPI = new TasksAPI(HttpClientFactory.getClient(token));
-        if (mApplication != null && mStatus != null) {
-            final TasksWrapper taskWrapper = mTaskAPI.getTasks(mUsername, mStatus, mApplication);
-            mResponseHandler.post(new Runnable() {
-                @Override public void run() {
-                    if (taskWrapper != null && taskWrapper.getTasks() != null) {
-                        Collections.sort(taskWrapper.getTasks());
-                        ((TasksCallback) mCallback).onSuccess(taskWrapper.getTasks());
+        try {
+            mTaskAPI = new TasksAPI(HttpClientFactory.getClient(token));
+        } catch (IndigoException e) {
+            mCallback.onError(e);
+        }
+
+        try {
+            if (mApplication != null && mStatus != null) {
+                final TasksWrapper taskWrapper =
+                    mTaskAPI.getTasks(mUsername, mStatus, mApplication);
+                mResponseHandler.post(new Runnable() {
+                    @Override public void run() {
+                        if (taskWrapper != null && taskWrapper.getTasks() != null) {
+                            Collections.sort(taskWrapper.getTasks());
+                            ((TasksCallback) mCallback).onSuccess(taskWrapper.getTasks());
+                        }
                     }
-                }
-            });
-        } else if (mStatus != null && mApplication == null) {
-            final TasksWrapper taskWrapper = mTaskAPI.getTasks(mUsername, mStatus);
-            mResponseHandler.post(new Runnable() {
-                @Override public void run() {
-                    if (taskWrapper != null && taskWrapper.getTasks() != null) {
-                        Collections.sort(taskWrapper.getTasks());
-                        ((TasksCallback) mCallback).onSuccess(taskWrapper.getTasks());
+                });
+            } else if (mStatus != null && mApplication == null) {
+                final TasksWrapper taskWrapper = mTaskAPI.getTasks(mUsername, mStatus);
+                mResponseHandler.post(new Runnable() {
+                    @Override public void run() {
+                        if (taskWrapper != null && taskWrapper.getTasks() != null) {
+                            Collections.sort(taskWrapper.getTasks());
+                            ((TasksCallback) mCallback).onSuccess(taskWrapper.getTasks());
+                        }
                     }
-                }
-            });
-        } else {
-            final TasksWrapper taskWrapper = mTaskAPI.getTasks(mUsername);
-            mResponseHandler.post(new Runnable() {
-                @Override public void run() {
-                    if (taskWrapper != null && taskWrapper.getTasks() != null) {
-                        Collections.sort(taskWrapper.getTasks());
-                        ((TasksCallback) mCallback).onSuccess(taskWrapper.getTasks());
+                });
+            } else {
+                final TasksWrapper taskWrapper = mTaskAPI.getTasks(mUsername);
+                mResponseHandler.post(new Runnable() {
+                    @Override public void run() {
+                        if (taskWrapper != null && taskWrapper.getTasks() != null) {
+                            Collections.sort(taskWrapper.getTasks());
+                            ((TasksCallback) mCallback).onSuccess(taskWrapper.getTasks());
+                        }
                     }
-                }
-            });
+                });
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
         quit();
     }

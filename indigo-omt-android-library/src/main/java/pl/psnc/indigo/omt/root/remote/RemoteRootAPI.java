@@ -2,8 +2,10 @@ package pl.psnc.indigo.omt.root.remote;
 
 import android.util.Log;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import okhttp3.OkHttpClient;
 import pl.psnc.indigo.omt.api.model.Root;
+import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.root.RootOperations;
 import pl.psnc.indigo.omt.utils.RetrofitFactory;
 import retrofit2.Call;
@@ -23,16 +25,21 @@ public class RemoteRootAPI implements RootOperations {
         mRootAPI = RetrofitFactory.getInstanceForRootAPI(mHttpClient).create(RetrofitRootAPI.class);
     }
 
-    @Override public String getRoot() {
+    @Override public String getRoot() throws IndigoException {
         String root = null;
         Call<Root> call = mRootAPI.getRoot();
         try {
             Response<Root> rootResponse = call.execute();
             if (rootResponse != null && rootResponse.isSuccessful()) {
-                root = "/"
-                    + rootResponse.body().getVersions().get(0).getLinks().get(0).getHref()
-                    + "/";
+                Root rootObject = rootResponse.body();
+                if (rootObject == null) {
+                    throw new IndigoException("Can't get root object from the FG API");
+                }
+                root = "/" + rootObject.getVersions().get(0).getLinks().get(0).getHref() + "/";
             }
+        } catch (SocketTimeoutException e) {
+            throw new IndigoException(
+                "Can't get root object from the FG API. Reason: " + e.getMessage());
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
         } catch (NullPointerException e) {

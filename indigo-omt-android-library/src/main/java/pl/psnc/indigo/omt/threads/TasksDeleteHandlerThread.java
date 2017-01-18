@@ -5,6 +5,7 @@ import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDeleteCallback;
+import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.TasksAPI;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
@@ -23,15 +24,17 @@ public class TasksDeleteHandlerThread extends ApiHandlerThread implements ApiCal
     }
 
     @Override public void networkWork(String accessToken) {
-        mTasksAPI = new TasksAPI(HttpClientFactory.getClient(accessToken));
-
+        try {
+            mTasksAPI = new TasksAPI(HttpClientFactory.getClient(accessToken));
+        } catch (IndigoException e) {
+            mCallback.onError(e);
+        }
         final boolean deleted = mTasksAPI.deleteTask(mTaskToDelete);
         mResponseHandler.post(new Runnable() {
             @Override public void run() {
                 ((TaskDeleteCallback) mCallback).onSuccess(deleted);
+                quit();
             }
         });
-
-        quit();
     }
 }

@@ -55,7 +55,7 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
     private List<Task> mTasks;
     private Handler mHandler = new Handler();
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -76,8 +76,10 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
 
         final AuthState authState = IAMHelper.readAuthState(getApplicationContext());
         final AuthorizationService service = new AuthorizationService(getApplicationContext());
-        Log.i(TAG, "access_token: " + authState.getAccessToken());
-        Log.i(TAG, "refresh_token: " + authState.getRefreshToken());
+        if (authState.isAuthorized()) {
+            Log.i(TAG, "access_token: " + authState.getAccessToken());
+            Log.i(TAG, "refresh_token: " + authState.getRefreshToken());
+        }
 
         //for (authState.getLastAuthorizationResponse().additionalParameters.entrySet()
         //...
@@ -87,7 +89,6 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
             if (resp != null) {
                 // authorization succeeded
                 authState.update(resp, ex);
-                IAMHelper.writeAuthState(authState, getApplicationContext());
                 service.performTokenRequest(resp.createTokenExchangeRequest(),
                     new ClientSecretPost(BuildConfig.IAM_CLIENT_SECRET),
                     new AuthorizationService.TokenResponseCallback() {
@@ -95,44 +96,25 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
                             AuthorizationException ex) {
                             if (response != null) {
                                 // exchange succeeded
+                                Log.i(TAG, "access_token: " + authState.getAccessToken());
+                                Log.i(TAG, "refresh_token: " + authState.getRefreshToken());
                                 authState.update(response, ex);
                                 IAMHelper.writeAuthState(authState, getApplicationContext());
-                                if (authState.isAuthorized()) {
-                                    if (mTasks == null) {
-                                        authState.performActionWithFreshTokens(service,
-                                            new AuthState.AuthStateAction() {
-                                                @Override public void execute(@Nullable String s,
-                                                    @Nullable String s1,
-                                                    @Nullable AuthorizationException e) {
-                                                    if (e == null) {
-                                                        getTasks(null);
-                                                    } else {
-                                                        Log.e(TAG, e.getMessage());
-                                                    }
-                                                }
-                                            });
-                                    }
-                                }
-                                Log.i(TAG, response.jsonSerializeString());
-                                Log.i(TAG, "access_token: " + response.accessToken);
-                                Log.i(TAG, "refresh_token: " + response.refreshToken);
-                                // Log.i("Client secret:", authState.getClientSecret());
+                                loadTasks(savedInstanceState, authState);
                             } else {
                                 // authorization failed, check ex for more details
-                                IAMHelper.writeForceReAuth(true, getApplicationContext());
-                                ex.printStackTrace();
+                                if (ex != null) ex.printStackTrace();
                             }
                         }
                     });
-            } else {
-                // authorization failed, check ex for more details
-                if (ex != null) ex.printStackTrace();
-                IAMHelper.writeForceReAuth(true, getApplicationContext());
             }
         }
+    }
 
-        if (authState.isAuthorized()) {
+    private void loadTasks(Bundle savedInstanceState, AuthState authState) {
+        if (authState != null && authState.isAuthorized()) {
             if (savedInstanceState == null || mTasks == null) {
+                AuthorizationService service = new AuthorizationService(getApplicationContext());
                 authState.performActionWithFreshTokens(service, new AuthState.AuthStateAction() {
                     @Override public void execute(@Nullable String s, @Nullable String s1,
                         @Nullable AuthorizationException e) {

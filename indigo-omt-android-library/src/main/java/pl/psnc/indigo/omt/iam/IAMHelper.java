@@ -34,15 +34,4 @@ public class IAMHelper {
         SharedPreferences authPrefs = ctx.getSharedPreferences("auth", MODE_PRIVATE);
         authPrefs.edit().putString("stateJson", state.jsonSerializeString()).apply();
     }
-
-    @NonNull public static boolean readForceReAuth(Context ctx) {
-        SharedPreferences authPrefs = ctx.getSharedPreferences("auth", MODE_PRIVATE);
-        boolean state = authPrefs.getBoolean("needsReAuth", true);
-        return state;
-    }
-
-    public static void writeForceReAuth(boolean state, Context ctx) {
-        SharedPreferences authPrefs = ctx.getSharedPreferences("auth", MODE_PRIVATE);
-        authPrefs.edit().putBoolean("needsReAuth", state).apply();
-    }
 }

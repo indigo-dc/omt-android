@@ -54,6 +54,7 @@ public class TaskDetailsActivity extends IndigoActivity {
         if (i != null) {
             mTask = i.getParcelableExtra("task");
             if (mTask != null) {
+
                 AuthState authState = IAMHelper.readAuthState(getApplicationContext());
                 Indigo.getTask(mTask, authState, new TaskDetailsCallback() {
                     @Override public void onSuccess(Task result) {
@@ -68,10 +69,12 @@ public class TaskDetailsActivity extends IndigoActivity {
                         FragmentWithListAndCaption f2 =
                             FragmentWithListAndCaption.create("Output files",
                                 result.getOutputFiles());
-                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        ft.replace(R.id.task_input_files_fragment, f1);
-                        ft.replace(R.id.task_output_files_fragment, f2);
-                        ft.commit();
+                        if (!isFinishing()) {
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            ft.replace(R.id.task_input_files_fragment, f1);
+                            ft.replace(R.id.task_output_files_fragment, f2);
+                            ft.commit();
+                        }
                     }
 
                     @Override public void onError(Exception exception) {
@@ -85,10 +88,12 @@ public class TaskDetailsActivity extends IndigoActivity {
                         FragmentWithListAndCaption f2 =
                             FragmentWithListAndCaption.create("Output files",
                                 mTask.getOutputFiles());
-                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        ft.replace(R.id.task_input_files_fragment, f1);
-                        ft.replace(R.id.task_output_files_fragment, f2);
-                        ft.commit();
+                        if (!isFinishing()) {
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            ft.replace(R.id.task_input_files_fragment, f1);
+                            ft.replace(R.id.task_output_files_fragment, f2);
+                            ft.commit();
+                        }
                     }
                 });
             }

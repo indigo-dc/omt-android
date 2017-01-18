@@ -5,6 +5,7 @@ import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
+import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.TasksAPI;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
@@ -23,7 +24,12 @@ public class TasksCreateHandlerThread extends ApiHandlerThread implements ApiCal
     }
 
     @Override public void networkWork(String accessToken) {
-        mTasksAPI = new TasksAPI(HttpClientFactory.getClient(accessToken));
+        try {
+            mTasksAPI = new TasksAPI(HttpClientFactory.getClient(accessToken));
+        } catch (IndigoException e) {
+            mCallback.onError(e);
+            quit();
+        }
         final Task task = mTasksAPI.createTask(mTaskToCreate);
         mResponseHandler.post(new Runnable() {
             @Override public void run() {
@@ -31,9 +37,10 @@ public class TasksCreateHandlerThread extends ApiHandlerThread implements ApiCal
                     throw new NullPointerException("Task is null");
                 } else {
                     ((TaskCreationCallback) mCallback).onSuccess(task);
+                    quit();
                 }
             }
         });
-        quit();
+
     }
 }

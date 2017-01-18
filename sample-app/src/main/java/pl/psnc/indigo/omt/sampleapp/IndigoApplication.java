@@ -10,6 +10,6 @@ public class IndigoApplication extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
-        Indigo.init(this, "michalu-dev");
+        Indigo.init(this, "futuregateway");
     }
 }

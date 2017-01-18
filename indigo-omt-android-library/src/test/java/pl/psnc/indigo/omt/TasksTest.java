@@ -9,6 +9,7 @@ import org.junit.Test;
 import pl.psnc.indigo.omt.api.model.InputFile;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
+import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.TasksAPI;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
@@ -17,14 +18,14 @@ import pl.psnc.indigo.omt.utils.HttpClientFactory;
  */
 
 public class TasksTest {
-    @Test public void test_GetAllTasks() {
+    @Test public void test_GetAllTasks() throws IndigoException {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         TasksAPI tasksAPI = new TasksAPI(client);
         TasksWrapper tasks = tasksAPI.getTasks("brunor");
         Assert.assertNotNull(tasks);
     }
 
-    @Test public void test_createTask() {
+    @Test public void test_createTask() throws IndigoException {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         TasksAPI tasksAPI = new TasksAPI(client);
 
@@ -58,7 +59,7 @@ public class TasksTest {
         Assert.assertNotNull(result);
     }
 
-    @Test public void test_GetTaskDetails() {
+    @Test public void test_GetTaskDetails() throws IndigoException {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         TasksAPI tasksAPI = new TasksAPI(client);
 
@@ -67,7 +68,7 @@ public class TasksTest {
         Assert.assertNotNull(task);
     }
 
-    @Test public void test_CreateAndDeleteTask() {
+    @Test public void test_CreateAndDeleteTask() throws IndigoException {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         TasksAPI tasksAPI = new TasksAPI(client);
 

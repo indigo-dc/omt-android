@@ -1,5 +1,6 @@
 package pl.psnc.indigo.omt.utils;
 
+import android.util.Log;
 import java.io.IOException;
 import net.openid.appauth.AuthState;
 import okhttp3.Interceptor;
@@ -18,6 +19,7 @@ public class HttpClientFactory {
         return new OkHttpClient.Builder().addInterceptor(new Interceptor() {
             @Override public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
+                Log.i("OkHttp", request.headers().toString());
                 request.newBuilder()
                     .addHeader("Authorization", "Bearer " + accessToken)
                     .addHeader("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE)
@@ -29,17 +31,18 @@ public class HttpClientFactory {
     }
 
     public static OkHttpClient getClient(final String accessToken) {
-        return new OkHttpClient.Builder().addInterceptor(new Interceptor() {
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(new Interceptor() {
             @Override public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
-                request.newBuilder()
-                    .addHeader("Authorization", "Bearer " + accessToken)
-                    .addHeader("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE)
-                    .build();
-                Response response = chain.proceed(request);
-                return response;
+                Request.Builder requestBuilder = request.newBuilder()
+                    .header("Authorization", "Bearer " + accessToken)
+                    .header("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE);
+                Request newRequest = requestBuilder.build();
+                return chain.proceed(newRequest);
             }
-        }).build();
+        });
+        return httpClient.build();
     }
 
     public static OkHttpClient getNonIAMClient() {
@@ -47,7 +50,6 @@ public class HttpClientFactory {
             @Override public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
                 request.newBuilder()
-                    .addHeader("Authorization", "Bearer {}")
                     .addHeader("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE)
                     .build();
                 Response response = chain.proceed(request);

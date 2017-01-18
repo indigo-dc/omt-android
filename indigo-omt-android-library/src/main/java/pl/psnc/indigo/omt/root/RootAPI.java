@@ -2,6 +2,7 @@ package pl.psnc.indigo.omt.root;
 
 import okhttp3.OkHttpClient;
 import pl.psnc.indigo.omt.BuildConfig;
+import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.root.remote.RemoteRootAPI;
 
 /**
@@ -22,13 +23,9 @@ public class RootAPI implements RootOperations {
         return sInstance;
     }
 
-    @Override public String getRoot() {
+    @Override public String getRoot() throws IndigoException {
         if (mCachedRoot == null) {
-            try {
-                mCachedRoot = BuildConfig.FGAPI_ADDRESS + mRemoteRootAPI.getRoot();
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
+            mCachedRoot = BuildConfig.FGAPI_ADDRESS + mRemoteRootAPI.getRoot();
         }
         return mCachedRoot;
     }

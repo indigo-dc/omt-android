@@ -1,7 +1,6 @@
 package pl.psnc.indigo.omt.utils;
 
 import okhttp3.OkHttpClient;
-import pl.psnc.indigo.omt.BuildConfig;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -11,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitFactory {
     public static Retrofit getInstanceForRootAPI(OkHttpClient client) {
-        return new Retrofit.Builder().baseUrl(BuildConfig.FGAPI_ADDRESS)
+        return new Retrofit.Builder().baseUrl(FutureGatewayHelper.getServerAddress())
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build();

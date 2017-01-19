@@ -2,9 +2,9 @@ package pl.psnc.indigo.omt;
 
 import android.app.Application;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import java.net.URISyntaxException;
 import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.api.CreateTaskJob;
 import pl.psnc.indigo.omt.api.DeleteTaskJob;
@@ -16,6 +16,7 @@ import pl.psnc.indigo.omt.callbacks.TaskDeleteCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
+import pl.psnc.indigo.omt.utils.FutureGatewayHelper;
 
 /**
  * A class which simplifies access to the FutureGateway API
@@ -46,14 +47,32 @@ public class Indigo {
         return Indigo.sApplicationContext;
     }
 
-
     /**
-     * A method must be called in the application class of your app - only for debug purposes
+     * A method must be called in the application class of your app
      *
      * @param application an instance of your application
      * @param username provided username to init the library. It should be gathered from the API
      */
-    public static <T extends Application> void init(T application, String username) {
+    public static <T extends Application> void init(T application, String username)
+        throws URISyntaxException {
+        FutureGatewayHelper.setServerAddress(BuildConfig.FGAPI_ADDRESS);
+        sApplicationContext = application.getApplicationContext();
+        sUsername = username;
+        if (sApplicationContext != null) sInitialized = true;
+    }
+
+    /**
+     * A method must be called in the application class of your app
+     *
+     * @param application an instance of your application
+     * @param username provided username to init the library. It should be gathered from the API
+     * @param serverAddress address of the FutureGateway instance with port without last "/"
+     * @throws URISyntaxException
+     */
+
+    public static <T extends Application> void init(T application, String username,
+        String serverAddress) throws URISyntaxException {
+        FutureGatewayHelper.setServerAddress(serverAddress);
         sApplicationContext = application.getApplicationContext();
         sUsername = username;
         if (sApplicationContext != null) sInitialized = true;

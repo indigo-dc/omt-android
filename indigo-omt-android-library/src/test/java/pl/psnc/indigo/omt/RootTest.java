@@ -15,6 +15,7 @@ public class RootTest {
         OkHttpClient client = new OkHttpClient.Builder().build();
         RootAPI rootAPI = RootAPI.getInstance(client);
         String root = rootAPI.getRoot();
+        System.out.println(root);
         Assert.assertNotNull(root);
     }
 }

@@ -1,9 +1,9 @@
 package pl.psnc.indigo.omt.root;
 
 import okhttp3.OkHttpClient;
-import pl.psnc.indigo.omt.BuildConfig;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.root.remote.RemoteRootAPI;
+import pl.psnc.indigo.omt.utils.FutureGatewayHelper;
 
 /**
  * Created by michalu on 12.01.17.
@@ -25,7 +25,7 @@ public class RootAPI implements RootOperations {
 
     @Override public String getRoot() throws IndigoException {
         if (mCachedRoot == null) {
-            mCachedRoot = BuildConfig.FGAPI_ADDRESS + mRemoteRootAPI.getRoot();
+            mCachedRoot = FutureGatewayHelper.getServerAddress() + mRemoteRootAPI.getRoot();
         }
         return mCachedRoot;
     }

@@ -17,7 +17,7 @@ ext {
   siteUrl = 'https://github.com/indigo-dc/omt-android'
   gitUrl = 'https://github.com/indigo-dc/omt-android.git'
 
-  libraryVersion = '0.7.3'
+  libraryVersion = '0.8'
 
   developerId = 'mupsnc'
   developerName = 'Michal Urbaniak'
@@ -56,7 +56,8 @@ android {
     versionCode 1
     versionName "1.0"
     //default IP with port to FG API
-    buildConfigField "String", "FGAPI_ADDRESS", "\"http://62.3.168.167:80\""
+    buildConfigField "String", "FGAPI_ADDRESS", "\"http://XXX.XXX.XXX.XXX:XXX\""
+    buildConfigField "String", "FGAPI_USERNAME", "\"your_username_here\""
     buildConfigField "String", "FGAPI_CONTENT_TYPE", "\"application/vnd.indigo-datacloud.apiserver+json\""
   }
   buildTypes {

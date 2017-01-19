@@ -2,15 +2,18 @@ package pl.psnc.indigo.omt;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import junit.framework.Assert;
 import okhttp3.OkHttpClient;
+import org.junit.Before;
 import org.junit.Test;
 import pl.psnc.indigo.omt.api.model.InputFile;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.TasksAPI;
+import pl.psnc.indigo.omt.utils.FutureGatewayHelper;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
 /**
@@ -18,10 +21,23 @@ import pl.psnc.indigo.omt.utils.HttpClientFactory;
  */
 
 public class TasksTest {
+    String username = BuildConfig.FGAPI_USERNAME;
+    String applicationId = "2";
+    String filename1 = "sayhello.sh";
+    String filename2 = "sayhello.txt";
+
+    @Before public void setup() {
+        try {
+            FutureGatewayHelper.setServerAddress(BuildConfig.FGAPI_ADDRESS);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test public void test_GetAllTasks() throws IndigoException {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         TasksAPI tasksAPI = new TasksAPI(client);
-        TasksWrapper tasks = tasksAPI.getTasks("brunor");
+        TasksWrapper tasks = tasksAPI.getTasks(username);
         Assert.assertNotNull(tasks);
     }
 
@@ -29,8 +45,8 @@ public class TasksTest {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         TasksAPI tasksAPI = new TasksAPI(client);
 
-        File file1 = new File("sayhello.sh");
-        File file2 = new File("sayhello.txt");
+        File file1 = new File(filename1);
+        File file2 = new File(filename2);
         try {
             file1.createNewFile();
             file2.createNewFile();
@@ -40,8 +56,8 @@ public class TasksTest {
 
         Task task = new Task();
         task.setDescription("TasksAPI v2 - creating task");
-        task.setApplication("2");
-        task.setUser("michalu-dev");
+        task.setApplication(applicationId);
+        task.setUser(username);
 
         InputFile if1 = new InputFile();
         if1.setFile(file1);
@@ -59,12 +75,11 @@ public class TasksTest {
         Assert.assertNotNull(result);
     }
 
-    @Test public void test_GetTaskDetails() throws IndigoException {
+    public void test_GetTaskDetails(int taskId) throws IndigoException {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         TasksAPI tasksAPI = new TasksAPI(client);
-
-        int taskId = 266;
         Task task = tasksAPI.getTaskDetails(taskId);
+        System.out.println(task);
         Assert.assertNotNull(task);
     }
 
@@ -74,11 +89,12 @@ public class TasksTest {
 
         Task task = new Task();
         task.setDescription("TasksAPI v2 - creating&deleting task");
-        task.setApplication("2");
-        task.setUser("michalu-dev");
+        task.setApplication(applicationId);
+        task.setUser(username);
 
         Task taskAfterCreating = tasksAPI.createTask(task);
-
+        System.out.println(taskAfterCreating);
+        test_GetTaskDetails(Integer.parseInt(taskAfterCreating.getId()));
         Assert.assertNotNull(taskAfterCreating);
         Assert.assertTrue(tasksAPI.deleteTask(taskAfterCreating));
     }

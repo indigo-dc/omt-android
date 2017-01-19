@@ -13,6 +13,7 @@ import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.TasksOperations;
+import pl.psnc.indigo.omt.utils.FutureGatewayHelper;
 import pl.psnc.indigo.omt.utils.RetrofitFactory;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -142,7 +143,7 @@ public class RemoteTasksAPI implements TasksOperations {
                 RequestBody.create(MediaType.parse("application/octet-stream"), iff.getFile());
             MultipartBody.Part body =
                 MultipartBody.Part.createFormData("file[]", iff.getName(), requestFile);
-            String fullUploadUrl = BuildConfig.FGAPI_ADDRESS + uploadUrl;
+            String fullUploadUrl = FutureGatewayHelper.getServerAddress() + uploadUrl;
             Call<ResponseBody> callUpload =
                 mTasksRetrofitAPI.uploadInputFile(fullUploadUrl, body, task.getUser());
             try {

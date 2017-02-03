@@ -1,6 +1,5 @@
 package pl.psnc.indigo.omt.utils;
 
-import android.util.Log;
 import java.io.IOException;
 import net.openid.appauth.AuthState;
 import okhttp3.Interceptor;

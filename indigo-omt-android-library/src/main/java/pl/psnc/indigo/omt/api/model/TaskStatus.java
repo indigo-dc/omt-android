@@ -7,6 +7,8 @@ public class TaskStatus {
     public static final String DONE = "DONE";
     public static final String SCHEDULED = "SCHEDULED";
     public static final String PROCESSING = "PROCESSING";
+    public static final String SUBMITTED = "SUBMITTED";
+    public static final String SUBMIT = "SUBMIT";
     public static final String WAITING = "WAITING";
     public static final String READY = "READY";
     public static final String RUNNING = "RUNNING";

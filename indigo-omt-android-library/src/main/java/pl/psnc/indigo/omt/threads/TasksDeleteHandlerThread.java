@@ -27,14 +27,19 @@ public class TasksDeleteHandlerThread extends ApiHandlerThread implements ApiCal
         try {
             mTasksAPI = new TasksAPI(HttpClientFactory.getClient(accessToken));
         } catch (IndigoException e) {
-            mCallback.onError(e);
+            if (mCallback.get() != null) mCallback.get().onError(e);
+            quitSafely();
         }
         final boolean deleted = mTasksAPI.deleteTask(mTaskToDelete);
-        mResponseHandler.post(new Runnable() {
-            @Override public void run() {
-                ((TaskDeleteCallback) mCallback).onSuccess(deleted);
-                quit();
-            }
-        });
+        if (mResponseHandler.get() != null) {
+            mResponseHandler.get().post(new Runnable() {
+                @Override public void run() {
+                    if (mCallback.get() != null) {
+                        ((TaskDeleteCallback) mCallback.get()).onSuccess(deleted);
+                    }
+                    quitSafely();
+                }
+            });
+        }
     }
 }

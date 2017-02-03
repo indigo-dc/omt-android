@@ -1,12 +1,12 @@
 package pl.psnc.indigo.omt.root.remote;
 
-import android.util.Log;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import okhttp3.OkHttpClient;
 import pl.psnc.indigo.omt.api.model.Root;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.root.RootOperations;
+import pl.psnc.indigo.omt.utils.Log;
 import pl.psnc.indigo.omt.utils.RetrofitFactory;
 import retrofit2.Call;
 import retrofit2.Response;

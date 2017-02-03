@@ -6,22 +6,23 @@ import android.os.Handler;
 import android.os.Looper;
 import java.net.URISyntaxException;
 import net.openid.appauth.AuthState;
-import pl.psnc.indigo.omt.api.CreateTaskJob;
-import pl.psnc.indigo.omt.api.DeleteTaskJob;
-import pl.psnc.indigo.omt.api.GetTaskDetailsJob;
-import pl.psnc.indigo.omt.api.GetTasksJob;
 import pl.psnc.indigo.omt.api.model.Task;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDeleteCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
+import pl.psnc.indigo.omt.threads.TasksCreateHandlerThread;
+import pl.psnc.indigo.omt.threads.TasksDeleteHandlerThread;
+import pl.psnc.indigo.omt.threads.TasksDetailsHandlerThread;
+import pl.psnc.indigo.omt.threads.TasksHandlerThread;
 import pl.psnc.indigo.omt.utils.FutureGatewayHelper;
 
 /**
  * A class which simplifies access to the FutureGateway API
  */
 public class Indigo {
+    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
     private static String sUsername;
     private static boolean sInitialized = false;
     private static Context sApplicationContext;
@@ -91,8 +92,8 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(status, sUsername).doAsync(new Handler(Looper.getMainLooper()), authState,
-            callback);
+        new TasksHandlerThread(sUsername, status, null, null, UI_HANDLER, authState,
+            callback).start();
     }
 
     /**
@@ -102,8 +103,8 @@ public class Indigo {
      */
 
     public static void getTasks(AuthState authState, TasksCallback callback) {
-        new GetTasksJob(sUsername).doAsync(new Handler(Looper.getMainLooper()), authState,
-            callback);
+        new TasksHandlerThread(sUsername, null, null, null, UI_HANDLER, authState,
+            callback).start();
     }
 
     /**
@@ -121,8 +122,8 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(status, sUsername, application).doAsync(new Handler(Looper.getMainLooper()),
-            authState, callback);
+        new TasksHandlerThread(sUsername, status, application, null, UI_HANDLER, authState,
+            callback).start();
     }
 
     /**
@@ -139,8 +140,7 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new GetTaskDetailsJob(task).doAsync(new Handler(Looper.getMainLooper()), authState,
-            callback);
+        new TasksDetailsHandlerThread(task, null, UI_HANDLER, authState, callback).start();
     }
 
     /**
@@ -158,8 +158,7 @@ public class Indigo {
             return;
         }
         newTask.setUser(sUsername);
-        new CreateTaskJob(newTask).doAsync(new Handler(Looper.getMainLooper()), authState,
-            callback);
+        new TasksCreateHandlerThread(newTask, null, UI_HANDLER, authState, callback).start();
     }
 
     /**
@@ -177,6 +176,6 @@ public class Indigo {
             callback.onError(e);
             return;
         }
-        new DeleteTaskJob(task).doAsync(new Handler(Looper.getMainLooper()), authState, callback);
+        new TasksDeleteHandlerThread(task, null, UI_HANDLER, authState, callback).start();
     }
 }

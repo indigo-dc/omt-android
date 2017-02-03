@@ -11,18 +11,18 @@ import pl.psnc.indigo.omt.sampleapp.R;
  * Created by michalu on 30.03.16.
  */
 public class TaskViewHolder extends RecyclerView.ViewHolder {
-    public RelativeLayout mAll;
-    public TextView mId;
-    public TextView mDescription;
-    public Button mStatus;
-    public TextView mItemDate;
+    public RelativeLayout all;
+    public TextView id;
+    public TextView description;
+    public Button status;
+    public TextView itemDate;
 
     public TaskViewHolder(View view) {
         super(view);
-        this.mAll = (RelativeLayout) view.findViewById(R.id.listitem_rl);
-        this.mId = (TextView) view.findViewById(R.id.item_id);
-        this.mDescription = (TextView) view.findViewById(R.id.item_description);
-        this.mItemDate = (TextView) view.findViewById(R.id.item_date);
-        this.mStatus = (Button) view.findViewById(R.id.item_status);
+        this.all = (RelativeLayout) view.findViewById(R.id.listitem_rl);
+        this.id = (TextView) view.findViewById(R.id.item_id);
+        this.description = (TextView) view.findViewById(R.id.item_description);
+        this.itemDate = (TextView) view.findViewById(R.id.item_date);
+        this.status = (Button) view.findViewById(R.id.item_status);
     }
 }

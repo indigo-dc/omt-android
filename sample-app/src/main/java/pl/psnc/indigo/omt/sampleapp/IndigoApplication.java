@@ -12,9 +12,9 @@ public class IndigoApplication extends Application {
     @Override public void onCreate() {
         super.onCreate();
         try {
-            Indigo.init(this, "futuregateway");
+            Indigo.init(this, "futuregateway", "http://62.3.168.167");
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Bad server address. It should be http(s)://ip:port");
+            throw new RuntimeException("Bad server address. It should be http(s)://ip(:port)");
         }
     }
 }

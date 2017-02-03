@@ -8,12 +8,13 @@ import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.TasksAPI;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
+import pl.psnc.indigo.omt.utils.Log;
 
 /**
  * Created by michalu on 14.07.16.
  */
 public class TasksDetailsHandlerThread extends ApiHandlerThread implements ApiCallWorkflow {
-    public static final String TAG = "TasksDetailsHandlerThread";
+    public static final String TAG = "TasksDetailsHT";
     private TasksAPI mTasksAPI;
     private Task mTask;
 
@@ -24,22 +25,31 @@ public class TasksDetailsHandlerThread extends ApiHandlerThread implements ApiCa
     }
 
     @Override public void networkWork(String accessToken) {
+        Log.i(TAG, "networkWork() started");
         try {
             mTasksAPI = new TasksAPI(HttpClientFactory.getClient(accessToken));
         } catch (IndigoException e1) {
-            mCallback.onError(e1);
+            if (mCallback.get() != null) mCallback.get().onError(e1);
+            quitSafely();
         }
 
         final Task taskWithDetails = mTasksAPI.getTaskDetails(Integer.parseInt(mTask.getId()));
-        mResponseHandler.post(new Runnable() {
-            @Override public void run() {
-                if (taskWithDetails == null) {
-                    mCallback.onError(new IndigoException("No details downloaded"));
-                } else {
-                    ((TaskDetailsCallback) mCallback).onSuccess(taskWithDetails);
+        if (mResponseHandler.get() != null) {
+            mResponseHandler.get().post(new Runnable() {
+                @Override public void run() {
+                    if (taskWithDetails == null) {
+                        if (mCallback.get() != null) {
+                            mCallback.get().onError(new IndigoException("No details downloaded"));
+                            quitSafely();
+                        }
+                    } else {
+                        if (mCallback.get() != null) {
+                            ((TaskDetailsCallback) mCallback.get()).onSuccess(taskWithDetails);
+                            quitSafely();
+                        }
+                    }
                 }
-            }
-        });
-        quit();
+            });
+        }
     }
 }

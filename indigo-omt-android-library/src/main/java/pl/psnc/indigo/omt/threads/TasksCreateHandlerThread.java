@@ -27,20 +27,26 @@ public class TasksCreateHandlerThread extends ApiHandlerThread implements ApiCal
         try {
             mTasksAPI = new TasksAPI(HttpClientFactory.getClient(accessToken));
         } catch (IndigoException e) {
-            mCallback.onError(e);
-            quit();
+            if (mCallback.get() != null) mCallback.get().onError(e);
+            quitSafely();
         }
         final Task task = mTasksAPI.createTask(mTaskToCreate);
-        mResponseHandler.post(new Runnable() {
-            @Override public void run() {
-                if (task == null) {
-                    throw new NullPointerException("Task is null");
-                } else {
-                    ((TaskCreationCallback) mCallback).onSuccess(task);
-                    quit();
+        if (mResponseHandler.get() != null) {
+            mResponseHandler.get().post(new Runnable() {
+                @Override public void run() {
+                    if (task == null) {
+                        if (mCallback.get() != null) {
+                            mCallback.get().onError(new IndigoException("Task == null"));
+                        }
+                        quitSafely();
+                    } else {
+                        if (mCallback.get() != null) {
+                            ((TaskCreationCallback) mCallback.get()).onSuccess(task);
+                        }
+                        quitSafely();
+                    }
                 }
-            }
-        });
-
+            });
+        }
     }
 }

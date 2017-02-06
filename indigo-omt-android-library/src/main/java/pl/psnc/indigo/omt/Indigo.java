@@ -7,11 +7,17 @@ import android.os.Looper;
 import java.net.URISyntaxException;
 import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.callbacks.ApplicationByIdCallback;
+import pl.psnc.indigo.omt.callbacks.ApplicationByNameCallback;
+import pl.psnc.indigo.omt.callbacks.ApplicationsCallback;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDeleteCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
+import pl.psnc.indigo.omt.threads.ApplicationByIdHandlerThread;
+import pl.psnc.indigo.omt.threads.ApplicationByNameHandlerThread;
+import pl.psnc.indigo.omt.threads.ApplicationsListHandlerThread;
 import pl.psnc.indigo.omt.threads.TasksCreateHandlerThread;
 import pl.psnc.indigo.omt.threads.TasksDeleteHandlerThread;
 import pl.psnc.indigo.omt.threads.TasksDetailsHandlerThread;
@@ -177,5 +183,46 @@ public class Indigo {
             return;
         }
         new TasksDeleteHandlerThread(task, null, UI_HANDLER, authState, callback).start();
+    }
+
+    /**
+     * Getting applications list
+     */
+    public static void getApplications(AuthState authState, ApplicationsCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new ApplicationsListHandlerThread(null, UI_HANDLER, authState, callback).start();
+    }
+
+    /**
+     * Get an application by name
+     */
+    public static void getApplications(String appName, AuthState authState,
+        ApplicationByNameCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new ApplicationByNameHandlerThread(appName, null, UI_HANDLER, authState, callback).start();
+    }
+
+    /**
+     * Get an application by id
+     */
+    public static void getApplications(String id, AuthState authState,
+        ApplicationByIdCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new ApplicationByIdHandlerThread(id, null, UI_HANDLER, authState, callback).start();
     }
 }

@@ -34,8 +34,12 @@ public class TasksHandlerThread extends ApiHandlerThread implements ApiCallWorkf
         Log.i(TAG, "networkWork() started");
         try {
             mTaskAPI = new TasksAPI(HttpClientFactory.getClient(token));
-        } catch (IndigoException e) {
-            if (mCallback.get() != null) mCallback.get().onError(e);
+        } catch (final IndigoException e1) {
+            mResponseHandler.get().post(new Runnable() {
+                @Override public void run() {
+                    if (mCallback.get() != null) mCallback.get().onError(e1);
+                }
+            });
             quitSafely();
         }
 

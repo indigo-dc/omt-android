@@ -27,8 +27,12 @@ public class ApplicationsListHandlerThread extends ApiHandlerThread implements A
         Log.i(TAG, "networkWork() started");
         try {
             mAppsAPI = new ApplicationAPI(HttpClientFactory.getClient(accessToken));
-        } catch (IndigoException e1) {
-            if (mCallback.get() != null) mCallback.get().onError(e1);
+        }  catch (final IndigoException e1) {
+            mResponseHandler.get().post(new Runnable() {
+                @Override public void run() {
+                    if (mCallback.get() != null) mCallback.get().onError(e1);
+                }
+            });
             quitSafely();
         }
 

@@ -26,8 +26,12 @@ public class TasksCreateHandlerThread extends ApiHandlerThread implements ApiCal
     @Override public void networkWork(String accessToken) {
         try {
             mTasksAPI = new TasksAPI(HttpClientFactory.getClient(accessToken));
-        } catch (IndigoException e) {
-            if (mCallback.get() != null) mCallback.get().onError(e);
+        }  catch (final IndigoException e1) {
+            mResponseHandler.get().post(new Runnable() {
+                @Override public void run() {
+                    if (mCallback.get() != null) mCallback.get().onError(e1);
+                }
+            });
             quitSafely();
         }
         final Task task = mTasksAPI.createTask(mTaskToCreate);

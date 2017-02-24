@@ -18,7 +18,6 @@ import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationRequest;
 import net.openid.appauth.AuthorizationService;
 import net.openid.appauth.AuthorizationServiceConfiguration;
-import net.openid.appauth.ClientSecretPost;
 import net.openid.appauth.ResponseTypeValues;
 import net.openid.appauth.TokenResponse;
 import pl.psnc.indigo.omt.iam.IAMHelper;
@@ -88,7 +87,6 @@ public class LoginActivity extends IndigoActivity {
                         Intent postAuthIntent = new Intent(ctx, TasksActivity.class);
                         mService.performAuthorizationRequest(req,
                             PendingIntent.getActivity(ctx, req.hashCode(), postAuthIntent, 0));
-                        mService.dispose();
                     }
 
                     //finish();
@@ -108,7 +106,6 @@ public class LoginActivity extends IndigoActivity {
         try {
             Toast.makeText(ctx, "Checking authorization", Toast.LENGTH_SHORT).show();
             mService.performTokenRequest(mAuthState.createTokenRefreshRequest(),
-                new ClientSecretPost(BuildConfig.IAM_CLIENT_SECRET),
                 new AuthorizationService.TokenResponseCallback() {
                     @Override public void onTokenRequestCompleted(@Nullable TokenResponse response,
                         @Nullable AuthorizationException ex) {

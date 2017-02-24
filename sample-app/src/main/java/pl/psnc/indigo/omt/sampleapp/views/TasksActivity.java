@@ -31,7 +31,6 @@ import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.AuthorizationService;
-import net.openid.appauth.ClientSecretPost;
 import net.openid.appauth.TokenResponse;
 import pl.psnc.indigo.omt.Indigo;
 import pl.psnc.indigo.omt.api.model.InputFile;
@@ -40,7 +39,6 @@ import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.iam.IAMHelper;
-import pl.psnc.indigo.omt.sampleapp.BuildConfig;
 import pl.psnc.indigo.omt.sampleapp.R;
 import pl.psnc.indigo.omt.sampleapp.callbacks.OnTaskListListener;
 import pl.psnc.indigo.omt.utils.Log;
@@ -82,14 +80,14 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
         if (getIntent().getExtras() != null) {
             AuthorizationResponse resp = AuthorizationResponse.fromIntent(getIntent());
             AuthorizationException ex = AuthorizationException.fromIntent(getIntent());
+            AuthState authStateFromIntent = IAMHelper.readAuthState(getApplicationContext());
+            authStateFromIntent.update(resp, ex);
+            IAMHelper.writeAuthState(authStateFromIntent, getApplicationContext());
             if (resp != null) {
+                getIntent().getExtras().clear();
                 // authorization succeeded
-                AuthState authStateFromIntent = IAMHelper.readAuthState(getApplicationContext());
-                authStateFromIntent.update(resp, ex);
-                IAMHelper.writeAuthState(authStateFromIntent, getApplicationContext());
                 AuthorizationService service = new AuthorizationService(getApplicationContext());
                 service.performTokenRequest(resp.createTokenExchangeRequest(),
-                    new ClientSecretPost(BuildConfig.IAM_CLIENT_SECRET),
                     new AuthorizationService.TokenResponseCallback() {
                         @Override public void onTokenRequestCompleted(TokenResponse response,
                             AuthorizationException ex) {
@@ -115,6 +113,7 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
     private void loadTasks(Bundle savedInstanceState, AuthState authState) {
         if (authState != null && authState.isAuthorized()) {
             if (savedInstanceState == null || mTasks == null) {
+                ;
                 AuthorizationService service = new AuthorizationService(getApplicationContext());
                 authState.performActionWithFreshTokens(service, new AuthState.AuthStateAction() {
                     @Override public void execute(@Nullable String s, @Nullable String s1,
@@ -180,9 +179,10 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
      * @param comparator a comparator to compare tasks for sorting purpose
      */
     public void getTasks(final Comparator<Task> comparator) {
-        AuthState authState = IAMHelper.readAuthState(getApplicationContext());
+        final AuthState authState = IAMHelper.readAuthState(getApplicationContext());
         Indigo.getTasks(TaskStatus.ANY, authState, new TasksCallback() {
             @Override public void onSuccess(List<Task> tasks) {
+                Log.i(TAG, "Refresh token = " + authState.getRefreshToken());
                 mTasks = (ArrayList) tasks;
                 if (comparator != null) Collections.sort(tasks, comparator);
                 mListAdapter.setTasks(mTasks);
@@ -225,9 +225,10 @@ public class TasksActivity extends IndigoActivity implements OnTaskListListener 
         }
 
         @Override public void run() {
-            AuthState authState = IAMHelper.readAuthState(Indigo.getApplicationContext());
+            final AuthState authState = IAMHelper.readAuthState(Indigo.getApplicationContext());
             Indigo.getTasks(TaskStatus.ANY, authState, new TasksCallback() {
                 @Override public void onSuccess(List<Task> tasks) {
+                    Log.i(TAG, "Refresh token = " + authState.getRefreshToken());
                     Log.i(TAG, "Got tasks from handlerthread");
                     try {
                         if (mList != null) mList = tasks;

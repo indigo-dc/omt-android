@@ -10,11 +10,12 @@ task checkstyle (type: Checkstyle) {
 
     ignoreFailures = true
     showViolations = false
-    source 'src/main', 'src/release', 'src/androidTest/java'
+    source 'src/main'
     include '**/*.java'
     exclude '**/gen/**'
     exclude '**/R.java'
     exclude '**/BuildConfig.java'
+    exclude '.*pl.psnc.indigo.omt.sampleapp.*'
     reports {
         xml.destination "$project.buildDir/reports/checkstyle/checkstyle-report.xml"
     }

@@ -7,7 +7,7 @@
 
 - add the dependency to the app's module build.gradle config
 ```gradle
-compile 'pl.psnc.indigo:indigo-omt-android-library:0.7.1'
+compile 'pl.psnc.indigo:indigo-omt-android-library:0.8.6'
 ```
 - create custom Application class which extends Android default Application class 
 - remember to update your manifest.xml with the name of your Application class
@@ -21,11 +21,11 @@ compile 'pl.psnc.indigo:indigo-omt-android-library:0.7.1'
 ```
 - add following initialization line in your YourCustomApplicationClass in *onCreate* method after *super.onCreate();*
 ```java
-Indigo.init(apiServerURlWithPort);
+Indigo.init(context, user, server);
 ```
 example:
 ```java
-Indigo.init("http://10.0.0.0:8888");
+Indigo.init(this, "futuregateway", "http://62.3.168.167");
 ```
 - now you are able to call methods which wrap request to INDIGO DataCloud API. Example:
 ```java

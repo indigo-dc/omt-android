@@ -4,7 +4,7 @@ apply plugin: 'android-apt'
 
 android {
   compileSdkVersion 25
-  buildToolsVersion '25.0.1'
+  buildToolsVersion '25.0.2'
 
   defaultConfig {
     applicationId "pl.psnc.indigo.omt.sampleapp"
@@ -12,20 +12,18 @@ android {
     targetSdkVersion 23
     versionCode 1
     versionName "1.0"
+
+    buildConfigField "String", "FGAPI_ADDRESS", "\"http://62.3.168.167\""
+    buildConfigField "String", "IAM_CLIENT_ID", "\"3127e252-e743-4c1a-9b88-1d39d14c93b2\""
+    buildConfigField "String", "IAM_URL", "\"https://iam-test.indigo-datacloud.eu\""
+    buildConfigField "String", "IAM_REDIRECT_URL_SCHEME",
+        "\"pl.psnc.indigo.omt.sampleapp://oauth2redirect\""
+    buildConfigField "String []", "IAM_SCOPES",
+        "{ \"profile\", \"openid\", \"offline_access\" }"
   }
   buildTypes {
     debug {
       testCoverageEnabled true
-
-      buildConfigField "String", "FGAPI_ADDRESS", "\"http://XXX.XXX.XXX.XXX:XXX\""
-      buildConfigField "String", "IAM_CLIENT_ID", "\"XXXXXXXXXXXXXXXXXXXXXX\""
-      buildConfigField "String", "IAM_URL", "\"https://iam-test.indigo-datacloud.eu\""
-      buildConfigField "String", "IAM_CLIENT_SECRET",
-          "\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\""
-      buildConfigField "String", "IAM_REDIRECT_URL_SCHEME",
-          "\"pl.psnc.indigo.omt.sampleapp://oauth2redirect\""
-      buildConfigField "String []", "IAM_SCOPES",
-          "{ \"profile\", \"openid\", \"offline_access\" }"
     }
     release {
       minifyEnabled false
@@ -39,8 +37,8 @@ android {
 
 dependencies {
   compile fileTree(include: ['*.jar'], dir: 'libs')
-  compile 'com.android.support:appcompat-v7:25.1.0'
-  compile 'com.android.support:design:25.1.0'
+  compile 'com.android.support:appcompat-v7:25.2.0'
+  compile 'com.android.support:design:25.2.0'
   compile 'com.jakewharton:butterknife:8.4.0'
   apt 'com.jakewharton:butterknife-compiler:8.4.0'
   compile 'org.greenrobot:eventbus:3.0.0'
@@ -52,7 +50,7 @@ dependencies {
   testCompile "com.google.dexmaker:dexmaker-mockito:1.2"
   testCompile "org.robolectric:robolectric:3.1-rc1"
   androidTestCompile 'org.mockito:mockito-core:1.10.19'
-  androidTestCompile 'com.android.support:support-annotations:25.1.0'
+  androidTestCompile 'com.android.support:support-annotations:25.2.0'
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
   androidTestCompile "com.google.dexmaker:dexmaker:1.2"
   androidTestCompile "com.google.dexmaker:dexmaker-mockito:1.2"

@@ -18,7 +18,7 @@ public class TasksDeleteHandlerThread extends ApiHandlerThread implements ApiCal
     private Task mTaskToDelete;
 
     public TasksDeleteHandlerThread(Task task, Handler workerHandler, Handler responseHandler,
-        AuthState authState, IndigoCallback callback) {
+            AuthState authState, IndigoCallback callback) {
         super(TAG, responseHandler, workerHandler, authState, callback);
         this.mTaskToDelete = task;
     }

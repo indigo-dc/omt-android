@@ -29,7 +29,7 @@ public class ApiHandlerThread extends HandlerThread implements ApiCallWorkflow {
     protected AuthState mAuthState;
 
     public ApiHandlerThread(String name, Handler responseHandler, Handler workerHandler,
-        AuthState authState, IndigoCallback callback) {
+            AuthState authState, IndigoCallback callback) {
         super(name);
         this.mResponseHandler = new WeakReference<Handler>(responseHandler);
         this.mWorkerHandler = workerHandler;

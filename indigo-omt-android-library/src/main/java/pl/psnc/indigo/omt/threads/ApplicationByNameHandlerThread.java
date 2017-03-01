@@ -19,7 +19,7 @@ public class ApplicationByNameHandlerThread extends ApiHandlerThread implements 
     private String mAppName;
 
     public ApplicationByNameHandlerThread(String appName, Handler workerHandler,
-        Handler responseHandler, AuthState authState, IndigoCallback callback) {
+            Handler responseHandler, AuthState authState, IndigoCallback callback) {
         super(TAG, responseHandler, workerHandler, authState, callback);
         mAppName = appName;
     }

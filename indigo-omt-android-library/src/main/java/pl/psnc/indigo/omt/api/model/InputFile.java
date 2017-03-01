@@ -100,7 +100,7 @@ public class InputFile implements Serializable, Parcelable {
     }
 
     public static final Parcelable.Creator<InputFile> CREATOR =
-        new Parcelable.Creator<InputFile>() {
+            new Parcelable.Creator<InputFile>() {
             @Override public InputFile createFromParcel(Parcel source) {
                 return new InputFile(source);
             }

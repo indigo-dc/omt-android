@@ -78,7 +78,7 @@ public class Indigo {
      */
 
     public static <T extends Application> void init(T application, String username,
-        String serverAddress) throws URISyntaxException {
+            String serverAddress) throws URISyntaxException {
         FutureGatewayHelper.setServerAddress(serverAddress);
         sApplicationContext = application.getApplicationContext();
         sUsername = username;
@@ -121,7 +121,7 @@ public class Indigo {
      * @param callback a callback to notify about the result of the operation
      */
     public static void getTasks(String application, String status, AuthState authState,
-        TasksCallback callback) {
+            TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -156,7 +156,7 @@ public class Indigo {
      * @param callback a callback to notify about the result of the operation
      */
     public static void createTask(Task newTask, AuthState authState,
-        TaskCreationCallback callback) {
+            TaskCreationCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -202,7 +202,7 @@ public class Indigo {
      * Get an application by name
      */
     public static void getApplications(String appName, AuthState authState,
-        ApplicationByNameCallback callback) {
+            ApplicationByNameCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -216,7 +216,7 @@ public class Indigo {
      * Get an application by id
      */
     public static void getApplications(String id, AuthState authState,
-        ApplicationByIdCallback callback) {
+            ApplicationByIdCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {

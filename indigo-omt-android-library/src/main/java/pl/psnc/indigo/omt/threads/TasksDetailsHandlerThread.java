@@ -19,7 +19,7 @@ public class TasksDetailsHandlerThread extends ApiHandlerThread implements ApiCa
     private Task mTask;
 
     public TasksDetailsHandlerThread(Task task, Handler workerHandler, Handler responseHandler,
-        AuthState authState, IndigoCallback callback) {
+            AuthState authState, IndigoCallback callback) {
         super(TAG, responseHandler, workerHandler, authState, callback);
         this.mTask = task;
     }

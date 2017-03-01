@@ -22,8 +22,8 @@ public class TasksHandlerThread extends ApiHandlerThread implements ApiCallWorkf
     private String mUsername;
 
     public TasksHandlerThread(String username, String status, String application,
-        Handler workerHandler, Handler responseHandler, AuthState authState,
-        IndigoCallback callback) {
+            Handler workerHandler, Handler responseHandler, AuthState authState,
+            IndigoCallback callback) {
         super(TAG, responseHandler, workerHandler, authState, callback);
         this.mStatus = status;
         this.mApplication = application;
@@ -46,7 +46,7 @@ public class TasksHandlerThread extends ApiHandlerThread implements ApiCallWorkf
         try {
             if (mApplication != null && mStatus != null) {
                 final TasksWrapper taskWrapper =
-                    mTaskAPI.getTasks(mUsername, mStatus, mApplication);
+                        mTaskAPI.getTasks(mUsername, mStatus, mApplication);
                 if (mResponseHandler.get() != null) {
                     mResponseHandler.get().post(new Runnable() {
                         @Override public void run() {
@@ -56,7 +56,7 @@ public class TasksHandlerThread extends ApiHandlerThread implements ApiCallWorkf
                                 if (mCallback.get() != null) {
                                     Log.i(TAG, "Callback is not null");
                                     ((TasksCallback) mCallback.get()).onSuccess(
-                                        taskWrapper.getTasks());
+                                            taskWrapper.getTasks());
                                 }
                             }
                             Log.i(TAG, "quitSafely()");
@@ -75,7 +75,7 @@ public class TasksHandlerThread extends ApiHandlerThread implements ApiCallWorkf
                                 if (mCallback.get() != null) {
                                     Log.i(TAG, "Callback is not null");
                                     ((TasksCallback) mCallback.get()).onSuccess(
-                                        taskWrapper.getTasks());
+                                            taskWrapper.getTasks());
                                 }
                             }
                             Log.i(TAG, "quitSafely()");
@@ -94,7 +94,7 @@ public class TasksHandlerThread extends ApiHandlerThread implements ApiCallWorkf
                                 if (mCallback.get() != null) {
                                     Log.i(TAG, "Callback is not null");
                                     ((TasksCallback) mCallback.get()).onSuccess(
-                                        taskWrapper.getTasks());
+                                            taskWrapper.getTasks());
                                 }
                             }
                             Log.i(TAG, "quitSafely()");

@@ -19,7 +19,7 @@ public class ApplicationByIdHandlerThread extends ApiHandlerThread implements Ap
     private String mAppId;
 
     public ApplicationByIdHandlerThread(String id, Handler workerHandler, Handler responseHandler,
-        AuthState authState, IndigoCallback callback) {
+            AuthState authState, IndigoCallback callback) {
         super(TAG, responseHandler, workerHandler, authState, callback);
         mAppId = id;
     }

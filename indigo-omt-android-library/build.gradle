@@ -58,7 +58,8 @@ android {
     //default IP with port to FG API
     buildConfigField "String", "FGAPI_ADDRESS", "\"http://62.3.168.16:80\""
     buildConfigField "String", "FGAPI_USERNAME", "\"test\""
-    buildConfigField "String", "FGAPI_CONTENT_TYPE", "\"application/vnd.indigo-datacloud.apiserver+json\""
+    buildConfigField "String", "FGAPI_CONTENT_TYPE",
+        "\"application/vnd.indigo-datacloud.apiserver+json\""
   }
   buildTypes {
     release {
@@ -69,14 +70,14 @@ android {
   lintOptions {
     abortOnError false
   }
-  android.defaultConfig.manifestPlaceholders = [
-      'appAuthRedirectScheme': 'pl.psnc.indigo.omt.sampleapp'
-  ]
+  android.defaultConfig.manifestPlaceholders =
+      ['appAuthRedirectScheme': 'pl.psnc.indigo.omt.sampleapp']
 }
 
 cobertura {
-  coverageIncludes = [".*pl.psnc.indigo.omt.*", ".*pl.psnc.indigo.omt.sampleapp.*"]
-  coverageExcludes = [".*pl.psnc.indigo.omt.R.*", ".*\\.package-info.*",
+  coverageIncludes = [".*pl.psnc.indigo.omt.*"]
+  coverageExcludes = [".*pl.psnc.indigo.omt.sampleapp.*",
+                      ".*pl.psnc.indigo.omt.R.*", ".*\\.package-info.*",
                       ".*\\.R.*",
                       ".*BuildConfig.*",
                       ".*Manifest.*"]

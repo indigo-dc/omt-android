@@ -19,7 +19,7 @@ public class ApplicationsListHandlerThread extends ApiHandlerThread implements A
     private ApplicationAPI mAppsAPI;
 
     public ApplicationsListHandlerThread(Handler workerHandler, Handler responseHandler,
-        AuthState authState, IndigoCallback callback) {
+            AuthState authState, IndigoCallback callback) {
         super(TAG, responseHandler, workerHandler, authState, callback);
     }
 

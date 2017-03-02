@@ -1,26 +1,37 @@
 package pl.psnc.indigo.omt;
 
+import android.app.Application;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import java.util.HashMap;
-import pl.psnc.indigo.omt.api.CreateTaskJob;
-import pl.psnc.indigo.omt.api.GetTaskDetailsJob;
-import pl.psnc.indigo.omt.api.GetTasksJob;
-import pl.psnc.indigo.omt.api.ApiHelper;
+import java.net.URISyntaxException;
+import net.openid.appauth.AuthState;
 import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.callbacks.ApplicationByIdCallback;
+import pl.psnc.indigo.omt.callbacks.ApplicationByNameCallback;
+import pl.psnc.indigo.omt.callbacks.ApplicationsCallback;
 import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
+import pl.psnc.indigo.omt.callbacks.TaskDeleteCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
+import pl.psnc.indigo.omt.threads.ApplicationByIdHandlerThread;
+import pl.psnc.indigo.omt.threads.ApplicationByNameHandlerThread;
+import pl.psnc.indigo.omt.threads.ApplicationsListHandlerThread;
+import pl.psnc.indigo.omt.threads.TasksCreateHandlerThread;
+import pl.psnc.indigo.omt.threads.TasksDeleteHandlerThread;
+import pl.psnc.indigo.omt.threads.TasksDetailsHandlerThread;
+import pl.psnc.indigo.omt.threads.TasksHandlerThread;
+import pl.psnc.indigo.omt.utils.FutureGatewayHelper;
 
 /**
  * A class which simplifies access to the FutureGateway API
  */
 public class Indigo {
+    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
     private static String sUsername;
-    private static String sUrl;
-    private static String sApiToken;
     private static boolean sInitialized = false;
+    private static Context sApplicationContext;
 
     private Indigo() {
 
@@ -39,28 +50,39 @@ public class Indigo {
         }
     }
 
-    /**
-     * A method must be called in the application class of your app
-     *
-     * @param url domain or IP address of the FutureGateway instance
-     */
-    public static void init(String url) {
-        if (sInitialized) return;
-        Indigo.sUrl = url;
-        sInitialized = true;
+    public static Context getApplicationContext() {
+        return Indigo.sApplicationContext;
     }
 
     /**
-     * A method must be called in the application class of your app - only for debug purposes
+     * A method must be called in the application class of your app
      *
-     * @param url domain or IP address of the FutureGateway instance
+     * @param application an instance of your application
      * @param username provided username to init the library. It should be gathered from the API
      */
-    public static void init(String url, String username) {
-        if (sInitialized) return;
-        Indigo.sUrl = url;
-        Indigo.sUsername = username;
-        sInitialized = true;
+    public static <T extends Application> void init(T application, String username)
+        throws URISyntaxException {
+        FutureGatewayHelper.setServerAddress(BuildConfig.FGAPI_ADDRESS);
+        sApplicationContext = application.getApplicationContext();
+        sUsername = username;
+        if (sApplicationContext != null) sInitialized = true;
+    }
+
+    /**
+     * A method must be called in the application class of your app
+     *
+     * @param application an instance of your application
+     * @param username provided username to init the library. It should be gathered from the API
+     * @param serverAddress address of the FutureGateway instance with port without last "/"
+     * @throws URISyntaxException
+     */
+
+    public static <T extends Application> void init(T application, String username,
+            String serverAddress) throws URISyntaxException {
+        FutureGatewayHelper.setServerAddress(serverAddress);
+        sApplicationContext = application.getApplicationContext();
+        sUsername = username;
+        if (sApplicationContext != null) sInitialized = true;
     }
 
     /**
@@ -69,15 +91,15 @@ public class Indigo {
      * @param status results will be filtered based on provided status
      * @param callback a callback to notify about the result of the operation
      */
-    public static void getTasks(String status, TasksCallback callback) {
+    public static void getTasks(String status, AuthState authState, TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS, status, sUsername).doAsyncJob(
-                new Handler(Looper.getMainLooper()), callback);
+        new TasksHandlerThread(sUsername, status, null, null, UI_HANDLER, authState,
+            callback).start();
     }
 
     /**
@@ -86,9 +108,9 @@ public class Indigo {
      * @param callback a callback to notify about the result of the operation
      */
 
-    public static void getTasks(TasksCallback callback) {
-        new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
-                new Handler(Looper.getMainLooper()), callback);
+    public static void getTasks(AuthState authState, TasksCallback callback) {
+        new TasksHandlerThread(sUsername, null, null, null, UI_HANDLER, authState,
+            callback).start();
     }
 
     /**
@@ -98,33 +120,33 @@ public class Indigo {
      * @param status results will be filtered based on the provided status
      * @param callback a callback to notify about the result of the operation
      */
-    public static void getTasks(String application, String status, TasksCallback callback) {
+    public static void getTasks(String application, String status, AuthState authState,
+            TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        new GetTasksJob(ApiHelper.EMULATOR_LOCALHOST_ADDRESS, status, sUsername,
-            application).doAsyncJob(new Handler(Looper.getMainLooper()), callback);
+        new TasksHandlerThread(sUsername, status, application, null, UI_HANDLER, authState,
+            callback).start();
     }
 
     /**
      * Gets details about task
      *
-     * @param taskId id of the task which should be obtained
+     * @param task the task which should be obtained
      * @param callback a callback to notify about the result of the operation
      */
 
-    public static void getTask(int taskId, TaskDetailsCallback callback) {
+    public static void getTask(Task task, AuthState authState, TaskDetailsCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        new GetTaskDetailsJob(taskId, ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
-                new Handler(Looper.getMainLooper()), callback);
+        new TasksDetailsHandlerThread(task, null, UI_HANDLER, authState, callback).start();
     }
 
     /**
@@ -133,14 +155,74 @@ public class Indigo {
      * @param newTask a task to execute
      * @param callback a callback to notify about the result of the operation
      */
-    public static void createTask(Task newTask, TaskCreationCallback callback) {
+    public static void createTask(Task newTask, AuthState authState,
+            TaskCreationCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
             callback.onError(e);
             return;
         }
-        new CreateTaskJob(newTask, ApiHelper.EMULATOR_LOCALHOST_ADDRESS).doAsyncJob(
-                new Handler(Looper.getMainLooper()), callback);
+        newTask.setUser(sUsername);
+        new TasksCreateHandlerThread(newTask, null, UI_HANDLER, authState, callback).start();
+    }
+
+    /**
+     * Deleting the task
+     *
+     * @param task task to delete
+     * @param authState an object with auth data
+     * @param callback callback informing about results
+     */
+    public static void deleteTask(Task task, AuthState authState, TaskDeleteCallback callback) {
+
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new TasksDeleteHandlerThread(task, null, UI_HANDLER, authState, callback).start();
+    }
+
+    /**
+     * Getting applications list
+     */
+    public static void getApplications(AuthState authState, ApplicationsCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new ApplicationsListHandlerThread(null, UI_HANDLER, authState, callback).start();
+    }
+
+    /**
+     * Get an application by name
+     */
+    public static void getApplications(String appName, AuthState authState,
+            ApplicationByNameCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new ApplicationByNameHandlerThread(appName, null, UI_HANDLER, authState, callback).start();
+    }
+
+    /**
+     * Get an application by id
+     */
+    public static void getApplications(String id, AuthState authState,
+            ApplicationByIdCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        new ApplicationByIdHandlerThread(id, null, UI_HANDLER, authState, callback).start();
     }
 }

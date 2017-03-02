@@ -1,89 +1,112 @@
 package pl.psnc.indigo.omt.threads;
 
-import android.net.Uri;
 import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.List;
-import okhttp3.Request;
-import okhttp3.Response;
-import pl.psnc.indigo.omt.api.GetTasksJob;
-import pl.psnc.indigo.omt.api.model.Task;
+import net.openid.appauth.AuthState;
+import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.callbacks.IndigoCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
+import pl.psnc.indigo.omt.tasks.TasksAPI;
+import pl.psnc.indigo.omt.utils.HttpClientFactory;
+import pl.psnc.indigo.omt.utils.Log;
 
 /**
  * Created by michalu on 14.07.16.
  */
-public class TasksHandlerThread extends HandlerThread implements IndigoHandlerThread {
-    private Handler mResponseHandler;
-    private Handler mWorkerHandler;
-    private IndigoCallback mCallback;
-    private GetTasksJob mApiJob;
+public class TasksHandlerThread extends ApiHandlerThread implements ApiCallWorkflow {
+    private static final String TAG = "TasksHandlerThread";
+    private TasksAPI mTaskAPI;
+    private String mApplication;
+    private String mStatus;
+    private String mUsername;
 
-    public TasksHandlerThread(GetTasksJob job, Handler responseHandler, IndigoCallback callback) {
-        super("TasksHandlerThread");
-        this.mResponseHandler = responseHandler;
-        this.mCallback = callback;
-        this.mApiJob = job;
-    }
-
-    public TasksHandlerThread(GetTasksJob job, Handler workerHandler, Handler responseHandler,
+    public TasksHandlerThread(String username, String status, String application,
+            Handler workerHandler, Handler responseHandler, AuthState authState,
             IndigoCallback callback) {
-        super("TasksHandlerThread");
-        this.mResponseHandler = responseHandler;
-        this.mWorkerHandler = workerHandler;
-        this.mCallback = callback;
-        this.mApiJob = job;
+        super(TAG, responseHandler, workerHandler, authState, callback);
+        this.mStatus = status;
+        this.mApplication = application;
+        this.mUsername = username;
     }
 
-    @Override public void prepare() {
-        if (mWorkerHandler == null) {
-            mWorkerHandler = new Handler(getLooper(), new Handler.Callback() {
-                @Override public boolean handleMessage(Message msg) {
-                    makeRequest();
-                    return true;
-                }
-            });
-        }
-    }
-
-    @Override public synchronized void start() {
-        super.start();
-        prepare();
-        Message m = mWorkerHandler.obtainMessage();
-        m.sendToTarget();
-    }
-
-    @Override public void makeRequest() {
+    @Override public void networkWork(String token) {
+        Log.i(TAG, "networkWork() started");
         try {
-            Uri address = mApiJob.getFullUri(GetTasksJob.ENDPOINT);
-            Request request = new Request.Builder().url(address.getPath()).build();
-            Response response = mApiJob.getClient().newCall(request).execute();
-
-            Type listOfTasks = new TypeToken<List<Task>>() {
-            }.getType();
-            final List<Task> tasks = new Gson().fromJson(response.body().string(), listOfTasks);
-            mResponseHandler.post(new Runnable() {
+            mTaskAPI = new TasksAPI(HttpClientFactory.getClient(token));
+        } catch (final IndigoException e1) {
+            mResponseHandler.get().post(new Runnable() {
                 @Override public void run() {
-                    Collections.sort(tasks);
-                    ((TasksCallback) mCallback).onSuccess(tasks);
+                    if (mCallback.get() != null) mCallback.get().onError(e1);
                 }
             });
-        } catch (IndigoException e) {
-            mCallback.onError(e);
-        } catch (IOException e) {
-            mCallback.onError(e);
-        } catch (IllegalArgumentException e) {
-            mCallback.onError(e);
-        } finally {
-            quit();
+            quitSafely();
+        }
+
+        try {
+            if (mApplication != null && mStatus != null) {
+                final TasksWrapper taskWrapper =
+                        mTaskAPI.getTasks(mUsername, mStatus, mApplication);
+                if (mResponseHandler.get() != null) {
+                    mResponseHandler.get().post(new Runnable() {
+                        @Override public void run() {
+                            if (taskWrapper != null && taskWrapper.getTasks() != null) {
+                                Log.i(TAG, "Got non-null taskWrapper object");
+                                Collections.sort(taskWrapper.getTasks());
+                                if (mCallback.get() != null) {
+                                    Log.i(TAG, "Callback is not null");
+                                    ((TasksCallback) mCallback.get()).onSuccess(
+                                            taskWrapper.getTasks());
+                                }
+                            }
+                            Log.i(TAG, "quitSafely()");
+                            quitSafely();
+                        }
+                    });
+                }
+            } else if (mStatus != null && mApplication == null) {
+                final TasksWrapper taskWrapper = mTaskAPI.getTasks(mUsername, mStatus);
+                if (mResponseHandler.get() != null) {
+                    mResponseHandler.get().post(new Runnable() {
+                        @Override public void run() {
+                            if (taskWrapper != null && taskWrapper.getTasks() != null) {
+                                Log.i(TAG, "Got non-null taskWrapper object");
+                                Collections.sort(taskWrapper.getTasks());
+                                if (mCallback.get() != null) {
+                                    Log.i(TAG, "Callback is not null");
+                                    ((TasksCallback) mCallback.get()).onSuccess(
+                                            taskWrapper.getTasks());
+                                }
+                            }
+                            Log.i(TAG, "quitSafely()");
+                            quitSafely();
+                        }
+                    });
+                }
+            } else {
+                final TasksWrapper taskWrapper = mTaskAPI.getTasks(mUsername);
+                if (mResponseHandler.get() != null) {
+                    mResponseHandler.get().post(new Runnable() {
+                        @Override public void run() {
+                            if (taskWrapper != null && taskWrapper.getTasks() != null) {
+                                Log.i(TAG, "Got non-null taskWrapper object");
+                                Collections.sort(taskWrapper.getTasks());
+                                if (mCallback.get() != null) {
+                                    Log.i(TAG, "Callback is not null");
+                                    ((TasksCallback) mCallback.get()).onSuccess(
+                                            taskWrapper.getTasks());
+                                }
+                            }
+                            Log.i(TAG, "quitSafely()");
+                            quitSafely();
+                        }
+                    });
+                }
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.i(TAG, "quitSafely() after exception");
+            quitSafely();
         }
     }
 }

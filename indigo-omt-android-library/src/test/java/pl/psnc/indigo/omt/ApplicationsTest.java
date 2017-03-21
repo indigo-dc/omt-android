@@ -19,7 +19,9 @@ import pl.psnc.indigo.omt.utils.HttpClientFactory;
 public class ApplicationsTest {
     String username = BuildConfig.FGAPI_USERNAME;
     int id = 2;
+    int wrongId = 1111;
     String appName = "SayHello";
+    String wrongAppName = "SayBye";
 
     @Before public void setup() {
         try {
@@ -33,7 +35,6 @@ public class ApplicationsTest {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         ApplicationAPI appAPI = new ApplicationAPI(client);
         List<Application> apps = appAPI.getApplications();
-        System.out.println(apps);
         Assert.assertNotNull(apps);
     }
 
@@ -41,15 +42,27 @@ public class ApplicationsTest {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         ApplicationAPI appAPI = new ApplicationAPI(client);
         Application app = appAPI.getApplication(appName);
-        System.out.println(app);
-        Assert.assertNotNull(app);
+        Assert.assertEquals(app.getName(), appName);
     }
 
     @Test public void test_GetAppById() throws IndigoException {
         OkHttpClient client = HttpClientFactory.getNonIAMClient();
         ApplicationAPI appAPI = new ApplicationAPI(client);
         Application app = appAPI.getApplication(id);
-        System.out.println(app);
         Assert.assertNotNull(app);
+    }
+
+    @Test public void test_GetNonExistingAppById() throws IndigoException {
+        OkHttpClient client = HttpClientFactory.getNonIAMClient();
+        ApplicationAPI appAPI = new ApplicationAPI(client);
+        Application app = appAPI.getApplication(wrongId);
+        Assert.assertNull(app);
+    }
+
+    @Test public void test_GetAppByNonExistingName() throws IndigoException {
+        OkHttpClient client = HttpClientFactory.getNonIAMClient();
+        ApplicationAPI appAPI = new ApplicationAPI(client);
+        Application app = appAPI.getApplication(wrongAppName);
+        Assert.assertNull(app);
     }
 }

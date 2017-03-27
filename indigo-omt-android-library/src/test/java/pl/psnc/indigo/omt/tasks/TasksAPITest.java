@@ -13,7 +13,7 @@ import pl.psnc.indigo.omt.BuildConfig;
 import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
-import pl.psnc.indigo.omt.mocks.TasksResponsesDispatcher;
+import pl.psnc.indigo.omt.dispatcher.TasksResponsesDispatcher;
 import pl.psnc.indigo.omt.tasks.remote.RetrofitTasksAPI;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
 import pl.psnc.indigo.omt.utils.RetrofitFactory;

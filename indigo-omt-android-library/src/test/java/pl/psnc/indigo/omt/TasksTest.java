@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import pl.psnc.indigo.omt.api.model.InputFile;
 import pl.psnc.indigo.omt.api.model.Task;
-import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.TasksAPI;
 import pl.psnc.indigo.omt.utils.FutureGatewayHelper;
@@ -32,13 +31,6 @@ public class TasksTest {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-    }
-
-    @Test public void test_GetAllTasks() throws IndigoException {
-        OkHttpClient client = HttpClientFactory.getNonIAMClient();
-        TasksAPI tasksAPI = new TasksAPI(client);
-        TasksWrapper tasks = tasksAPI.getTasks(username);
-        Assert.assertNotNull(tasks);
     }
 
     @Test public void test_createTask() throws IndigoException {

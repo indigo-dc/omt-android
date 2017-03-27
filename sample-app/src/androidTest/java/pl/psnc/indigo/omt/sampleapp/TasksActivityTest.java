@@ -2,6 +2,8 @@ package pl.psnc.indigo.omt.sampleapp;
 
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
+import okhttp3.OkHttpClient;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import pl.psnc.indigo.omt.sampleapp.views.TestActivity;
 
@@ -11,35 +13,30 @@ import pl.psnc.indigo.omt.sampleapp.views.TestActivity;
 @RunWith(AndroidJUnit4.class) public class TasksActivityTest
     extends ActivityInstrumentationTestCase2<TestActivity> {
 
-    //private static final String TAG = "TasksActivityTest";
-    //
-    //OkHttpClient mockClient;
-    //
+    private static final String TAG = "TasksActivityTest";
+
+    OkHttpClient mockClient;
+
     public TasksActivityTest() {
         super(TestActivity.class);
     }
+
+    @Before public void setup() {
+        System.setProperty("dexmaker.dexcache",
+            getInstrumentation().getTargetContext().getCacheDir().getPath());
+    }
+
+
+    //@Test(expected = URISyntaxException.class) public void test_getRootAddressForTasks()
+    //    throws URISyntaxException {
     //
-    //@Before public void setup() {
-    //    System.setProperty("dexmaker.dexcache",
-    //        getInstrumentation().getTargetContext().getCacheDir().getPath());
-    //}
-    //
-    //public OkHttpClient getMockedClient(String file) {
-    //    OkHttpClient client =
-    //        new OkHttpClient.Builder().addInterceptor(new MockInterceptor(file, getActivity()))
-    //            .build();
-    //    return client;
-    //}
-    //
-    //@Test(expected = IndigoException.class) public void test_getRootAddressForTasks()
-    //    throws IndigoException {
     //    GetTasksJob job =
     //        new GetTasksJob(getMockedClient("versions.json"), ApiHelper.DEFAULT_ADDRESS);
     //    Uri address = job.getFullUri("tasks");
     //    assertEquals(Uri.parse(BuildConfig.FGAPI_ADDRESS + "/v1.0/tasks").toString(),
     //        address.toString());
     //}
-    //
+
     //@Test(expected = IndigoException.class)
     //public void test_getRootAddressForTasksWithUserAndStatus() throws IndigoException {
     //    GetTasksJob job =

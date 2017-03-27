@@ -1,4 +1,4 @@
-package pl.psnc.indigo.omt.mocks;
+package pl.psnc.indigo.omt.dispatcher;
 
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;

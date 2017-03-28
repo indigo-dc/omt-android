@@ -1,11 +1,24 @@
 package pl.psnc.indigo.omt.sampleapp;
 
+import android.content.Context;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
-import okhttp3.OkHttpClient;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import pl.psnc.indigo.omt.Indigo;
+import pl.psnc.indigo.omt.api.model.InputFile;
+import pl.psnc.indigo.omt.api.model.Task;
+import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
+import pl.psnc.indigo.omt.exceptions.IndigoException;
+import pl.psnc.indigo.omt.root.RootAPI;
 import pl.psnc.indigo.omt.sampleapp.views.TestActivity;
+import pl.psnc.indigo.omt.tasks.TasksAPI;
+import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
 /**
  * Created by michalu on 18.07.16.
@@ -13,131 +26,111 @@ import pl.psnc.indigo.omt.sampleapp.views.TestActivity;
 @RunWith(AndroidJUnit4.class) public class TasksActivityTest
     extends ActivityInstrumentationTestCase2<TestActivity> {
 
-    private static final String TAG = "TasksActivityTest";
+    private static final String USER = "test";
+    private static final String DONE = "done";
+    private static final String APPLICATION = "2";
+    private static final int KNOWN_TASK_ID = 500;
+    private static final String FG_ADDRESS = "http://62.3.168.16";
+    private static final String EXPECTED_ROOT = "http://62.3.168.16/v1.0/";
 
-    OkHttpClient mockClient;
+    android.app.Application app;
 
     public TasksActivityTest() {
         super(TestActivity.class);
     }
 
-    @Before public void setup() {
+    @Before public void setup() throws URISyntaxException {
         System.setProperty("dexmaker.dexcache",
             getInstrumentation().getTargetContext().getCacheDir().getPath());
     }
 
+    @Test(expected = URISyntaxException.class) public void test_getRootAddressForTasks()
+        throws URISyntaxException, IndigoException {
+        RootAPI rootAPI = RootAPI.getInstance(HttpClientFactory.getNonIAMClient());
+        String root = rootAPI.getRoot();
+        assertEquals(root, EXPECTED_ROOT);
+    }
 
-    //@Test(expected = URISyntaxException.class) public void test_getRootAddressForTasks()
-    //    throws URISyntaxException {
-    //
-    //    GetTasksJob job =
-    //        new GetTasksJob(getMockedClient("versions.json"), ApiHelper.DEFAULT_ADDRESS);
-    //    Uri address = job.getFullUri("tasks");
-    //    assertEquals(Uri.parse(BuildConfig.FGAPI_ADDRESS + "/v1.0/tasks").toString(),
-    //        address.toString());
-    //}
+    @Test public void test_getAllTasks()
+        throws InterruptedException, URISyntaxException, IndigoException {
+        app = getActivity().getApplication();
+        Indigo.init(app, USER, FG_ADDRESS);
+        TasksAPI tasksAPI = new TasksAPI(HttpClientFactory.getNonIAMClient());
+        TasksWrapper t = tasksAPI.getTasks(USER);
+        assertNotNull(t);
+    }
 
-    //@Test(expected = IndigoException.class)
-    //public void test_getRootAddressForTasksWithUserAndStatus() throws IndigoException {
-    //    GetTasksJob job =
-    //        new GetTasksJob(getMockedClient("versions.json"), ApiHelper.DEFAULT_ADDRESS,
-    //            TaskStatus.ANY, "brunor");
-    //    Map<String, String> queryParams = new HashMap<>();
-    //    queryParams.put("user", job.getUser());
-    //    queryParams.put("status", job.getStatus());
-    //    Uri address = job.getFullUri("tasks", null, queryParams);
-    //    assertEquals(
-    //        Uri.parse(BuildConfig.FGAPI_ADDRESS + "/v1.0/tasks?status=ANY&user=brunor").toString(),
-    //        address.toString());
-    //}
-    //
-    //@Test(expected = IndigoException.class) public void test_getRootAddressForTaskDetails()
-    //    throws IndigoException {
-    //    GetTaskDetailsJob job =
-    //        new GetTaskDetailsJob(1, getMockedClient("versions.json"), ApiHelper.DEFAULT_ADDRESS);
-    //    Uri address =
-    //        job.getFullUri("tasks", new String[] { String.valueOf(job.getTaskId()) }, null);
-    //    assertEquals(Uri.parse(BuildConfig.FGAPI_ADDRESS + "/v1.0/tasks/1").toString(),
-    //        address.toString());
-    //}
-    //
-    //@Test public void test_getAllTasks() throws InterruptedException {
-    //    Log.d(TAG, "starting test_getAllTasks");
-    //    Indigo.init("http://10.0.2.2:8888", "brunor");
-    //    Indigo.getTasks(new TasksCallback() {
-    //        @Override public void onSuccess(List<Task> result) {
-    //            Log.i(TAG, result.toString());
-    //            assertNotNull(result);
-    //        }
-    //
-    //        @Override public void onError(Exception exception) {
-    //            assertNull(exception);
-    //        }
-    //    });
-    //    Thread.sleep(12000);
-    //}
-    //
-    //@Test public void test_getTasksByStatus() throws InterruptedException {
-    //    Log.d(TAG, "starting test_getTasksByStatus");
-    //    Indigo.init("http://10.0.2.2:8888", "brunor");
-    //    Indigo.getTasks(TaskStatus.WAITING, new TasksCallback() {
-    //        @Override public void onSuccess(List<Task> result) {
-    //            Log.i(TAG, result.toString());
-    //            assertNotNull(result);
-    //        }
-    //
-    //        @Override public void onError(Exception exception) {
-    //            assertNull(exception);
-    //        }
-    //    });
-    //    Thread.sleep(12000);
-    //}
-    //
-    //@Test public void test_getTasksByStatusAndApplication() throws InterruptedException {
-    //    Log.d(TAG, "starting test_getTasksByStatusAndApplication");
-    //    Indigo.init("http://10.0.2.2:8888", "brunor");
-    //    Indigo.getTasks(null, TaskStatus.WAITING, new TasksCallback() {
-    //        @Override public void onSuccess(List<Task> result) {
-    //            Log.i(TAG, result.toString());
-    //            assertNotNull(result);
-    //        }
-    //
-    //        @Override public void onError(Exception exception) {
-    //            assertNull(exception);
-    //        }
-    //    });
-    //    Thread.sleep(12000);
-    //}
-    //
-    //@Test public void test_createTask() throws InterruptedException {
-    //    Log.d(TAG, "starting test_createTask");
-    //    Indigo.init("http://10.0.2.2:8888", "brunor");
-    //    Indigo.createTask(new Task("sample description", "2"), new TaskCreationCallback() {
-    //        @Override public void onSuccess(Task result) {
-    //            assertNotNull(result);
-    //        }
-    //
-    //        @Override public void onError(Exception exception) {
-    //            assertNull(exception);
-    //        }
-    //    });
-    //
-    //    Thread.sleep(12000);
-    //}
-    //
-    //@Test public void test_getTaskDetail() throws InterruptedException {
-    //    Log.d(TAG, "starting test_getTaskDetail");
-    //    Indigo.init("http://10.0.2.2:8888", "brunor");
-    //    Indigo.getTask(1, new TaskDetailsCallback() {
-    //        @Override public void onSuccess(Task result) {
-    //            assertNotNull(result);
-    //        }
-    //
-    //        @Override public void onError(Exception exception) {
-    //            assertNull(exception);
-    //        }
-    //    });
-    //
-    //    Thread.sleep(12000);
-    //}
+    @Test public void test_getTasksByStatus()
+        throws InterruptedException, URISyntaxException, IndigoException {
+        app = getActivity().getApplication();
+        Indigo.init(app, USER, FG_ADDRESS);
+        TasksAPI tasksAPI = new TasksAPI(HttpClientFactory.getNonIAMClient());
+        TasksWrapper t = tasksAPI.getTasks(USER, DONE);
+        assertNotNull(t);
+    }
+
+    @Test public void test_getTasksByStatusAndApplication()
+        throws InterruptedException, URISyntaxException, IndigoException {
+        app = getActivity().getApplication();
+        Indigo.init(app, USER, FG_ADDRESS);
+        TasksAPI tasksAPI = new TasksAPI(HttpClientFactory.getNonIAMClient());
+        TasksWrapper t = tasksAPI.getTasks(USER, DONE, APPLICATION);
+        assertNotNull(t);
+    }
+
+    @Test public void test_createTask()
+        throws InterruptedException, URISyntaxException, IndigoException {
+        app = getActivity().getApplication();
+        Indigo.init(app, USER, FG_ADDRESS);
+        TasksAPI tasksAPI = new TasksAPI(HttpClientFactory.getNonIAMClient());
+        Task t = tasksAPI.createTask(createDummyTask(getActivity()));
+        assertNotNull(t);
+    }
+
+    @Test public void test_getTaskDetail()
+        throws InterruptedException, URISyntaxException, IndigoException {
+        app = getActivity().getApplication();
+        Indigo.init(app, USER, FG_ADDRESS);
+        TasksAPI tasksAPI = new TasksAPI(HttpClientFactory.getNonIAMClient());
+        Task t = tasksAPI.getTaskDetails(KNOWN_TASK_ID);
+        assertNotNull(t);
+    }
+
+    @Test public void test_deleteTask()
+        throws InterruptedException, URISyntaxException, IndigoException {
+        app = getActivity().getApplication();
+        Indigo.init(app, USER, FG_ADDRESS);
+        TasksAPI tasksAPI = new TasksAPI(HttpClientFactory.getNonIAMClient());
+        Task t = tasksAPI.createTask(createDummyTask(getActivity()));
+        assertTrue(tasksAPI.deleteTask(t));
+    }
+
+    private Task createDummyTask(Context ctx) {
+        File file1 = new File(ctx.getExternalFilesDir(null) + File.separator + "sayhello.sh");
+        File file2 = new File(ctx.getExternalFilesDir(null) + File.separator + "sayhello.txt");
+        try {
+            file1.createNewFile();
+            file2.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Task task = new Task();
+        task.setDescription("TasksAPI v2 - creating task");
+        task.setApplication("2");
+        task.setUser("test");
+
+        InputFile if1 = new InputFile();
+        if1.setFile(file1);
+        if1.setName(file1.getName());
+
+        InputFile if2 = new InputFile();
+        if2.setFile(file2);
+        if2.setName(file2.getName());
+        ArrayList<InputFile> files = new ArrayList<>();
+        files.add(if1);
+        files.add(if2);
+        task.setInputFiles(files);
+        return task;
+    }
 }

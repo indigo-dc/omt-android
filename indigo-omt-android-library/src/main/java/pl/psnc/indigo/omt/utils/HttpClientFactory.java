@@ -20,8 +20,8 @@ public class HttpClientFactory {
             @Override public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
                 Request.Builder requestBuilder = request.newBuilder()
-                    .addHeader("Authorization", "Bearer " + accessToken)
-                    .addHeader("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE);
+                        .addHeader("Authorization", "Bearer " + accessToken)
+                        .addHeader("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE);
                 Request newRequest = requestBuilder.build();
                 return chain.proceed(newRequest);
             }
@@ -35,8 +35,8 @@ public class HttpClientFactory {
             @Override public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
                 Request.Builder requestBuilder = request.newBuilder()
-                    .header("Authorization", "Bearer " + accessToken)
-                    .header("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE);
+                        .header("Authorization", "Bearer " + accessToken)
+                        .header("Content-Type", BuildConfig.FGAPI_CONTENT_TYPE);
                 Request newRequest = requestBuilder.build();
                 return chain.proceed(newRequest);
             }

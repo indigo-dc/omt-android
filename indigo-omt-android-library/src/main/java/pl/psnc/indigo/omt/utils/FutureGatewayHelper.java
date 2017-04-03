@@ -12,16 +12,12 @@ public class FutureGatewayHelper {
     private static String sServerAddress;
 
     public static String getServerAddress() {
-        if (sServerAddress == null) sServerAddress = BuildConfig.FGAPI_ADDRESS;
+        if (sServerAddress == null) return BuildConfig.FGAPI_ADDRESS;
         return sServerAddress;
     }
 
     public static void setServerAddress(String serverAddress) throws URISyntaxException {
-        if (serverAddress == null) {
-            sServerAddress = BuildConfig.FGAPI_ADDRESS;
-        } else {
-            sServerAddress = serverAddress;
-        }
-        new URI(sServerAddress);
+        sServerAddress = serverAddress;
+        new URI(getServerAddress()); //only for validation
     }
 }

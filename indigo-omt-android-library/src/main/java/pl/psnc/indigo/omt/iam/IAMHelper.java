@@ -11,8 +11,6 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * Created by michalu on 06.10.16.
  */
-
-//TODO rethink/move to app?
 public class IAMHelper {
     @NonNull public static AuthState readAuthState(Context ctx) {
         SharedPreferences authPrefs = ctx.getSharedPreferences("auth", MODE_PRIVATE);

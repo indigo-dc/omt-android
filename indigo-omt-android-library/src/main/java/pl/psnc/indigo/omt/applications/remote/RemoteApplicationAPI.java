@@ -25,6 +25,11 @@ public class RemoteApplicationAPI implements ApplicationOperations {
             RetrofitFactory.getInstance(url, mHttpClient).create(RetrofitApplicationAPI.class);
     }
 
+    public RemoteApplicationAPI(OkHttpClient client, RetrofitApplicationAPI api) {
+        mHttpClient = client;
+        mAppRetrofitAPI = api;
+    }
+
     @Override public List<Application> getApplications() {
         List<Application> applications = null;
         Call<ApplicationsWrapper> call = mAppRetrofitAPI.getApplications();

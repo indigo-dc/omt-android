@@ -34,6 +34,12 @@ public class RemoteTasksAPI implements TasksOperations {
             RetrofitFactory.getInstance(url, mHttpClient).create(RetrofitTasksAPI.class);
     }
 
+    public RemoteTasksAPI(String url, OkHttpClient client, RetrofitTasksAPI tasksRetrofitAPI) {
+        mHttpClient = client;
+        mUrl = url;
+        mTasksRetrofitAPI = tasksRetrofitAPI;
+    }
+
     @Override public TasksWrapper getTasks(String user) {
         TasksWrapper tasks = null;
         Call<TasksWrapper> call = mTasksRetrofitAPI.getTasks(user, TaskStatus.ANY);

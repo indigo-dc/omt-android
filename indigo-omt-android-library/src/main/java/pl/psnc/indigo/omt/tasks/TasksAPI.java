@@ -7,6 +7,7 @@ import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.root.RootAPI;
 import pl.psnc.indigo.omt.tasks.remote.RemoteTasksAPI;
+import pl.psnc.indigo.omt.tasks.remote.RetrofitTasksAPI;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
 
 /**
@@ -17,10 +18,16 @@ public class TasksAPI implements TasksOperations {
     private BaseAPI mBaseAPI;
     private RemoteTasksAPI mTasksAPI;
 
-    public TasksAPI(OkHttpClient okHttpClient) throws IndigoException{
+    public TasksAPI(OkHttpClient okHttpClient) throws IndigoException {
         mBaseAPI = new BaseAPI(RootAPI.getInstance(HttpClientFactory.getNonIAMClient()));
         String url = mBaseAPI.getRoot();
         mTasksAPI = new RemoteTasksAPI(url, okHttpClient);
+    }
+
+    public TasksAPI(OkHttpClient okHttpClient, String url, RetrofitTasksAPI tasksRetrofitAPI)
+        throws IndigoException {
+        mBaseAPI = new BaseAPI(RootAPI.getInstance(HttpClientFactory.getNonIAMClient()));
+        mTasksAPI = new RemoteTasksAPI(url, okHttpClient, tasksRetrofitAPI);
     }
 
     @Override public TasksWrapper getTasks(String user) {

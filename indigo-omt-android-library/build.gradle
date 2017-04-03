@@ -17,7 +17,7 @@ ext {
   siteUrl = 'https://github.com/indigo-dc/omt-android'
   gitUrl = 'https://github.com/indigo-dc/omt-android.git'
 
-  libraryVersion = '0.8.6'
+  libraryVersion = '0.8.7'
 
   developerId = 'mupsnc'
   developerName = 'Michal Urbaniak'
@@ -70,6 +70,9 @@ android {
   lintOptions {
     abortOnError false
   }
+  testOptions {
+    unitTests.returnDefaultValues = true
+  }
   android.defaultConfig.manifestPlaceholders =
       ['appAuthRedirectScheme': 'pl.psnc.indigo.omt.sampleapp']
 }
@@ -96,7 +99,14 @@ dependencies {
   //for testing
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.10.19'
-  testCompile "org.robolectric:robolectric:3.1-rc1"
+  testCompile 'com.squareup.okhttp3:mockwebserver:3.6.0'
+  androidTestCompile 'com.android.support:support-annotations:25.3.0'
+  androidTestCompile 'com.android.support.test:runner:0.5'
+  androidTestCompile 'com.android.support.test:rules:0.5'
+  androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  })
+
 }
 
 // Place it at the end of the file

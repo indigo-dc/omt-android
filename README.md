@@ -7,7 +7,7 @@
 
 - add the dependency to the app's module build.gradle config
 ```gradle
-compile 'pl.psnc.indigo:indigo-omt-android-library:0.8.6'
+compile 'pl.psnc.indigo:indigo-omt-android-library:0.8.7'
 ```
 - create custom Application class which extends Android default Application class 
 - remember to update your manifest.xml with the name of your Application class

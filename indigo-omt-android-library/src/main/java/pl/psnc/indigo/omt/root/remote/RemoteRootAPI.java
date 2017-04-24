@@ -35,7 +35,7 @@ public class RemoteRootAPI implements RootOperations {
                 if (rootObject == null) {
                     throw new IndigoException("Can't get root object from the FG API");
                 }
-                root = "/" + rootObject.getVersions().get(0).getLinks().get(0).getHref() + "/";
+                root = rootObject.getVersions().get(0).getLinks().get(0).getHref() + "/";
             }
         } catch (SocketTimeoutException e) {
             throw new IndigoException(

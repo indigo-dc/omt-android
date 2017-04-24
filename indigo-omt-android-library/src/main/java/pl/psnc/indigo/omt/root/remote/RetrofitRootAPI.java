@@ -12,5 +12,5 @@ public interface RetrofitRootAPI {
     /*
         This resource return the versions available in the server with the link to access them.
      */
-    @GET("/") Call<Root> getRoot();
+    @GET(".") Call<Root> getRoot();
 }

@@ -149,6 +149,8 @@ public class RemoteTasksAPI implements TasksOperations {
                 RequestBody.create(MediaType.parse("application/octet-stream"), iff.getFile());
             MultipartBody.Part body =
                 MultipartBody.Part.createFormData("file[]", iff.getName(), requestFile);
+            if (uploadUrl.startsWith("/"))
+                uploadUrl = uploadUrl.substring(1);
             String fullUploadUrl = FutureGatewayHelper.getServerAddress() + uploadUrl;
             Call<ResponseBody> callUpload =
                 mTasksRetrofitAPI.uploadInputFile(fullUploadUrl, body, task.getUser());

@@ -144,13 +144,14 @@ public class RemoteTasksAPI implements TasksOperations {
     @Override public void uploadInputFile(String url, Task task) {
         String uploadUrl = url;
         for (InputFile iff : task.getInputFiles()) {
+            if (iff.getFile() == null) continue;
             RequestBody requestFile =
-                    RequestBody.create(MediaType.parse("application/octet-stream"), iff.getFile());
+                RequestBody.create(MediaType.parse("application/octet-stream"), iff.getFile());
             MultipartBody.Part body =
-                    MultipartBody.Part.createFormData("file[]", iff.getName(), requestFile);
+                MultipartBody.Part.createFormData("file[]", iff.getName(), requestFile);
             String fullUploadUrl = FutureGatewayHelper.getServerAddress() + uploadUrl;
             Call<ResponseBody> callUpload =
-                    mTasksRetrofitAPI.uploadInputFile(fullUploadUrl, body, task.getUser());
+                mTasksRetrofitAPI.uploadInputFile(fullUploadUrl, body, task.getUser());
             try {
                 Response<ResponseBody> uploadResponse = callUpload.execute();
                 if (!uploadResponse.isSuccessful()) {

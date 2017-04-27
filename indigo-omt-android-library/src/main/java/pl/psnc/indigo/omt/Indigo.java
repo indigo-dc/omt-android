@@ -14,6 +14,7 @@ import pl.psnc.indigo.omt.callbacks.TaskCreationCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDeleteCallback;
 import pl.psnc.indigo.omt.callbacks.TaskDetailsCallback;
 import pl.psnc.indigo.omt.callbacks.TasksCallback;
+import pl.psnc.indigo.omt.callbacks.UploadFileCallback;
 import pl.psnc.indigo.omt.exceptions.NotInitilizedException;
 import pl.psnc.indigo.omt.threads.ApplicationByIdHandlerThread;
 import pl.psnc.indigo.omt.threads.ApplicationByNameHandlerThread;
@@ -22,6 +23,7 @@ import pl.psnc.indigo.omt.threads.TasksCreateHandlerThread;
 import pl.psnc.indigo.omt.threads.TasksDeleteHandlerThread;
 import pl.psnc.indigo.omt.threads.TasksDetailsHandlerThread;
 import pl.psnc.indigo.omt.threads.TasksHandlerThread;
+import pl.psnc.indigo.omt.threads.TasksUploadFilesHandlerThread;
 import pl.psnc.indigo.omt.utils.FutureGatewayHelper;
 
 /**
@@ -78,7 +80,7 @@ public class Indigo {
      */
 
     public static <T extends Application> void init(T application, String username,
-            String serverAddress) throws URISyntaxException {
+        String serverAddress) throws URISyntaxException {
         FutureGatewayHelper.setServerAddress(serverAddress);
         sApplicationContext = application.getApplicationContext();
         sUsername = username;
@@ -121,7 +123,7 @@ public class Indigo {
      * @param callback a callback to notify about the result of the operation
      */
     public static void getTasks(String application, String status, AuthState authState,
-            TasksCallback callback) {
+        TasksCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -156,7 +158,7 @@ public class Indigo {
      * @param callback a callback to notify about the result of the operation
      */
     public static void createTask(Task newTask, AuthState authState,
-            TaskCreationCallback callback) {
+        TaskCreationCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -165,6 +167,24 @@ public class Indigo {
         }
         newTask.setUser(sUsername);
         new TasksCreateHandlerThread(newTask, null, UI_HANDLER, authState, callback).start();
+    }
+
+    /**
+     * Uploading the files for the task created before and waiting for inputs
+     *
+     * @param task created task
+     * @param callback a callback to notify about the result of the operation
+     */
+    public static void uploadInputFiles(Task task, AuthState authState,
+        UploadFileCallback callback) {
+        try {
+            checkInitialization();
+        } catch (NotInitilizedException e) {
+            callback.onError(e);
+            return;
+        }
+        task.setUser(sUsername);
+        new TasksUploadFilesHandlerThread(task, null, UI_HANDLER, authState, callback).start();
     }
 
     /**
@@ -202,7 +222,7 @@ public class Indigo {
      * Get an application by name
      */
     public static void getApplications(String appName, AuthState authState,
-            ApplicationByNameCallback callback) {
+        ApplicationByNameCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {
@@ -216,7 +236,7 @@ public class Indigo {
      * Get an application by id
      */
     public static void getApplications(String id, AuthState authState,
-            ApplicationByIdCallback callback) {
+        ApplicationByIdCallback callback) {
         try {
             checkInitialization();
         } catch (NotInitilizedException e) {

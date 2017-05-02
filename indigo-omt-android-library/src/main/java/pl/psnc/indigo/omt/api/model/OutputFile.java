@@ -17,6 +17,9 @@ public class OutputFile implements Parcelable, Serializable {
     @SerializedName("name") private String mName;
     @SerializedName("url") private String mUrl;
 
+    public OutputFile() {
+    }
+
     public final String getName() {
         return mName;
     }

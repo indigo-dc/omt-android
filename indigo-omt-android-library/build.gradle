@@ -12,12 +12,12 @@ ext {
   libraryName = 'Indigo DataCloud Open Mobile Toolkit for Android'
   artifact = 'indigo-omt-android-library'
 
-  libraryDescription = 'Android library which simplifies access to INDIGO DataCloud API'
+  libraryDescription = 'Android library which simplifies access to the FutureGateway API'
 
   siteUrl = 'https://github.com/indigo-dc/omt-android'
   gitUrl = 'https://github.com/indigo-dc/omt-android.git'
 
-  libraryVersion = '0.9.0.3'
+  libraryVersion = '0.9.0.4'
 
   developerId = 'mupsnc'
   developerName = 'Michal Urbaniak'

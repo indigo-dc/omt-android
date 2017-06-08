@@ -9,13 +9,14 @@ import pl.psnc.indigo.omt.root.RootOperations;
  */
 
 public class BaseAPI implements RootOperations {
-    private RootAPI mRootAPI;
+  private RootAPI mRootAPI;
 
-    public BaseAPI(RootAPI rootAPI) {
-        mRootAPI = rootAPI;
-    }
+  public BaseAPI(RootAPI rootAPI) {
+    mRootAPI = rootAPI;
+  }
 
-    @Override public String getRoot() throws IndigoException {
-        return mRootAPI.getRoot();
-    }
+  @Override public String getRoot() throws IndigoException {
+    if (mRootAPI == null) throw new IndigoException("RootAPI is null");
+    return mRootAPI.getRoot();
+  }
 }

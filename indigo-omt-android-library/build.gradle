@@ -17,7 +17,7 @@ ext {
   siteUrl = 'https://github.com/indigo-dc/omt-android'
   gitUrl = 'https://github.com/indigo-dc/omt-android.git'
 
-  libraryVersion = '0.9.0.4'
+  libraryVersion = '0.9.1'
 
   developerId = 'mupsnc'
   developerName = 'Michal Urbaniak'
@@ -95,7 +95,7 @@ dependencies {
   compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.1.0'
   compile 'com.squareup.okhttp3:okhttp:3.6.0'
   compile 'org.apache.commons:commons-lang3:3.4'
-  compile 'net.openid:appauth:0.5.1'
+  compile 'net.openid:appauth:0.6.1'
   //for testing
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.10.19'

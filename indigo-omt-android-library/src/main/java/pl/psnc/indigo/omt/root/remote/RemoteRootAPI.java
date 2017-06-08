@@ -16,35 +16,39 @@ import retrofit2.Response;
  */
 
 public class RemoteRootAPI implements RootOperations {
-    public static final String TAG = "RemoteTasksAPI";
-    private RetrofitRootAPI mRootAPI;
-    private OkHttpClient mHttpClient;
+  public static final String TAG = "RemoteTasksAPI";
+  private RetrofitRootAPI mRootAPI;
+  private OkHttpClient mHttpClient;
 
-    public RemoteRootAPI(OkHttpClient client) {
-        mHttpClient = client;
-        mRootAPI = RetrofitFactory.getInstanceForRootAPI(mHttpClient).create(RetrofitRootAPI.class);
+  public RemoteRootAPI(OkHttpClient client) {
+    mHttpClient = client;
+    try {
+      mRootAPI = RetrofitFactory.getInstanceForRootAPI(mHttpClient).create(RetrofitRootAPI.class);
+    } catch (Exception e) {
+      Log.e(TAG, "Can't obtain root of the API");
+      mRootAPI = null;
     }
+  }
 
-    @Override public String getRoot() throws IndigoException {
-        String root = null;
-        Call<Root> call = mRootAPI.getRoot();
-        try {
-            Response<Root> rootResponse = call.execute();
-            if (rootResponse != null && rootResponse.isSuccessful()) {
-                Root rootObject = rootResponse.body();
-                if (rootObject == null) {
-                    throw new IndigoException("Can't get root object from the FG API");
-                }
-                root = rootObject.getVersions().get(0).getLinks().get(0).getHref() + "/";
-            }
-        } catch (SocketTimeoutException e) {
-            throw new IndigoException(
-                "Can't get root object from the FG API. Reason: " + e.getMessage());
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (NullPointerException e) {
-            Log.e(TAG, e.getMessage());
+  @Override public String getRoot() throws IndigoException {
+    String root = null;
+    try {
+      Call<Root> call = mRootAPI.getRoot();
+      Response<Root> rootResponse = call.execute();
+      if (rootResponse != null && rootResponse.isSuccessful()) {
+        Root rootObject = rootResponse.body();
+        if (rootObject == null) {
+          throw new IndigoException("Can't get root object from the FG API");
         }
-        return root;
+        root = rootObject.getVersions().get(0).getLinks().get(0).getHref() + "/";
+      }
+    } catch (SocketTimeoutException e) {
+      throw new IndigoException("Can't get root object from the FG API. Reason: " + e.getMessage());
+    } catch (IOException e) {
+      Log.e(TAG, e.getMessage());
+    } catch (NullPointerException e) {
+      Log.e(TAG, e.getMessage());
     }
+    return root;
+  }
 }

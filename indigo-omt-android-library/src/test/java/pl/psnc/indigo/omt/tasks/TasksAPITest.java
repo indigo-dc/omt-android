@@ -22,47 +22,51 @@ import pl.psnc.indigo.omt.utils.RetrofitFactory;
  * Created by michalu on 13.01.17.
  */
 @RunWith(MockitoJUnitRunner.class) public class TasksAPITest {
-    String username = BuildConfig.FGAPI_USERNAME;
-    String status = TaskStatus.DONE;
-    String applicationId = "2";
-    String filename1 = "sayhello.sh";
-    String filename2 = "sayhello.txt";
+  String username = BuildConfig.FGAPI_USERNAME;
+  String status = TaskStatus.DONE;
+  String applicationId = "2";
+  String filename1 = "sayhello.sh";
+  String filename2 = "sayhello.txt";
 
-    OkHttpClient client;
-    MockWebServer server;
-    String baseUrl;
-    RetrofitTasksAPI service;
+  OkHttpClient client;
+  MockWebServer server;
+  String baseUrl;
+  RetrofitTasksAPI service;
 
-    @Before public void setup() throws IOException {
-        client = HttpClientFactory.getNonIAMClient();
-        server = new MockWebServer();
-        server.setDispatcher(new TasksResponsesDispatcher());
-        server.start();
-        baseUrl = server.url("").toString();
-        service = RetrofitFactory.getInstance(baseUrl, client).create(RetrofitTasksAPI.class);
+  @Before public void setup() throws IOException {
+    client = HttpClientFactory.getNonIAMClient();
+    server = new MockWebServer();
+    server.setDispatcher(new TasksResponsesDispatcher());
+    server.start();
+    baseUrl = server.url("").toString();
+    try {
+      service = RetrofitFactory.getInstance(baseUrl, client).create(RetrofitTasksAPI.class);
+    } catch (Exception e) {
+
     }
+  }
 
-    @Test public void test_GetAllTasksByUsername() throws IndigoException, IOException {
-        TasksAPI tasksAPI = new TasksAPI(client, baseUrl, service);
-        TasksWrapper tasks = tasksAPI.getTasks(username);
-        Assert.assertNotNull(tasks);
-    }
+  @Test public void test_GetAllTasksByUsername() throws IndigoException, IOException {
+    TasksAPI tasksAPI = new TasksAPI(client, baseUrl, service);
+    TasksWrapper tasks = tasksAPI.getTasks(username);
+    Assert.assertNotNull(tasks);
+  }
 
-    @Test public void test_GetAllTasksByUsernameAndStatus() throws IndigoException, IOException {
-        TasksAPI tasksAPI = new TasksAPI(client, baseUrl, service);
-        TasksWrapper tasks = tasksAPI.getTasks(username, status);
-        Assert.assertNotNull(tasks);
-    }
+  @Test public void test_GetAllTasksByUsernameAndStatus() throws IndigoException, IOException {
+    TasksAPI tasksAPI = new TasksAPI(client, baseUrl, service);
+    TasksWrapper tasks = tasksAPI.getTasks(username, status);
+    Assert.assertNotNull(tasks);
+  }
 
-    @Test public void test_GetAllTasksByUsernameAndStatusAndApplication()
-        throws IndigoException, IOException {
-        TasksAPI tasksAPI = new TasksAPI(client, baseUrl, service);
-        TasksWrapper tasks = tasksAPI.getTasks(username, status, applicationId);
-        Assert.assertNotNull(tasks);
-    }
+  @Test public void test_GetAllTasksByUsernameAndStatusAndApplication()
+      throws IndigoException, IOException {
+    TasksAPI tasksAPI = new TasksAPI(client, baseUrl, service);
+    TasksWrapper tasks = tasksAPI.getTasks(username, status, applicationId);
+    Assert.assertNotNull(tasks);
+  }
 
-    @After public void after() throws IOException {
-        //Finish web server
-        server.shutdown();
-    }
+  @After public void after() throws IOException {
+    //Finish web server
+    server.shutdown();
+  }
 }

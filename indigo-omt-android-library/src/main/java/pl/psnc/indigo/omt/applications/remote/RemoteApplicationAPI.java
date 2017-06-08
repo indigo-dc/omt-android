@@ -15,45 +15,51 @@ import retrofit2.Response;
  */
 
 public class RemoteApplicationAPI implements ApplicationOperations {
-    public static final String TAG = "RemoteTasksAPI";
-    private RetrofitApplicationAPI mAppRetrofitAPI;
-    private OkHttpClient mHttpClient;
+  public static final String TAG = "RemoteTasksAPI";
+  private RetrofitApplicationAPI mAppRetrofitAPI;
+  private OkHttpClient mHttpClient;
 
-    public RemoteApplicationAPI(String url, OkHttpClient client) {
-        mHttpClient = client;
-        mAppRetrofitAPI =
-            RetrofitFactory.getInstance(url, mHttpClient).create(RetrofitApplicationAPI.class);
+  public RemoteApplicationAPI(String url, OkHttpClient client) {
+    mHttpClient = client;
+    try {
+      mAppRetrofitAPI =
+          RetrofitFactory.getInstance(url, mHttpClient).create(RetrofitApplicationAPI.class);
+    } catch (Exception e) {
+      mAppRetrofitAPI = null;
     }
+  }
 
-    public RemoteApplicationAPI(OkHttpClient client, RetrofitApplicationAPI api) {
-        mHttpClient = client;
-        mAppRetrofitAPI = api;
-    }
+  public RemoteApplicationAPI(OkHttpClient client, RetrofitApplicationAPI api) {
+    mHttpClient = client;
+    mAppRetrofitAPI = api;
+  }
 
-    @Override public List<Application> getApplications() {
-        List<Application> applications = null;
-        Call<ApplicationsWrapper> call = mAppRetrofitAPI.getApplications();
-        try {
-            Response<ApplicationsWrapper> response = call.execute();
-            if (response != null && response.isSuccessful()) {
-                ApplicationsWrapper wrapper = response.body();
-                if (wrapper != null && wrapper.getApplications() != null) {
-                    applications = wrapper.getApplications();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+  @Override public List<Application> getApplications() {
+    List<Application> applications = null;
+    try {
+      Call<ApplicationsWrapper> call = mAppRetrofitAPI.getApplications();
+      Response<ApplicationsWrapper> response = call.execute();
+      if (response != null && response.isSuccessful()) {
+        ApplicationsWrapper wrapper = response.body();
+        if (wrapper != null && wrapper.getApplications() != null) {
+          applications = wrapper.getApplications();
         }
-        return applications;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (NullPointerException e) {
+      e.printStackTrace();
     }
+    return applications;
+  }
 
-    @Override public Application getApplication(int appId) {
-        //no-op
-        return null;
-    }
+  @Override public Application getApplication(int appId) {
+    //no-op
+    return null;
+  }
 
-    @Override public Application getApplication(String name) {
-        //no-op
-        return null;
-    }
+  @Override public Application getApplication(String name) {
+    //no-op
+    return null;
+  }
 }

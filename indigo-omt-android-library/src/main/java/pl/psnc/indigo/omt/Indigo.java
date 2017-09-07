@@ -30,219 +30,206 @@ import pl.psnc.indigo.omt.utils.FutureGatewayHelper;
  * A class which simplifies access to the FutureGateway API
  */
 public class Indigo {
-    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
-    private static String sUsername;
-    private static boolean sInitialized = false;
-    private static Context sApplicationContext;
+  private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
+  private static boolean sInitialized = false;
+  private static Context sApplicationContext;
 
-    private Indigo() {
+  private Indigo() {
 
+  }
+
+  /**
+   * Checking initialization of the library
+   *
+   * @throws NotInitilizedException if library is not initalized
+   */
+
+  private static void checkInitialization() throws NotInitilizedException {
+    if (!sInitialized) {
+      throw new NotInitilizedException(
+          "Library not initialized! Call Indigo.init() in your Application class");
     }
+  }
 
-    /**
-     * Checking initialization of the library
-     *
-     * @throws NotInitilizedException if library is not initalized
-     */
+  public static Context getApplicationContext() {
+    return Indigo.sApplicationContext;
+  }
 
-    private static void checkInitialization() throws NotInitilizedException {
-        if (!sInitialized) {
-            throw new NotInitilizedException(
-                "Library not initialized! Call Indigo.init() in your Application class");
-        }
+  /**
+   * A method must be called in the application class of your app
+   *
+   * @param application an instance of your application
+   */
+  public static <T extends Application> void init(T application) throws URISyntaxException {
+    FutureGatewayHelper.setServerAddress(BuildConfig.FGAPI_ADDRESS);
+    sApplicationContext = application.getApplicationContext();
+    if (sApplicationContext != null) sInitialized = true;
+  }
+
+  /**
+   * A method must be called in the application class of your app
+   *
+   * @param application an instance of your application
+   * @param serverAddress address of the FutureGateway instance with port without last "/"
+   * @throws URISyntaxException
+   */
+
+  public static <T extends Application> void init(T application, String serverAddress)
+      throws URISyntaxException {
+    FutureGatewayHelper.setServerAddress(serverAddress);
+    sApplicationContext = application.getApplicationContext();
+    if (sApplicationContext != null) sInitialized = true;
+  }
+
+  /**
+   * Gets all status assigned to given user and filtered by status
+   *
+   * @param status results will be filtered based on provided status
+   * @param callback a callback to notify about the result of the operation
+   */
+  public static void getTasks(String status, AuthState authState, TasksCallback callback) {
+    try {
+      checkInitialization();
+    } catch (NotInitilizedException e) {
+      callback.onError(e);
+      return;
     }
+    new TasksHandlerThread(status, null, null, UI_HANDLER, authState, callback).start();
+  }
 
-    public static Context getApplicationContext() {
-        return Indigo.sApplicationContext;
+  /**
+   * Gets all tasks assigned to authenticated user
+   *
+   * @param callback a callback to notify about the result of the operation
+   */
+
+  public static void getTasks(AuthState authState, TasksCallback callback) {
+    new TasksHandlerThread(null, null, null, UI_HANDLER, authState, callback).start();
+  }
+
+  /**
+   * Gets all tasks related with given user and application filtered by status
+   *
+   * @param application results will be filtered basing on the application name
+   * @param status results will be filtered based on the provided status
+   * @param callback a callback to notify about the result of the operation
+   */
+  public static void getTasks(String application, String status, AuthState authState,
+      TasksCallback callback) {
+    try {
+      checkInitialization();
+    } catch (NotInitilizedException e) {
+      callback.onError(e);
+      return;
     }
+    new TasksHandlerThread(status, application, null, UI_HANDLER, authState, callback).start();
+  }
 
-    /**
-     * A method must be called in the application class of your app
-     *
-     * @param application an instance of your application
-     * @param username provided username to init the library. It should be gathered from the API
-     */
-    public static <T extends Application> void init(T application, String username)
-        throws URISyntaxException {
-        FutureGatewayHelper.setServerAddress(BuildConfig.FGAPI_ADDRESS);
-        sApplicationContext = application.getApplicationContext();
-        sUsername = username;
-        if (sApplicationContext != null) sInitialized = true;
+  /**
+   * Gets details about task
+   *
+   * @param task the task which should be obtained
+   * @param callback a callback to notify about the result of the operation
+   */
+
+  public static void getTask(Task task, AuthState authState, TaskDetailsCallback callback) {
+    try {
+      checkInitialization();
+    } catch (NotInitilizedException e) {
+      callback.onError(e);
+      return;
     }
+    new TasksDetailsHandlerThread(task, null, UI_HANDLER, authState, callback).start();
+  }
 
-    /**
-     * A method must be called in the application class of your app
-     *
-     * @param application an instance of your application
-     * @param username provided username to init the library. It should be gathered from the API
-     * @param serverAddress address of the FutureGateway instance with port without last "/"
-     * @throws URISyntaxException
-     */
-
-    public static <T extends Application> void init(T application, String username,
-        String serverAddress) throws URISyntaxException {
-        FutureGatewayHelper.setServerAddress(serverAddress);
-        sApplicationContext = application.getApplicationContext();
-        sUsername = username;
-        if (sApplicationContext != null) sInitialized = true;
+  /**
+   * Executing the task
+   *
+   * @param newTask a task to execute
+   * @param callback a callback to notify about the result of the operation
+   */
+  public static void createTask(Task newTask, AuthState authState, TaskCreationCallback callback) {
+    try {
+      checkInitialization();
+    } catch (NotInitilizedException e) {
+      callback.onError(e);
+      return;
     }
+    new TasksCreateHandlerThread(newTask, null, UI_HANDLER, authState, callback).start();
+  }
 
-    /**
-     * Gets all status assigned to given user and filtered by status
-     *
-     * @param status results will be filtered based on provided status
-     * @param callback a callback to notify about the result of the operation
-     */
-    public static void getTasks(String status, AuthState authState, TasksCallback callback) {
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        new TasksHandlerThread(sUsername, status, null, null, UI_HANDLER, authState,
-            callback).start();
+  /**
+   * Uploading the files for the task created before and waiting for inputs
+   *
+   * @param task created task
+   * @param callback a callback to notify about the result of the operation
+   */
+  public static void uploadInputFiles(Task task, AuthState authState, UploadFileCallback callback) {
+    try {
+      checkInitialization();
+    } catch (NotInitilizedException e) {
+      callback.onError(e);
+      return;
     }
+    new TasksUploadFilesHandlerThread(task, null, UI_HANDLER, authState, callback).start();
+  }
 
-    /**
-     * Gets all tasks assigned to authenticated user
-     *
-     * @param callback a callback to notify about the result of the operation
-     */
+  /**
+   * Deleting the task
+   *
+   * @param task task to delete
+   * @param authState an object with auth data
+   * @param callback callback informing about results
+   */
+  public static void deleteTask(Task task, AuthState authState, TaskDeleteCallback callback) {
 
-    public static void getTasks(AuthState authState, TasksCallback callback) {
-        new TasksHandlerThread(sUsername, null, null, null, UI_HANDLER, authState,
-            callback).start();
+    try {
+      checkInitialization();
+    } catch (NotInitilizedException e) {
+      callback.onError(e);
+      return;
     }
+    new TasksDeleteHandlerThread(task, null, UI_HANDLER, authState, callback).start();
+  }
 
-    /**
-     * Gets all tasks related with given user and application filtered by status
-     *
-     * @param application results will be filtered basing on the application name
-     * @param status results will be filtered based on the provided status
-     * @param callback a callback to notify about the result of the operation
-     */
-    public static void getTasks(String application, String status, AuthState authState,
-        TasksCallback callback) {
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        new TasksHandlerThread(sUsername, status, application, null, UI_HANDLER, authState,
-            callback).start();
+  /**
+   * Getting applications list
+   */
+  public static void getApplications(AuthState authState, ApplicationsCallback callback) {
+    try {
+      checkInitialization();
+    } catch (NotInitilizedException e) {
+      callback.onError(e);
+      return;
     }
+    new ApplicationsListHandlerThread(null, UI_HANDLER, authState, callback).start();
+  }
 
-    /**
-     * Gets details about task
-     *
-     * @param task the task which should be obtained
-     * @param callback a callback to notify about the result of the operation
-     */
-
-    public static void getTask(Task task, AuthState authState, TaskDetailsCallback callback) {
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        new TasksDetailsHandlerThread(task, null, UI_HANDLER, authState, callback).start();
+  /**
+   * Get an application by name
+   */
+  public static void getApplications(String appName, AuthState authState,
+      ApplicationByNameCallback callback) {
+    try {
+      checkInitialization();
+    } catch (NotInitilizedException e) {
+      callback.onError(e);
+      return;
     }
+    new ApplicationByNameHandlerThread(appName, null, UI_HANDLER, authState, callback).start();
+  }
 
-    /**
-     * Executing the task
-     *
-     * @param newTask a task to execute
-     * @param callback a callback to notify about the result of the operation
-     */
-    public static void createTask(Task newTask, AuthState authState,
-        TaskCreationCallback callback) {
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        newTask.setUser(sUsername);
-        new TasksCreateHandlerThread(newTask, null, UI_HANDLER, authState, callback).start();
+  /**
+   * Get an application by id
+   */
+  public static void getApplications(String id, AuthState authState,
+      ApplicationByIdCallback callback) {
+    try {
+      checkInitialization();
+    } catch (NotInitilizedException e) {
+      callback.onError(e);
+      return;
     }
-
-    /**
-     * Uploading the files for the task created before and waiting for inputs
-     *
-     * @param task created task
-     * @param callback a callback to notify about the result of the operation
-     */
-    public static void uploadInputFiles(Task task, AuthState authState,
-        UploadFileCallback callback) {
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        task.setUser(sUsername);
-        new TasksUploadFilesHandlerThread(task, null, UI_HANDLER, authState, callback).start();
-    }
-
-    /**
-     * Deleting the task
-     *
-     * @param task task to delete
-     * @param authState an object with auth data
-     * @param callback callback informing about results
-     */
-    public static void deleteTask(Task task, AuthState authState, TaskDeleteCallback callback) {
-
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        new TasksDeleteHandlerThread(task, null, UI_HANDLER, authState, callback).start();
-    }
-
-    /**
-     * Getting applications list
-     */
-    public static void getApplications(AuthState authState, ApplicationsCallback callback) {
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        new ApplicationsListHandlerThread(null, UI_HANDLER, authState, callback).start();
-    }
-
-    /**
-     * Get an application by name
-     */
-    public static void getApplications(String appName, AuthState authState,
-        ApplicationByNameCallback callback) {
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        new ApplicationByNameHandlerThread(appName, null, UI_HANDLER, authState, callback).start();
-    }
-
-    /**
-     * Get an application by id
-     */
-    public static void getApplications(String id, AuthState authState,
-        ApplicationByIdCallback callback) {
-        try {
-            checkInitialization();
-        } catch (NotInitilizedException e) {
-            callback.onError(e);
-            return;
-        }
-        new ApplicationByIdHandlerThread(id, null, UI_HANDLER, authState, callback).start();
-    }
+    new ApplicationByIdHandlerThread(id, null, UI_HANDLER, authState, callback).start();
+  }
 }

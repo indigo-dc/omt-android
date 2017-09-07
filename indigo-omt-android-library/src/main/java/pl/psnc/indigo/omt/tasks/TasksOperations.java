@@ -8,21 +8,22 @@ import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
  */
 
 public interface TasksOperations {
-    TasksWrapper getTasks(String user);
 
-    TasksWrapper getTasks(String user, String status);
+  TasksWrapper getTasks();
 
-    TasksWrapper getTasks(String user, String status, String application);
+  TasksWrapper getTasks(String status);
 
-    Task createTask(Task task);
+  TasksWrapper getTasks(String status, String application);
 
-    TasksWrapper createTasks(TasksWrapper tasks);
+  Task createTask(Task task);
 
-    Task getTaskDetails(int taskId);
+  TasksWrapper createTasks(TasksWrapper tasks);
 
-    Task modifyTask(int taskId, Task task);
+  Task getTaskDetails(int taskId);
 
-    boolean deleteTask(Task task);
+  Task modifyTask(int taskId, Task task);
 
-    void uploadInputFile(String url, Task task);
+  boolean deleteTask(Task task);
+
+  void uploadInputFile(String url, Task task);
 }

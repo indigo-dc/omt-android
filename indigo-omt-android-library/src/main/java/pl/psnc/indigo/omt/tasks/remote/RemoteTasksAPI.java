@@ -8,7 +8,6 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import pl.psnc.indigo.omt.api.model.InputFile;
 import pl.psnc.indigo.omt.api.model.Task;
-import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
 import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.TasksOperations;
@@ -44,10 +43,10 @@ public class RemoteTasksAPI implements TasksOperations {
     mTasksRetrofitAPI = tasksRetrofitAPI;
   }
 
-  @Override public TasksWrapper getTasks(String user) {
+  @Override public TasksWrapper getTasks() {
     TasksWrapper tasks = null;
     try {
-      Call<TasksWrapper> call = mTasksRetrofitAPI.getTasks(user, TaskStatus.ANY);
+      Call<TasksWrapper> call = mTasksRetrofitAPI.getTasks();
       Response<TasksWrapper> tasksResponse = call.execute();
       if (tasksResponse != null && tasksResponse.isSuccessful()) {
         tasks = tasksResponse.body();
@@ -58,10 +57,10 @@ public class RemoteTasksAPI implements TasksOperations {
     return tasks;
   }
 
-  @Override public TasksWrapper getTasks(String user, String status) {
+  @Override public TasksWrapper getTasks(String status) {
     TasksWrapper tasks = null;
     try {
-      Call<TasksWrapper> call = mTasksRetrofitAPI.getTasks(user, status);
+      Call<TasksWrapper> call = mTasksRetrofitAPI.getTasks(status);
       Response<TasksWrapper> tasksResponse = call.execute();
       if (tasksResponse != null && tasksResponse.isSuccessful()) {
         tasks = tasksResponse.body();
@@ -72,10 +71,10 @@ public class RemoteTasksAPI implements TasksOperations {
     return tasks;
   }
 
-  @Override public TasksWrapper getTasks(String user, String status, String application) {
+  @Override public TasksWrapper getTasks(String status, String application) {
     TasksWrapper tasks = null;
     try {
-      Call<TasksWrapper> call = mTasksRetrofitAPI.getTasks(user, status, application);
+      Call<TasksWrapper> call = mTasksRetrofitAPI.getTasks(status, application);
       Response<TasksWrapper> tasksResponse = call.execute();
       if (tasksResponse != null && tasksResponse.isSuccessful()) {
         tasks = tasksResponse.body();

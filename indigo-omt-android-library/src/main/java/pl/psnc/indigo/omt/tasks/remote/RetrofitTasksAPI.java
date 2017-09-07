@@ -22,22 +22,23 @@ import retrofit2.http.Url;
 
 public interface RetrofitTasksAPI {
 
-    @GET("tasks") Call<TasksWrapper> getTasks(@Query("user") String user,
-        @Query("status") String status, @Query("application") String application);
+  @GET("tasks") Call<TasksWrapper> getTasks(@Query("status") String status,
+      @Query("application") String application);
 
-    @GET("tasks") Call<TasksWrapper> getTasks(@Query("user") String user,
-        @Query("status") String status);
+  @GET("tasks") Call<TasksWrapper> getTasks(@Query("status") String status);
 
-    @POST("tasks") Call<Task> createTask(@Body Task task);
+  @GET("tasks") Call<TasksWrapper> getTasks();
 
-    @PATCH("tasks") Call<TasksWrapper> createTasks(@Body TasksWrapper tasks);
+  @POST("tasks") Call<Task> createTask(@Body Task task);
 
-    @GET("tasks/{id}") Call<Task> getTaskDetails(@Path("id") int taskId);
+  @PATCH("tasks") Call<TasksWrapper> createTasks(@Body TasksWrapper tasks);
 
-    @PATCH("tasks/{id}") Call<Task> modifyTask(@Path("id") int taskId, @Body Task task);
+  @GET("tasks/{id}") Call<Task> getTaskDetails(@Path("id") int taskId);
 
-    @DELETE("tasks/{id}") Call<ResponseBody> deleteTask(@Path("id") int taskId);
+  @PATCH("tasks/{id}") Call<Task> modifyTask(@Path("id") int taskId, @Body Task task);
 
-    @Multipart @POST Call<ResponseBody> uploadInputFile(@Url String url,
-        @Part MultipartBody.Part file, @Query("user") String user);
+  @DELETE("tasks/{id}") Call<ResponseBody> deleteTask(@Path("id") int taskId);
+
+  @Multipart @POST Call<ResponseBody> uploadInputFile(@Url String url,
+      @Part MultipartBody.Part file, @Query("user") String user);
 }

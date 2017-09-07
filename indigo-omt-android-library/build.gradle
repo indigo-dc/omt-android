@@ -17,7 +17,7 @@ ext {
   siteUrl = 'https://github.com/indigo-dc/omt-android'
   gitUrl = 'https://github.com/indigo-dc/omt-android.git'
 
-  libraryVersion = '0.9.1'
+  libraryVersion = '0.9.1.1'
 
   developerId = 'mupsnc'
   developerName = 'Michal Urbaniak'
@@ -48,7 +48,7 @@ project.afterEvaluate {
 
 android {
   compileSdkVersion 25
-  buildToolsVersion '25.0.2'
+  buildToolsVersion '25.0.3'
 
   defaultConfig {
     minSdkVersion 18
@@ -90,23 +90,22 @@ cobertura {
 
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
-  compile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
-  compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-  compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.1.0'
-  compile 'com.squareup.okhttp3:okhttp:3.6.0'
-  compile 'org.apache.commons:commons-lang3:3.4'
-  compile 'net.openid:appauth:0.6.1'
+  compile group: 'com.google.code.gson', name: 'gson', version: '2.8.1'
+  compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+  compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.3.0'
+  compile 'com.squareup.okhttp3:okhttp:3.9.0'
+  compile 'org.apache.commons:commons-lang3:3.6'
+  compile 'net.openid:appauth:0.7.0'
   //for testing
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.10.19'
-  testCompile 'com.squareup.okhttp3:mockwebserver:3.6.0'
+  testCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
   androidTestCompile 'com.android.support:support-annotations:25.3.1'
   androidTestCompile 'com.android.support.test:runner:0.5'
   androidTestCompile 'com.android.support.test:rules:0.5'
   androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
-
 }
 
 // Place it at the end of the file

@@ -9,12 +9,12 @@ import pl.psnc.indigo.omt.Indigo;
  */
 public class IndigoApplication extends Application {
 
-    @Override public void onCreate() {
-        super.onCreate();
-        try {
-            Indigo.init(this, "test", "http://rhus-147.man.poznan.pl/apis/");
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Bad server address. It should be http(s)://ip(:port)/");
-        }
+  @Override public void onCreate() {
+    super.onCreate();
+    try {
+      Indigo.init(this, "https://fgw01.ncg.ingrid.pt/apis/");
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Bad server address. It should be http(s)://ip(:port)/");
     }
+  }
 }

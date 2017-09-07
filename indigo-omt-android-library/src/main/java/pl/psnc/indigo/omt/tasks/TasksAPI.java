@@ -15,54 +15,54 @@ import pl.psnc.indigo.omt.utils.HttpClientFactory;
  */
 
 public class TasksAPI implements TasksOperations {
-    private BaseAPI mBaseAPI;
-    private RemoteTasksAPI mTasksAPI;
+  private BaseAPI mBaseAPI;
+  private RemoteTasksAPI mTasksAPI;
 
-    public TasksAPI(OkHttpClient okHttpClient) throws IndigoException {
-        mBaseAPI = new BaseAPI(RootAPI.getInstance(HttpClientFactory.getNonIAMClient()));
-        String url = mBaseAPI.getRoot();
-        mTasksAPI = new RemoteTasksAPI(url, okHttpClient);
-    }
+  public TasksAPI(OkHttpClient okHttpClient) throws IndigoException {
+    mBaseAPI = new BaseAPI(RootAPI.getInstance(HttpClientFactory.getNonIAMClient()));
+    String url = mBaseAPI.getRoot();
+    mTasksAPI = new RemoteTasksAPI(url, okHttpClient);
+  }
 
-    public TasksAPI(OkHttpClient okHttpClient, String url, RetrofitTasksAPI tasksRetrofitAPI)
-        throws IndigoException {
-        mBaseAPI = new BaseAPI(RootAPI.getInstance(HttpClientFactory.getNonIAMClient()));
-        mTasksAPI = new RemoteTasksAPI(url, okHttpClient, tasksRetrofitAPI);
-    }
+  public TasksAPI(OkHttpClient okHttpClient, String url, RetrofitTasksAPI tasksRetrofitAPI)
+      throws IndigoException {
+    mBaseAPI = new BaseAPI(RootAPI.getInstance(HttpClientFactory.getNonIAMClient()));
+    mTasksAPI = new RemoteTasksAPI(url, okHttpClient, tasksRetrofitAPI);
+  }
 
-    @Override public TasksWrapper getTasks(String user) {
-        return mTasksAPI.getTasks(user);
-    }
+  @Override public TasksWrapper getTasks() {
+    return mTasksAPI.getTasks();
+  }
 
-    @Override public TasksWrapper getTasks(String user, String status) {
-        return mTasksAPI.getTasks(user, status);
-    }
+  @Override public TasksWrapper getTasks(String status) {
+    return mTasksAPI.getTasks(status);
+  }
 
-    @Override public TasksWrapper getTasks(String user, String status, String application) {
-        return mTasksAPI.getTasks(user, status, application);
-    }
+  @Override public TasksWrapper getTasks(String status, String application) {
+    return mTasksAPI.getTasks(status, application);
+  }
 
-    @Override public Task createTask(Task task) {
-        return mTasksAPI.createTask(task);
-    }
+  @Override public Task createTask(Task task) {
+    return mTasksAPI.createTask(task);
+  }
 
-    @Override public TasksWrapper createTasks(TasksWrapper tasks) {
-        return mTasksAPI.createTasks(tasks);
-    }
+  @Override public TasksWrapper createTasks(TasksWrapper tasks) {
+    return mTasksAPI.createTasks(tasks);
+  }
 
-    @Override public Task getTaskDetails(int taskId) {
-        return mTasksAPI.getTaskDetails(taskId);
-    }
+  @Override public Task getTaskDetails(int taskId) {
+    return mTasksAPI.getTaskDetails(taskId);
+  }
 
-    @Override public Task modifyTask(int taskId, Task task) {
-        return null;
-    }
+  @Override public Task modifyTask(int taskId, Task task) {
+    return null;
+  }
 
-    @Override public boolean deleteTask(Task task) {
-        return mTasksAPI.deleteTask(task);
-    }
+  @Override public boolean deleteTask(Task task) {
+    return mTasksAPI.deleteTask(task);
+  }
 
-    @Override public void uploadInputFile(String url, Task task) {
-        mTasksAPI.uploadInputFile(url, task);
-    }
+  @Override public void uploadInputFile(String url, Task task) {
+    mTasksAPI.uploadInputFile(url, task);
+  }
 }

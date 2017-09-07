@@ -9,11 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import pl.psnc.indigo.omt.BuildConfig;
 import pl.psnc.indigo.omt.api.model.TaskStatus;
 import pl.psnc.indigo.omt.api.model.json.TasksWrapper;
-import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.dispatcher.TasksResponsesDispatcher;
+import pl.psnc.indigo.omt.exceptions.IndigoException;
 import pl.psnc.indigo.omt.tasks.remote.RetrofitTasksAPI;
 import pl.psnc.indigo.omt.utils.HttpClientFactory;
 import pl.psnc.indigo.omt.utils.RetrofitFactory;
@@ -22,7 +21,6 @@ import pl.psnc.indigo.omt.utils.RetrofitFactory;
  * Created by michalu on 13.01.17.
  */
 @RunWith(MockitoJUnitRunner.class) public class TasksAPITest {
-  String username = BuildConfig.FGAPI_USERNAME;
   String status = TaskStatus.DONE;
   String applicationId = "2";
   String filename1 = "sayhello.sh";
@@ -48,20 +46,20 @@ import pl.psnc.indigo.omt.utils.RetrofitFactory;
 
   @Test public void test_GetAllTasksByUsername() throws IndigoException, IOException {
     TasksAPI tasksAPI = new TasksAPI(client, baseUrl, service);
-    TasksWrapper tasks = tasksAPI.getTasks(username);
+    TasksWrapper tasks = tasksAPI.getTasks();
     Assert.assertNotNull(tasks);
   }
 
   @Test public void test_GetAllTasksByUsernameAndStatus() throws IndigoException, IOException {
     TasksAPI tasksAPI = new TasksAPI(client, baseUrl, service);
-    TasksWrapper tasks = tasksAPI.getTasks(username, status);
+    TasksWrapper tasks = tasksAPI.getTasks(status);
     Assert.assertNotNull(tasks);
   }
 
   @Test public void test_GetAllTasksByUsernameAndStatusAndApplication()
       throws IndigoException, IOException {
     TasksAPI tasksAPI = new TasksAPI(client, baseUrl, service);
-    TasksWrapper tasks = tasksAPI.getTasks(username, status, applicationId);
+    TasksWrapper tasks = tasksAPI.getTasks(status, applicationId);
     Assert.assertNotNull(tasks);
   }
 
